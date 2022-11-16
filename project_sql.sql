@@ -1,13 +1,10 @@
 CREATE TABLE product_variant
 	(sku			CHAR(8), 
 	 name			VARCHAR(50),
-	 inventory_id	INT(7) NOT NULL, 
 	 product_id		INT(7) NOT NULL,
 	 price			NUMERIC(10,2),
 	 image_url		VARCHAR(255),
 	 PRIMARY KEY (sku),
-	 FOREIGN KEY (inventory_id) REFERENCES inventory(id)
-		ON DELETE CASCADE,
 	 FOREIGN key (product_id) REFERENCES product(id)
 		ON DELETE SET NULL
 	);
