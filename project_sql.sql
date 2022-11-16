@@ -6,7 +6,7 @@ CREATE TABLE product_variant
 	 image_url		VARCHAR(255),
 	 PRIMARY KEY (sku),
 	 FOREIGN key (product_id) REFERENCES product(id)
-		ON DELETE SET NULL
+		ON DELETE CASCADE
 	);
 
 CREATE TABLE product_variant_option
