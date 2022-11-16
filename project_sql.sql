@@ -62,6 +62,7 @@ CREATE TABLE registered_user (
     FOREIGN KEY (payment_detail_id) REFERENCES payment_detail(id)
         ON DELETE SET NULL
 );
+
 CREATE TABLE options
 	(option_id		    INT NOT NULL AUTO_INCREMENT, 
 	 prod_description	TEXT(100000), 
@@ -83,8 +84,8 @@ CREATE TABLE order_cart
      is_billed      BOOL,
      delivery_id    int,
      PRIMARY KEY (order_id),
-     FOREIGN KEY (user_id) REFERENCES USER(user_id),
-     FOREIGN KEY (delivery_id) REFERENCES DELIVERY(delivery_id)
+     FOREIGN KEY (user_id) REFERENCES USER(id),
+     FOREIGN KEY (delivery_id) REFERENCES DELIVERY(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
     );
