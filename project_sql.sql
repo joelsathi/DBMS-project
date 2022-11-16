@@ -10,9 +10,9 @@ CREATE TABLE product_variant
 	);
 
 CREATE TABLE product_variant_option
-	(id			    INT(7) NOT NULL AUTO_INCREMENT, 
-	 sku			CHAR(8),
-	 option_id	    INT(7) NOT NULL, 
+	(id             INT(7) NOT NULL AUTO_INCREMENT, 
+	 sku            CHAR(8),
+	 option_id      INT(7) NOT NULL, 
 	 PRIMARY KEY (id),
 	 FOREIGN KEY (sku) REFERENCES product_variant(sku)
 		ON DELETE CASCADE,
@@ -21,20 +21,20 @@ CREATE TABLE product_variant_option
 	);
 
 CREATE TABLE product
-	(id			    INT(7) NOT NULL AUTO_INCREMENT, 
-	 name			VARCHAR(50),
-	 description	VARCHAR(100), 
-     base_price		NUMERIC(10,2),
-     discount_id	INT(7) NOT NULL,
-	 brand		    VARCHAR(50), 
+	(id             INT(7) NOT NULL AUTO_INCREMENT, 
+	 name           VARCHAR(50),
+	 description    TEXT(100000), 
+     base_price     NUMERIC(10,2),
+     discount_id    INT(7) NOT NULL,
+	 brand          VARCHAR(50), 
 	 PRIMARY KEY (id),
 	 FOREIGN KEY (discount_id) REFERENCES discount(id)
 		ON DELETE SET NULL
 	);
 
 CREATE TABLE product_sub_category
-	(id			    INT(7) NOT NULL AUTO_INCREMENT, 
-	 product_id	    INT(7) NOT NULL, 
+	(id             INT(7) NOT NULL AUTO_INCREMENT, 
+	 product_id     INT(7) NOT NULL, 
 	 subcategory_id INT(7) NOT NULL, 
 	 PRIMARY KEY (id),
 	 FOREIGN KEY (product_id) REFERENCES product(id)
