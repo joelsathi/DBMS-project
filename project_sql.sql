@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CREATE TABLE product_variant (
     sku CHAR(8),
     name VARCHAR(50),
@@ -104,3 +105,42 @@ CREATE TABLE inventory(
     sku VARCHAR(20),
     FOREIGN KEY(sku) REFERENCES product_varient(sku)
 );
+=======
+CREATE TABLE order_payment_details(
+	ID VARCHAR(8),
+    order_id VARCHAR(8),
+    cardnumber VARCHAR(10),
+    provider VARCHAR(20),
+    PRIMARY KEY (ID),
+    FOREIGN KEY (order_id) references order_cart(order_id)
+		on delete set null
+);
+
+CREATE TABLE delivery(
+	ID VARCHAR(8),
+    delivery_method VARCHAR(20),
+    provider VARCHAR(20),
+    location_id VARCHAR(10),
+    PRIMARY KEY (ID),
+    FOREIGN KEY (location_id) references location(ID)
+		on delete set null	
+);
+
+CREATE TABLE location(
+	ID VARCHAR(8),
+    name VARCHAR(20),
+    is_main_city VARCHAR(20),
+    delivery_cost NUMERIC(6,2), CHECK(delivery_cost>0),
+    PRIMARY KEY (ID)
+);
+
+CREATE TABLE user(
+	ID VARCHAR(8),
+	is_guest VARCHAR(20),
+    registered_user_id VARCHAR(8),
+    PRIMARY KEY(ID),
+    FOREIGN KEY(registered_user_id) references registered_user(ID)
+		on delete set null
+);
+
+>>>>>>> 4ccdf60 (1at_commit)
