@@ -107,8 +107,8 @@ CREATE TABLE inventory(
 );
 =======
 CREATE TABLE order_payment_details(
-	ID VARCHAR(8),
-    order_id VARCHAR(8),
+	ID INT(7) NOT NULL AUTO_INCREMENT,
+    order_id INT(7) NOT NULL AUTO_INCREMENT,
     cardnumber VARCHAR(10),
     provider VARCHAR(20),
     PRIMARY KEY (ID),
@@ -117,27 +117,27 @@ CREATE TABLE order_payment_details(
 );
 
 CREATE TABLE delivery(
-	ID VARCHAR(8),
+	ID INT(7) NOT NULL AUTO_INCREMENT,
     delivery_method VARCHAR(20),
     provider VARCHAR(20),
-    location_id VARCHAR(10),
+    location_id INT(7) NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (ID),
     FOREIGN KEY (location_id) references location(ID)
 		on delete set null	
 );
 
 CREATE TABLE location(
-	ID VARCHAR(8),
+	ID INT(7) NOT NULL AUTO_INCREMENT,
     name VARCHAR(20),
     is_main_city VARCHAR(20),
-    delivery_cost NUMERIC(6,2), CHECK(delivery_cost>0),
+    delivery_cost NUMERIC(10,2), CHECK(delivery_cost>0),
     PRIMARY KEY (ID)
 );
 
 CREATE TABLE user(
-	ID VARCHAR(8),
+	ID INT(7) NOT NULL AUTO_INCREMENT,
 	is_guest VARCHAR(20),
-    registered_user_id VARCHAR(8),
+    registered_user_id INT(7) NOT NULL AUTO_INCREMENT,
     PRIMARY KEY(ID),
     FOREIGN KEY(registered_user_id) references registered_user(ID)
 		on delete set null
