@@ -15,9 +15,9 @@ CREATE TABLE product_variant_option
 	 option_id	    INT(7) NOT NULL, 
 	 PRIMARY KEY (id),
 	 FOREIGN KEY (sku) REFERENCES product_variant(sku)
-		ON DELETE SET NULL,
+		ON DELETE CASCADE,
 	 FOREIGN key (option_id) REFERENCES options(option_id)
-		ON DELETE SET NULL
+		ON DELETE CASCADE
 	);
 
 CREATE TABLE product
@@ -29,7 +29,7 @@ CREATE TABLE product
 	 brand		    VARCHAR(50), 
 	 PRIMARY KEY (id),
 	 FOREIGN KEY (discount_id) REFERENCES discount(id)
-		ON DELETE CASCADE
+		ON DELETE SET NULL
 	);
 
 CREATE TABLE product_sub_category
@@ -38,7 +38,7 @@ CREATE TABLE product_sub_category
 	 subcategory_id INT(7) NOT NULL, 
 	 PRIMARY KEY (id),
 	 FOREIGN KEY (product_id) REFERENCES product(id)
-		ON DELETE SET NULL,
+		ON DELETE CASCADE,
 	 FOREIGN key (subcategory_id) REFERENCES sub_category(id)
-		ON DELETE SET NULL
+		ON DELETE CASCADE
 	);
