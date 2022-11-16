@@ -64,25 +64,25 @@ CREATE TABLE registered_user (
 );
 
 CREATE TABLE options
-	(option_id		    INT NOT NULL AUTO_INCREMENT, 
+	(option_id		    INT(7) NOT NULL AUTO_INCREMENT, 
 	 prod_description	TEXT(100000), 
 	 price_diff		    NUMERIC(10, 2) CHECK (price_diff > 0),
 	 PRIMARY KEY (option_id)
 	);
 
 CREATE TABLE super_catogory
-	(super_catogory_id	INT NOT NULL AUTO_INCREMENT, 
+	(super_catogory_id	INT(7) NOT NULL AUTO_INCREMENT, 
 	 cat_name       	VARCHAR(100), 
 	 price_diff		    NUMERIC(10, 2) CHECK (price_diff > 0),
 	 PRIMARY KEY (super_catogory_id)
 	);
 
 CREATE TABLE order_cart
-    (order_id       INT NOT NULL AUTO_INCREMENT,
-     user_id        INT NOT NULL,
+    (order_id       INT(7) NOT NULL AUTO_INCREMENT,
+     user_id        INT(7) NOT NULL,
      billing_date   DATE,
      is_billed      BOOL,
-     delivery_id    int,
+     delivery_id    INT(7),
      PRIMARY KEY (order_id),
      FOREIGN KEY (user_id) REFERENCES USER(id),
      FOREIGN KEY (delivery_id) REFERENCES DELIVERY(id)
