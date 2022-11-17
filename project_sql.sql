@@ -108,8 +108,8 @@ CREATE TABLE inventory(
 =======
 CREATE TABLE order_payment_details(
 	ID INT(7) NOT NULL AUTO_INCREMENT,
-    order_id INT(7) NOT NULL AUTO_INCREMENT,
-    cardnumber VARCHAR(10),
+    order_id INT(7) NOT NULL,
+    cardnumber VARCHAR(16),
     provider VARCHAR(20),
     PRIMARY KEY (ID),
     FOREIGN KEY (order_id) references order_cart(order_id)
@@ -120,7 +120,7 @@ CREATE TABLE delivery(
 	ID INT(7) NOT NULL AUTO_INCREMENT,
     delivery_method VARCHAR(20),
     provider VARCHAR(20),
-    location_id INT(7) NOT NULL AUTO_INCREMENT,
+    location_id INT(7) NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (location_id) references location(ID)
 		on delete set null	
@@ -128,16 +128,16 @@ CREATE TABLE delivery(
 
 CREATE TABLE location(
 	ID INT(7) NOT NULL AUTO_INCREMENT,
-    name VARCHAR(20),
-    is_main_city VARCHAR(20),
-    delivery_cost NUMERIC(10,2), CHECK(delivery_cost>0),
+    name VARCHAR(100),
+    is_main_city BOOL,
+    delivery_cost NUMERIC(10,2) CHECK(delivery_cost>0),
     PRIMARY KEY (ID)
 );
 
 CREATE TABLE user(
 	ID INT(7) NOT NULL AUTO_INCREMENT,
-	is_guest VARCHAR(20),
-    registered_user_id INT(7) NOT NULL AUTO_INCREMENT,
+	is_guest BOOL,
+    registered_user_id INT(7),
     PRIMARY KEY(ID),
     FOREIGN KEY(registered_user_id) references registered_user(ID)
 		on delete set null
