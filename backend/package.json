@@ -1,0 +1,12 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "backend for thulasi stores",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"no test\\n\"",
+    "start": "node app.js"
+  },
+  "author": "group 26",
+  "license": "MIT"
+}
