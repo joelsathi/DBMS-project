@@ -85,14 +85,14 @@ CREATE TABLE discount(
 CREATE TABLE sub_category(
     id INT(7) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20),
-    description VARCHAR(20),
-    super_category_id TEXT(10),
+    description TEXT(10000),
+    super_category_id VARCHAR(20),
     FOREIGN KEY(super_category_id) REFERENCES super_category(id) ON DELETE CASCADE on update cascade
 );
 CREATE TABLE product_order(
     id INT(7) NOT NULL AUTO_INCREMENT,
     sku VARCHAR(20),
-    order_id int,
+    order_id INT(7),
     price NUMERIC(10, 2) NOT NULL,
     quantity INT(254),
     PRIMARY KEY(id),
