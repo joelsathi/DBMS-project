@@ -42,3 +42,23 @@ CREATE TABLE product_sub_category
 	 FOREIGN key (subcategory_id) REFERENCES sub_category(id)
 		ON DELETE CASCADE
 	);
+CREATE TABLE payment_detail (
+    id INT(7) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    card_no VARCHAR(20) NOT NULL,
+    provider VARCHAR(20)
+);
+
+CREATE TABLE registered_user (
+    id INT(7) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(512) NOT NULL,
+    firstname VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    address VARCHAR(512),
+    mobile_no VARCHAR(10),
+    created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    payment_detail_id INT(7),
+    FOREIGN KEY (payment_detail_id) REFERENCES payment_detail(id)
+        ON DELETE SET NULL
+);
