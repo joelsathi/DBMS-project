@@ -80,14 +80,14 @@ CREATE TABLE discount(
     description VARCHAR(20),
     discount_amount NUMERIC(6, 2),
     status VARCHAR(8),
-    Primary key(ID)
+    PRIMARY KEY(ID)
 );
 CREATE TABLE sub_category(
     id INT(7) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20),
     description VARCHAR(20),
-    super_category_id VARCHAR(10),
-    foreign key(super_category_id) references super_category(id) on delete cascade on update cascade
+    super_category_id TEXT(10),
+    FOREIGN KEY(super_category_id) REFERENCES super_category(id) ON DELETE CASCADE on update cascade
 );
 CREATE TABLE product_order(
     id INT(7) NOT NULL AUTO_INCREMENT,
@@ -95,11 +95,12 @@ CREATE TABLE product_order(
     order_id int,
     price NUMERIC(10, 2) NOT NULL,
     quantity INT(254),
-    Primary key(id),
-    foreign key(order_id) references order_cart(order_id) on delete cascade on update cascade
+    PRIMARY KEY(id),
+    FOREIGN KEY(order_id) REFERENCES order_cart(order_id) ON DELETE CASCADE on update cascade
 );
 CREATE TABLE inventory(
-    id INT(7) NOT NULL AUTO_INCREMENT,
+    id INT(7) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     quantity INT(200),
-    primary key (id)
+    sku VARCHAR(20),
+    FOREIGN KEY(sku) REFERENCES product_varient(sku)
 );
