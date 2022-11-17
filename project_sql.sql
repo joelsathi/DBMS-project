@@ -76,21 +76,21 @@ CREATE TABLE order_cart (
     FOREIGN KEY (delivery_id) REFERENCES DELIVERY(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE discount(
-    id int NOT NULL AUTO_INCREMENT,
+    id INT(7) NOT NULL AUTO_INCREMENT,
     description VARCHAR(20),
-    discount_amount DECIMAL(2, 2),
+    discount_amount NUMERIC(6, 2),
     status VARCHAR(8),
     Primary key(ID)
 );
 CREATE TABLE sub_category(
-    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT(7) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20),
     description VARCHAR(20),
     super_category_id VARCHAR(10),
     foreign key(super_category_id) references super_category(id) on delete cascade on update cascade
 );
 CREATE TABLE product_order(
-    id int NOT NULL AUTO_INCREMENT,
+    id INT(7) NOT NULL AUTO_INCREMENT,
     sku VARCHAR(20),
     order_id int,
     price NUMERIC(10, 2) NOT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE product_order(
     foreign key(order_id) references order_cart(order_id) on delete cascade on update cascade
 );
 CREATE TABLE inventory(
-    id int NOT NULL AUTO_INCREMENT,
+    id INT(7) NOT NULL AUTO_INCREMENT,
     quantity INT(200),
     primary key (id)
 );
