@@ -112,8 +112,8 @@ CREATE TABLE order_payment_details(
     cardnumber VARCHAR(16),
     provider VARCHAR(20),
     PRIMARY KEY (ID),
-    FOREIGN KEY (order_id) references order_cart(order_id)
-		on delete set null
+    FOREIGN KEY (order_id) REFERENCES order_cart(order_id)
+		ON DELETE SET NULL
 );
 
 CREATE TABLE delivery(
@@ -122,8 +122,8 @@ CREATE TABLE delivery(
     provider VARCHAR(20),
     location_id INT(7) NOT NULL,
     PRIMARY KEY (ID),
-    FOREIGN KEY (location_id) references location(ID)
-		on delete set null	
+    FOREIGN KEY (location_id) REFERENCES location(ID)
+		ON DELETE SET NULL
 );
 
 CREATE TABLE location(
@@ -139,8 +139,8 @@ CREATE TABLE user(
 	is_guest BOOL,
     registered_user_id INT(7),
     PRIMARY KEY(ID),
-    FOREIGN KEY(registered_user_id) references registered_user(ID)
-		on delete set null
+    FOREIGN KEY(registered_user_id) REFERENCES registered_user(ID)
+		ON DELETE SET NULL
 );
 
 >>>>>>> 4ccdf60 (1at_commit)
