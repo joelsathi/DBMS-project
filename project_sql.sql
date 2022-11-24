@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 CREATE TABLE product_variant (
     sku CHAR(8),
     name VARCHAR(50),
@@ -105,7 +104,6 @@ CREATE TABLE inventory(
     sku VARCHAR(20),
     FOREIGN KEY(sku) REFERENCES product_varient(sku)
 );
-=======
 CREATE TABLE order_payment_details(
 	ID INT(7) NOT NULL AUTO_INCREMENT,
     order_id INT(7) NOT NULL,
@@ -142,5 +140,3 @@ CREATE TABLE user(
     FOREIGN KEY(registered_user_id) REFERENCES registered_user(ID)
 		ON DELETE SET NULL
 );
-
->>>>>>> 4ccdf60 (1at_commit)
