@@ -1,24 +1,9 @@
 import express, { Request, Response } from "express";
 import appConfig from "./config";
-import mysql2, { Connection } from "mysql2";
+import router from "./routes";
+import { initDb } from "./db";
 
-const db: Connection = mysql2.createConnection(appConfig.DB_CONFIG);
-db.connect((err: any) => {
-  if (err) {
-    throw err
-  } else {
-    console.log("Connected to mysql database")
-  }
-})
-
-const router = express.Router();
-router.get("/", (req: Request, res: Response) => {
-  res.send("Hello World");
-});
-router.get("/about", (req: Request, res: Response) => {
-  res.json({ projectName: "Thulasi", description: "Some Description" });
-});
-
+initDb();
 const app = express();
 app.use(router);
 app.listen(appConfig.PORT, appConfig.HOST, () => {
