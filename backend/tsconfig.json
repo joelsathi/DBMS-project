@@ -3,7 +3,15 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
+    // strict
     "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": false,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    // 
     "moduleResolution": "node",
     "sourceMap": true,
     "outDir": "dist",
