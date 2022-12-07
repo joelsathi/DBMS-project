@@ -10,10 +10,10 @@ router.get("/about", (req: Request, res: Response) => {
 });
 
 // User routes
-// router.get("/user", UserController.getList)
-// router.post("/user", UserController.create)
-// router.get("/user/:id", UserController.getOne)
-// router.delete("/user/:id", UserController.delete)
-// router.put("/user/:id", UserController.update)
+router.get("/user", UserController.getList)
+router.post("/user", UserController.create)
+router.get("/user/:id", UserController.getOne)
+router.delete("/user/:id", UserController.delete)
+router.put("/user/:id", UserController.update)
 
 export default router;
