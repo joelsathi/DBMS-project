@@ -3,7 +3,7 @@ CREATE TABLE discount(
     description VARCHAR(20),
     discount_amount NUMERIC(6, 2),
     status VARCHAR(8),
-    PRIMARY KEY(ID)
+    PRIMARY KEY(id)
 );
 CREATE TABLE product (
     id INT NOT NULL AUTO_INCREMENT,
@@ -25,7 +25,7 @@ CREATE TABLE product_variant (
     PRIMARY KEY (sku),
     FOREIGN key (product_id) REFERENCES product(id) ON DELETE CASCADE
 );
-CREATE TABLE options (
+CREATE TABLE product_option (
     option_id INT NOT NULL AUTO_INCREMENT,
     prod_description TEXT(100000),
     price_diff NUMERIC(10, 2) CHECK (price_diff > 0),
@@ -37,7 +37,7 @@ CREATE TABLE product_variant_option (
     option_id INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (sku) REFERENCES product_variant(sku) ON DELETE CASCADE,
-    FOREIGN key (option_id) REFERENCES options(option_id) ON DELETE CASCADE
+    FOREIGN key (option_id) REFERENCES product_option(option_id) ON DELETE CASCADE
 );
 CREATE TABLE super_category (
     id INT NOT NULL AUTO_INCREMENT,
@@ -54,10 +54,10 @@ CREATE TABLE sub_category(
 CREATE TABLE product_sub_category (
     id INT NOT NULL AUTO_INCREMENT,
     product_id INT NOT NULL,
-    subcategory_id INT NOT NULL,
+    sub_category_id INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-    FOREIGN key (subcategory_id) REFERENCES sub_category(id) ON DELETE CASCADE
+    FOREIGN key (sub_category_id) REFERENCES sub_category(id) ON DELETE CASCADE
 );
 CREATE TABLE payment_detail (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -66,10 +66,10 @@ CREATE TABLE payment_detail (
 );
 CREATE TABLE registered_user (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
+    user_name VARCHAR(255) NOT NULL,
     password VARCHAR(512) NOT NULL,
-    firstname VARCHAR(255) NOT NULL,
-    lastname VARCHAR(255) NOT NULL,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     address VARCHAR(512),
     mobile_no VARCHAR(10),
@@ -79,27 +79,27 @@ CREATE TABLE registered_user (
     SET NULL
 );
 CREATE TABLE user(
-	ID INT NOT NULL AUTO_INCREMENT,
+	id INT NOT NULL AUTO_INCREMENT,
 	is_guest BOOL,
     registered_user_id INT,
-    PRIMARY KEY(ID),
-    FOREIGN KEY(registered_user_id) REFERENCES registered_user(ID)
+    PRIMARY KEY(id),
+    FOREIGN KEY(registered_user_id) REFERENCES registered_user(id)
 		ON DELETE SET NULL
 );
 CREATE TABLE location(
-	ID INT NOT NULL AUTO_INCREMENT,
+	id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100),
     is_main_city BOOL,
     delivery_cost NUMERIC(10,2) CHECK(delivery_cost>0),
-    PRIMARY KEY (ID)
+    PRIMARY KEY (id)
 );
 CREATE TABLE delivery(
-	ID INT NOT NULL AUTO_INCREMENT,
+	id INT NOT NULL AUTO_INCREMENT,
     delivery_method VARCHAR(20),
     provider VARCHAR(20),
     location_id INT ,
-    PRIMARY KEY (ID),
-    FOREIGN KEY (location_id) REFERENCES location(ID)
+    PRIMARY KEY (id),
+    FOREIGN KEY (location_id) REFERENCES location(id)
 		ON DELETE SET NULL
 );
 
@@ -132,11 +132,11 @@ CREATE TABLE inventory(
 );
 
 CREATE TABLE order_payment_details(
-	ID INT NOT NULL AUTO_INCREMENT,
+	id INT NOT NULL AUTO_INCREMENT,
     order_id INT ,
-    cardnumber VARCHAR(16),
+    card_no VARCHAR(16),
     provider VARCHAR(20),
-    PRIMARY KEY (ID),
+    PRIMARY KEY (id),
     FOREIGN KEY (order_id) REFERENCES order_cart(order_id)
 		ON DELETE SET NULL
 );
@@ -147,7 +147,7 @@ VALUES ('Teddy bear', 'Lorem Ipsum is simply dummy text of the printing and type
 1000.00, 1, 'Foo Toys');
 INSERT INTO product_variant 
 VALUES ('ABCD1234', 'Brown Teddy bear', 1, 1000.00, NULL); 
-INSERT INTO options(prod_description, price_diff) 
+INSERT INTO product_option(prod_description, price_diff) 
 VALUES ('Sample description', 100.00);
 INSERT INTO product_variant_option(sku, option_id) 
 VALUES ('ABCD1234', 1); 
@@ -155,11 +155,11 @@ INSERT INTO super_category(cat_name)
 VALUES ('Toys'); 
 INSERT INTO sub_category(name, description, super_category_id) 
 VALUES ('Soft Toys', 'Sample description', 1); 
-INSERT INTO product_sub_category(product_id, subcategory_id) 
+INSERT INTO product_sub_category(product_id, sub_category_id) 
 VALUES (1, 1); 
 INSERT INTO payment_detail(card_no, provider) 
 VALUES ('1234567812345678', 'Visa');
-INSERT INTO registered_user(username, password, firstname, lastname, email, address, mobile_no, payment_detail_id) 
+INSERT INTO registered_user(user_name, password, first_name, last_name, email, address, mobile_no, payment_detail_id) 
 VALUES ('thulasithang', '4d27eae655e7272b21c5b0a539656a8ae869d75f', 'Thulasithan', 'Gnanenthiram', 'thulasithang@sample.com', 'T56: Bayawechcha paara, anda yata', '0112729729', 1);  
 INSERT INTO user(is_guest, registered_user_id) 
 VALUES (FALSE, 1);  
@@ -173,5 +173,5 @@ INSERT INTO product_order(sku, order_id, price, quantity)
 VALUES ('ABCD1234', 1, 1500.00, 1);
 INSERT INTO inventory(quantity, sku) 
 VALUES (10, 'ABCD1234');  
-INSERT INTO order_payment_details(order_id, cardnumber, provider) 
+INSERT INTO order_payment_details(order_id, card_no, provider) 
 VALUES (1, '1234567812345678', 'Visa');
