@@ -1,9 +1,10 @@
 import mysql.connector
-from mysql.connector import MySQLConnection
+from mysql.connector import CMySQLConnection
 
 from ..settings import settings
 
-connection: MySQLConnection = mysql.connector.connect(
+connection: CMySQLConnection = mysql.connector.connect(
+    use_pure=False,
     host=settings.DB_HOST,
     port=settings.DB_PORT,
     user=settings.DB_USER,
