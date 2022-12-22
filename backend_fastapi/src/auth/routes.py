@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Response
 
-from .models import UserDBModel
+from .models import RegisteredUserDBModel
 
 user_router = APIRouter(
     prefix="/auth",
 )
 
 
-@user_router.get("/user")
+@user_router.get("/registered_user")
 def get_user_list(response: Response):
-    rows = UserDBModel.manager.select()
-    return rows
+    rows = RegisteredUserDBModel.objects.select()
+    serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
+    return serialized_rows
