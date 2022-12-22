@@ -140,8 +140,10 @@ CREATE TABLE product_order(
     price NUMERIC(10, 2) NOT NULL,
     quantity INT,
     PRIMARY KEY(id),
-    FOREIGN KEY(order_id) REFERENCES order_cart(order_id) ON DELETE CASCADE on update cascade
+    FOREIGN KEY(order_id) REFERENCES order_cart(order_id) ON DELETE CASCADE on update cascade,
+    FOREIGN KEY(sku) REFERENCES product_variant(sku) ON DELETE CASCADE on update cascade
 );
+
 CREATE TABLE inventory(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     quantity INT,
