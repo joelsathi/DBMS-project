@@ -1,13 +1,71 @@
-from .manager import BaseManager
+from .manager import BaseQueryManager
+from .field import BaseDBField
 
 
-class MetaManagedModel(type):
-    __managerclass__ = BaseManager
+class MetaModel(type):
+    __query_manager__ = BaseQueryManager
+
+    def __new__(cls, name, bases, attrs, **kwargs):
+        # return if we're dealing with the BaseDBModel class (We only want to deal with concrete
+        # classes here)
+        top_level = True
+        for base in bases:
+            if isinstance(base, MetaModel):
+                top_level = False
+                break
+        if top_level:
+            return super().__new__(cls, name, bases, attrs)
+
+        # initialize fields with names and define as an attribute on the class
+        _fields = {}
+        new_attrs = {}
+        for attr_name, attr in attrs.items():
+            if isinstance(attr, BaseDBField):
+                attr.set_name(attr_name)
+                _fields[attr_name] = attr
+            else:
+                new_attrs[attr_name] = attr
+        new_attrs["_fields"] = _fields
+
+        return super().__new__(cls, name, bases, new_attrs)
 
     @property
-    def manager(cls):
-        return cls.__managerclass__(model_class=cls)
+    def objects(cls):
+        """Syntactic sugar to obtain a manager instance for the class"""
+        return cls.__query_manager__(model_class=cls)
 
 
-class BaseDBModel(metaclass=MetaManagedModel):
+class BaseDBModel(metaclass=MetaModel):
+    """Base Model class from which to inherit db models.
+
+    NOTE: Only final model classes should inherit from this.
+    """
+
     __tablename__ = None
+
+    def __init__(self, *args, **kwargs):
+        """NOTE: For now make sure that all field values are passed as kwargs"""
+
+        for f in self._fields.values():
+            try:
+                value = kwargs[f.name]
+            except KeyError:
+                value = f.get_default()
+            setattr(self, f.name, value)
+
+        # TODO check for extra kwargs / args
+
+    def save(self):
+        raise NotImplementedError
+
+    def serialize(self):
+        """Convert the model object into a representation suitable for sending as an API response.
+
+        NOTE: This would generally need to be overridden by every model class since the fields needed
+        to be sent per response would vary depending on each models needs.
+
+        Returns:
+            Generally a dict with the relevant model fields and values would be returned.
+        """
+
+        return {f: getattr(self, f) for f in self._fields.keys()}
