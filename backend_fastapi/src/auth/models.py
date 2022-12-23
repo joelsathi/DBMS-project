@@ -28,8 +28,34 @@ class RegisteredUserDBModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
-
 class UserDBModel(model.BaseDBModel):
     __tablename__ = "user"
 
-    # TODO complete
+    ID = field.IntegerDBField(is_primary_key=True)
+    is_guest = field.BooleanDBField()
+
+    registered_user_id = None       # TODO foreign key
+
+    def serialize(self):
+        fields = [
+            "ID",
+            "is_guest",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+class PaymentDetailDBModel(model.BaseDBModel):
+    __tablename__ = "payment_detail"
+
+    id = field.IntegerDBField(is_primary_key=True)
+    card_no = field.CharDBField(max_length=20)
+    provider = field.CharDBField(max_length=20)
+
+    def serialize(self):
+        fields = [
+            "id",
+            "card_no",
+            "provider",
+        ]
+
+        return {f: getattr(self, f) for f in fields}

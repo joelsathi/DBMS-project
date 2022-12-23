@@ -1,10 +1,14 @@
 from fastapi import FastAPI, Response
 from .auth.routes import user_router
+from .product.routes import product_router
+from .order.routes import order_router
 from .core.db import connection
 from .core.manager import BaseQueryManager
 
 app = FastAPI()
 app.include_router(user_router)
+app.include_router(product_router)
+app.include_router(order_router)
 
 
 @app.on_event("startup")
