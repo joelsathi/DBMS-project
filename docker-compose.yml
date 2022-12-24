@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'thulasi_stores'
+      MYSQL_USER: 'thulasi_user'
+      MYSQL_PASSWORD: ${ENV_MYSQL_PASSWORD:?err}
+      MYSQL_ROOT_PASSWORD: ${ENV_MYSQL_ROOT_PASSWORD:?err}
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    volumes:
+      - db-mysql:/var/lib/mysql
+
+  backend:
+    build: ./backend_fastapi
+    depends_on:
+      - db
+    restart: always
+    environment:
+      APP_ENV: 'PROD'
+      APP_PORT: 8000
+      APP_HOST: 'localhost'
+      DB_HOST: 'db'
+      DB_PORT: 3306
+      DB_NAME: 'thulasi_stores'
+      DB_USER: 'thulasi_user'
+      DB_PASSWORD: ${ENV_MYSQL_PASSWORD:?err}
+      DB_CONNECTION_LIMIT: 7
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+
+volumes:
+  db-mysql:
