@@ -7,8 +7,6 @@ services:
       MYSQL_USER: 'thulasi_user'
       MYSQL_PASSWORD: ${ENV_MYSQL_PASSWORD:?err}
       MYSQL_ROOT_PASSWORD: ${ENV_MYSQL_ROOT_PASSWORD:?err}
-    ports:
-      - 3306:3306
     expose:
       - 3306
     volumes:
@@ -30,8 +28,6 @@ services:
       DB_USER: 'thulasi_user'
       DB_PASSWORD: ${ENV_MYSQL_PASSWORD:?err}
       DB_CONNECTION_LIMIT: 7
-    ports:
-      - 8000:8000
     expose:
       - 8000
 
