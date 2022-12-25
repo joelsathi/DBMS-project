@@ -68,20 +68,22 @@ class DateTimeDBField(BaseDBField):
     def to_db(self, value):
         raise NotImplementedError
 
+
 class FloatDBField(BaseDBField):
     def from_db(self, value):
         if isinstance(value, float) or value is None:
             return value
         return round(float(value), 2)
-    
+
     def to_db(self, value):
         raise NotImplementedError
+
 
 class BooleanDBField(BaseDBField):
     def from_db(self, value):
         if isinstance(value, bool) or value is None:
             return value
         return bool(value)
-    
+
     def to_db(self, value):
         return bool(value)

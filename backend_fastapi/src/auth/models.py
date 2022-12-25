@@ -28,13 +28,14 @@ class RegisteredUserDBModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
+
 class UserDBModel(model.BaseDBModel):
     __tablename__ = "user"
 
     ID = field.IntegerDBField(is_primary_key=True)
     is_guest = field.BooleanDBField()
 
-    registered_user_id = None       # TODO foreign key
+    registered_user_id = None  # TODO foreign key
 
     def serialize(self):
         fields = [
@@ -43,6 +44,7 @@ class UserDBModel(model.BaseDBModel):
         ]
 
         return {f: getattr(self, f) for f in fields}
+
 
 class PaymentDetailDBModel(model.BaseDBModel):
     __tablename__ = "payment_detail"

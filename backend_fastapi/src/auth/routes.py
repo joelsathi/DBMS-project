@@ -8,10 +8,11 @@ user_router = APIRouter(
 
 
 @user_router.get("/registered_user")
-def get_user_list(response: Response):
+def get_registered_user_list(response: Response):
     rows = RegisteredUserDBModel.objects.select()
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
     return serialized_rows
+
 
 @user_router.get("/user")
 def get_user_list(response: Response):
@@ -19,8 +20,9 @@ def get_user_list(response: Response):
     serialized_rows = [UserDBModel.serialize(row) for row in rows]
     return serialized_rows
 
-@user_router.get("/paymentDetail")
-def get_user_list(response: Response):
+
+@user_router.get("/payment_detail")
+def get_payment_detail_list(response: Response):
     rows = PaymentDetailDBModel.objects.select()
     serialized_rows = [PaymentDetailDBModel.serialize(row) for row in rows]
     return serialized_rows

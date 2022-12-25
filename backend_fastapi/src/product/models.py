@@ -1,5 +1,6 @@
 from ..core import model, field
 
+
 class ProductModel(model.BaseDBModel):
     __tablename__ = "product"
 
@@ -9,7 +10,7 @@ class ProductModel(model.BaseDBModel):
     base_price = field.FloatDBField()
     brand = field.CharDBField(max_length=50)
 
-    discount_id = None      # TODO foriengn key
+    discount_id = None  # TODO foriengn key
 
     def serialize(self):
         fields = [
@@ -22,6 +23,7 @@ class ProductModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
+
 class ProductVariantModel(model.BaseDBModel):
     __tablename__ = "product_variant"
 
@@ -30,7 +32,7 @@ class ProductVariantModel(model.BaseDBModel):
     price = field.FloatDBField()
     image_url = field.CharDBField(max_length=255)
 
-    product_id = None      # TODO foriengn key
+    product_id = None  # TODO foriengn key
 
     def serialize(self):
         fields = [
@@ -41,7 +43,8 @@ class ProductVariantModel(model.BaseDBModel):
         ]
 
         return {f: getattr(self, f) for f in fields}
-    
+
+
 class SubCategoryModel(model.BaseDBModel):
     __tablename__ = "sub_category"
 
@@ -49,7 +52,7 @@ class SubCategoryModel(model.BaseDBModel):
     name = field.CharDBField(max_length=20)
     description = field.TextDBField()
 
-    super_category_id = None      # TODO foriengn key
+    super_category_id = None  # TODO foriengn key
 
     def serialize(self):
         fields = [
@@ -59,6 +62,7 @@ class SubCategoryModel(model.BaseDBModel):
         ]
 
         return {f: getattr(self, f) for f in fields}
+
 
 class SuperCategoryModel(model.BaseDBModel):
     __tablename__ = "super_category"
@@ -73,6 +77,7 @@ class SuperCategoryModel(model.BaseDBModel):
         ]
 
         return {f: getattr(self, f) for f in fields}
+
 
 class DiscountModel(model.BaseDBModel):
     __tablename__ = "discount"
@@ -92,6 +97,7 @@ class DiscountModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
+
 class OptionsModel(model.BaseDBModel):
     __tablename__ = "options"
 
@@ -108,6 +114,7 @@ class OptionsModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
+
 class InventoryModel(model.BaseDBModel):
     __tablename__ = "inventory"
 
@@ -116,7 +123,7 @@ class InventoryModel(model.BaseDBModel):
 
     # sku = field.CharDBField(max_length=20)
 
-    sku = None          # TODO foreign key
+    sku = None  # TODO foreign key
 
     def serialize(self):
         fields = [
@@ -126,13 +133,14 @@ class InventoryModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
+
 class ProductSubCategoryModel(model.BaseDBModel):
     __tablename__ = "product_sub_category"
 
     id = field.IntegerDBField(is_primary_key=True)
 
-    product_id = None           # TODO foreign key
-    subcategory_id = None       # TODO foreign key
+    product_id = None  # TODO foreign key
+    subcategory_id = None  # TODO foreign key
 
     def serialize(self):
         fields = [
@@ -141,16 +149,17 @@ class ProductSubCategoryModel(model.BaseDBModel):
 
         return {f: getattr(self, f) for f in fields}
 
+
 class ProductVarientOptionsModel(model.BaseDBModel):
     __tablename__ = "product_variant_option"
 
     id = field.IntegerDBField(is_primary_key=True)
 
-    # sku = field.CharDBField(max_length=8) 
-    # option_id = field.IntegerDBField()  
+    # sku = field.CharDBField(max_length=8)
+    # option_id = field.IntegerDBField()
 
-    sku = None           # TODO foreign key
-    option_id = None       # TODO foreign key
+    sku = None  # TODO foreign key
+    option_id = None  # TODO foreign key
 
     def serialize(self):
         fields = [
