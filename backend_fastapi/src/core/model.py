@@ -1,5 +1,6 @@
+from functools import lru_cache
 from .manager import BaseQueryManager
-from .field import BaseDBField
+from .field import BaseDBField, ForeignKeyDBField
 
 
 class MetaModel(type):
@@ -18,14 +19,22 @@ class MetaModel(type):
 
         # initialize fields with names and define as an attribute on the class
         _fields = {}
+        _foreign_key_fields = {}
         new_attrs = {}
         for attr_name, attr in attrs.items():
             if isinstance(attr, BaseDBField):
                 attr.set_name(attr_name)
-                _fields[attr_name] = attr
+                if isinstance(attr, ForeignKeyDBField):
+                    _foreign_key_fields[attr.name_id] = attr
+                else:
+                    _fields[attr_name] = attr
+                    if attr.is_primary_key:
+                        # TODO what if there are multiple primary keys?
+                        new_attrs["primary_key"] = attr_name
             else:
                 new_attrs[attr_name] = attr
         new_attrs["_fields"] = _fields
+        new_attrs["_foreign_key_fields"] = _foreign_key_fields
 
         return super().__new__(cls, name, bases, new_attrs)
 
@@ -33,6 +42,13 @@ class MetaModel(type):
     def objects(cls):
         """Syntactic sugar to obtain a manager instance for the class"""
         return cls.__query_manager__(model_class=cls)
+
+    @lru_cache(maxsize=1)
+    def get_field_names(cls):
+        return {
+            **cls._fields,
+            **{f.name_id: f for f in cls._foreign_key_fields.values()},
+        }
 
 
 class BaseDBModel(metaclass=MetaModel):
@@ -53,6 +69,19 @@ class BaseDBModel(metaclass=MetaModel):
                 value = f.get_default()
             setattr(self, f.name, value)
 
+        for f in self._foreign_key_fields.values():
+            try:
+                value = kwargs[f.name]  # entire related object
+                setattr(self, f.name, value)
+                setattr(self, f.name_id, getattr(value, value.primary_key.name))
+            except KeyError:
+                try:
+                    value = kwargs[f.name_id]  # id only
+                except KeyError:
+                    value = None
+                setattr(self, f.name_id, value)
+                # TODO consider adding a way to otherwise obtain the related object
+
         # TODO check for extra kwargs / args
 
     def save(self):
@@ -68,4 +97,4 @@ class BaseDBModel(metaclass=MetaModel):
             Generally a dict with the relevant model fields and values would be returned.
         """
 
-        return {f: getattr(self, f) for f in self._fields.keys()}
+        return {f: getattr(self, f) for f in self.get_field_names()}

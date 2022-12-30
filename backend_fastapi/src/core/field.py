@@ -1,4 +1,11 @@
+from functools import cached_property
+
+
 DEFAULT_DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
+
+
+class InvalidRelatedModelException(Exception):
+    pass
 
 
 class BaseDBField:
@@ -87,3 +94,34 @@ class BooleanDBField(BaseDBField):
 
     def to_db(self, value):
         return bool(value)
+
+
+class ForeignKeyDBField(BaseDBField):
+    def __init__(self, *args, related_model, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.related_model = related_model
+        self._check_valid_relation()
+
+    def set_name(self, name):
+        _name = name
+        if _name.split("_")[-1] == "id":
+            _name = _name[:-3]
+        super().set_name(_name)
+
+    @cached_property
+    def name_id(self):
+        return self.name + "_id"
+
+    def _check_valid_relation(self):
+        if getattr(self.related_model, "__tablename__", None) is None:
+            raise InvalidRelatedModelException(
+                "{} is not a valid related model!".format(self.related_model)
+            )
+
+    def from_db(self, value):
+        if isinstance(value, int) or value is None:
+            return value
+        return int(value)
+
+    def to_db(self, value):
+        raise NotImplementedError
