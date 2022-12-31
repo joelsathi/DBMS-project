@@ -53,6 +53,10 @@ class MetaModel(type):
             **{f.name_id: f for f in cls._foreign_key_fields.values()},
         }
 
+    @lru_cache(maxsize=1)
+    def get_fields(self):
+        return [*self._fields.values(), *self._foreign_key_fields.values()]
+
 
 class BaseDBModel(metaclass=MetaModel):
     """Base Model class from which to inherit db models.
@@ -99,3 +103,23 @@ class BaseDBModel(metaclass=MetaModel):
         """
 
         return {f: getattr(self, f) for f in self.get_field_names()}
+
+    def serialize_with_related(self):
+        """
+        Convert the model object into a representation suitable for sending as an API response,
+        including a representation of related objects. Similar to `serialize`, except this would
+        include nested related objects instead of just their ids.
+        """
+
+        serialized_obj = {}
+
+        for f in self.__class__.get_fields():
+            if isinstance(f, ForeignKeyDBField):
+                serialized_obj[f.name] = f.related_model.serialize(
+                    getattr(self, f.name)
+                )
+
+            else:
+                serialized_obj[f.name] = getattr(self, f.name)
+
+        return serialized_obj

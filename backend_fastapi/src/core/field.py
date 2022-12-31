@@ -1,5 +1,4 @@
 from functools import cached_property
-import time
 
 
 DEFAULT_DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
