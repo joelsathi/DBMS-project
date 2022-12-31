@@ -1,6 +1,6 @@
 from functools import lru_cache
 from .manager import BaseQueryManager
-from .field import BaseDBField, ForeignKeyDBField, LazyFieldAttribute
+from .field import BaseDBField, ForeignKeyDBField
 
 
 class MetaModel(type):
@@ -18,26 +18,18 @@ class MetaModel(type):
             return super().__new__(cls, name, bases, attrs)
 
         # initialize fields with names and define as an attribute on the class
-        _fields = {}
-        _foreign_key_fields = {}
         new_attrs = {}
+        new_attrs["_fields"] = {}
+        new_attrs["_foreign_key_fields"] = {}
         for attr_name, attr in attrs.items():
             if isinstance(attr, BaseDBField):
-                attr.set_name(attr_name)
-                if isinstance(attr, ForeignKeyDBField):
-                    _foreign_key_fields[attr_name] = attr
-                    new_attrs[attr.name] = LazyFieldAttribute(
-                        attr, attr.get_related_object, attr.set_related_object_id
-                    )
-                else:
-                    _fields[attr_name] = attr
-                    if attr.is_primary_key:
-                        # TODO what if there are multiple primary keys?
-                        new_attrs["primary_key"] = attr_name
+                attr.add_to_model(
+                    model_name=name,
+                    field_name=attr_name,
+                    new_attrs=new_attrs,
+                )
             else:
                 new_attrs[attr_name] = attr
-        new_attrs["_fields"] = _fields
-        new_attrs["_foreign_key_fields"] = _foreign_key_fields
 
         return super().__new__(cls, name, bases, new_attrs)
 

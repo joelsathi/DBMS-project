@@ -8,6 +8,10 @@ class InvalidRelatedModelException(Exception):
     pass
 
 
+class FieldException(Exception):
+    pass
+
+
 class LazyFieldAttribute:
     """
     To set related objects as attributes on model instances without immediately running a query
@@ -47,8 +51,32 @@ class BaseDBField:
 
         self.name = None
 
-    def set_name(self, name):
-        self.name = name
+    def add_to_model(self, model_name, field_name, new_attrs):
+        """Add this field to a model
+
+        NOTE: This will be called inside a metaclasses __new__ method, so we will directly be
+        working with attribute dictionaries.
+
+        Args:
+            model_name (str): name of the model class we're working with
+            field_name (str): name of field on the model class
+            new_attrs (dict): dict which will have all the attributes to be added to the model
+                classes __dict__. This would have a dict _field inside it containing fields of the
+                model.
+        """
+
+        self.name = field_name
+        new_attrs["_fields"][self.name] = self
+
+        if self.is_primary_key:
+            # NOTE: for now, we will not allow multiple primary keys
+            if "primary_key" in new_attrs:
+                raise FieldException(
+                    "Cannot add multiple primary keys '{}' and '{}' to model {}".format(
+                        self.name, new_attrs["primary_key"], model_name
+                    )
+                )
+            new_attrs["primary_key"] = self.name
 
     def from_db(self, value):
         """Convert value obtained from database (from the connector) into the relevant python type"""
@@ -135,12 +163,6 @@ class ForeignKeyDBField(BaseDBField):
         self.related_model = related_model
         self._check_valid_relation()
 
-    def set_name(self, name):
-        _name = name
-        if _name.split("_")[-1] == "id":
-            _name = _name[:-3]
-        super().set_name(_name)
-
     @cached_property
     def name_id(self):
         return self.name + "_id"
@@ -167,3 +189,27 @@ class ForeignKeyDBField(BaseDBField):
 
     def set_related_object_id(self, instance, obj):
         setattr(instance, self.name_id, getattr(obj, obj.primary_key))
+
+    def add_to_model(self, model_name, field_name, new_attrs):
+        """Add this field to a model
+
+        NOTE: This will be called inside a metaclasses __new__ method, so we will directly be
+        working with attribute dictionaries.
+
+        Args:
+            model_name (str): name of the model class we're working with
+            field_name (str): name of field on the model class
+            new_attrs (dict): dict which will have all the attributes to be added to the model
+                classes __dict__. This would have a dict _field inside it containing fields of the
+                model.
+        """
+
+        _name = field_name
+        if _name.split("_")[-1] == "id":
+            _name = _name[:-3]
+        self.name = _name
+
+        new_attrs["_foreign_key_fields"][self.name] = self
+        new_attrs[self.name] = LazyFieldAttribute(
+            self, self.get_related_object, self.set_related_object_id
+        )
