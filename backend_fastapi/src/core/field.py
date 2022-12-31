@@ -1,4 +1,5 @@
 from functools import cached_property
+import time
 
 
 DEFAULT_DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
@@ -6,6 +7,37 @@ DEFAULT_DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 
 class InvalidRelatedModelException(Exception):
     pass
+
+
+class LazyFieldAttribute:
+    """
+    To set related objects as attributes on model instances without immediately running a query
+    when instantiating the instance. This would be useful to get a list of model instances from a
+    single query without having to run a query for each related object when instantiating each
+    instance from the query results, while at the same time having an easy way to query and access
+    the related object when dealing with individual model instances.
+    """
+
+    def __init__(self, field, getter, pre_setter):
+        self.field = field
+        self.getter = getter
+        self.pre_setter = pre_setter
+
+    def __get__(self, instance, cls=None):
+        if instance is None:
+            return self.field
+
+        if self.field.name in instance.__dict__:
+            return instance.__dict__[self.field.name]
+
+        field_value = self.getter(instance)
+        instance.__dict__[self.field.name] = field_value
+        return field_value
+
+    def __set__(self, instance, value):
+        # TODO do we do some basic type checking here?
+        self.pre_setter(instance, value)
+        instance.__dict__[self.field.name] = value
 
 
 class BaseDBField:
@@ -97,6 +129,8 @@ class BooleanDBField(BaseDBField):
 
 
 class ForeignKeyDBField(BaseDBField):
+    # TODO consider reverse side of relationship too
+
     def __init__(self, *args, related_model, **kwargs):
         super().__init__(*args, **kwargs)
         self.related_model = related_model
@@ -125,3 +159,12 @@ class ForeignKeyDBField(BaseDBField):
 
     def to_db(self, value):
         raise NotImplementedError
+
+    def get_related_object(self, instance):
+        related_obj_id = getattr(instance, self.name_id)
+        if related_obj_id is None:
+            return None
+        return self.related_model.objects.select_by_id(related_obj_id)
+
+    def set_related_object_id(self, instance, obj):
+        setattr(instance, self.name_id, getattr(obj, obj.primary_key))

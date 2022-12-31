@@ -1,6 +1,6 @@
 from functools import lru_cache
 from .manager import BaseQueryManager
-from .field import BaseDBField, ForeignKeyDBField
+from .field import BaseDBField, ForeignKeyDBField, LazyFieldAttribute
 
 
 class MetaModel(type):
@@ -25,7 +25,10 @@ class MetaModel(type):
             if isinstance(attr, BaseDBField):
                 attr.set_name(attr_name)
                 if isinstance(attr, ForeignKeyDBField):
-                    _foreign_key_fields[attr.name_id] = attr
+                    _foreign_key_fields[attr_name] = attr
+                    new_attrs[attr.name] = LazyFieldAttribute(
+                        attr, attr.get_related_object, attr.set_related_object_id
+                    )
                 else:
                     _fields[attr_name] = attr
                     if attr.is_primary_key:
@@ -73,14 +76,12 @@ class BaseDBModel(metaclass=MetaModel):
             try:
                 value = kwargs[f.name]  # entire related object
                 setattr(self, f.name, value)
-                setattr(self, f.name_id, getattr(value, value.primary_key.name))
             except KeyError:
                 try:
                     value = kwargs[f.name_id]  # id only
                 except KeyError:
                     value = None
                 setattr(self, f.name_id, value)
-                # TODO consider adding a way to otherwise obtain the related object
 
         # TODO check for extra kwargs / args
 
