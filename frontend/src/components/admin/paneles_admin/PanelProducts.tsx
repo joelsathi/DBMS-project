@@ -20,7 +20,7 @@ import {
   orderByStock,
 } from "../../slices/productSlice";
 
-const PanelProductos = () => {
+const PanelProducts = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [productsPerPage] = useState(9);
   const lastPostIndex = currentPage * productsPerPage;
@@ -241,4 +241,4 @@ const PanelProductos = () => {
   }
 };
 
-export default PanelProductos;
+export default PanelProducts;

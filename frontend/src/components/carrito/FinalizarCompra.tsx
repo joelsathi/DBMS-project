@@ -13,7 +13,7 @@ export interface input {
   tel: string;
 }
 
-const CrearProducto = () => {
+const CreateProduct = () => {
   const dispatch = useAppDispatch();
   const user: any = JSON.parse(window.localStorage.getItem("user") || "[]");
   const token = JSON.parse(window.localStorage.getItem("token") || "{}");
@@ -176,4 +176,4 @@ const CrearProducto = () => {
   );
 };
 
-export default CrearProducto;
+export default CreateProduct;

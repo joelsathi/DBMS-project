@@ -15,7 +15,7 @@ import {
 import { yaLog } from "../../slices/logIn";
 import OrderSearch from "../OrderSearch";
 
-const PanelCompras = () => {
+const PanelPurchases = () => {
   const token = JSON.parse(window.localStorage.getItem("token") || "{}");
   const user = JSON.parse(window.localStorage.getItem("user") || "{}");
   const header = useHeaders(token);
@@ -229,4 +229,4 @@ const PanelCompras = () => {
   );
 };
 
-export default PanelCompras;
+export default PanelPurchases;

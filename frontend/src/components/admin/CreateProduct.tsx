@@ -1,63 +1,49 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { AiFillCloseCircle } from "react-icons/ai";
-import { useParams } from "react-router";
+// import { useNavigate } from "react-router";
 import useHeaders from "../../app/header";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { editProd } from "../slices/admin";
-import { categorias, clearDetail, productDetail } from "../slices/productSlice";
+import { createProd } from "../slices/admin";
+import { categorias } from "../slices/productSlice";
+import axios from "axios";
+import { useNavigate } from "react-router";
+import { RiContrastDropLine } from "react-icons/ri";
 export interface input {
   nombre: string;
   precio: number;
   stock: number;
   descripcion: string;
-  categorias: Array<any>;
+  categorias: Array<string>;
+  available: boolean;
+  image: string;
 }
-
-type QuizParams = {
-  idProduct: string;
-};
-
-const EditarProducto = () => {
+const CreateProduct = () => {
+  const navigate = useNavigate();
   const token = JSON.parse(window.localStorage.getItem("token") || "{}");
-  const { idProduct } = useParams<QuizParams>();
   const header = useHeaders(token);
   const dispatch = useAppDispatch();
-  const producto = useAppSelector((state) => state.products.product);
   const categoriaProds = useAppSelector((state) => state.products.categorias);
-  const [img, setImg] = useState([]);
-  const [filepreview, setFilepreview] = useState("");
   const [inputs, setInputs] = useState<input>({
     nombre: "",
     precio: 0,
     stock: 0,
     descripcion: "",
     categorias: [],
+    available: false,
+    image: "",
   });
-
   useEffect(() => {
-    dispatch(productDetail(idProduct || ""));
     dispatch(categorias());
-    return () => {
-      dispatch(clearDetail());
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
-
-  useEffect(() => {
-    setInputs({
-      ...inputs,
-      nombre: producto?.name || "",
-      precio: producto?.price || 0,
-      stock: producto?.stock || 0,
-      descripcion: producto?.description || "",
-      categorias: producto?.categories?.map((c) => c.name) || [],
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [producto]);
-
   //================handlers===========
   const handleInput = (e: React.ChangeEvent<any>) => {
     e.preventDefault();
+    if (e.target.name === "stock") {
+      setInputs((prevState) => ({
+        ...prevState,
+        available: true,
+      }));
+    }
     setInputs((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
@@ -72,7 +58,7 @@ const EditarProducto = () => {
       categorias: filtered,
     });
   };
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
     !inputs.categorias.includes(e.target.value) &&
       setInputs({
@@ -80,40 +66,54 @@ const EditarProducto = () => {
         categorias: [...inputs.categorias, e.target.value],
       });
   };
-
   const handleImage = (e: ChangeEvent<any>) => {
-    setImg(e.target.files);
-    setFilepreview(URL.createObjectURL(e.target.files[0]));
+    const formData = new FormData();
+    formData.append("file", e.target.files[0]);
+    formData.append("upload_preset", "xbzjme36");
+    axios
+      .post("https://api.cloudinary.com/v1_1/dxzm2vv32/image/upload", formData)
+      .then((res) => {
+        setInputs({
+          ...inputs,
+          image: res.data.secure_url,
+        });
+      });
   };
-
+  const clearState = () => {
+    setInputs(() => {
+      return {
+        nombre: "",
+        precio: 0,
+        stock: 0,
+        descripcion: "",
+        categorias: [],
+        available: false,
+        image: "",
+      };
+    });
+  };
   const handleCreateOrder = () => {
-    idProduct
-      ? dispatch(editProd(header.headers, inputs, img, idProduct))
-      : alert("Este producto no se puede editar");
-    console.log(inputs);
-    console.log(header);
+    clearState();
+    dispatch(createProd(header.headers, inputs));
+    alert("Producto creado con exito");
+    navigate("/admin/products");
   };
-
   //===================render========================
   return (
-    <div className="flex bg-bg-prods bg-cover">
-      <div className="flex flex-col container mx-40 my-16 py-4 px-8 bg-white/50 rounded-lg">
+    <div className=" flex bg-bg-prods bg-cover">
+      <div className="flex flex-col mx-auto my-16 py-4 px-8 bg-white/50 rounded-lg">
         <h1 className="text-5xl font-bold flex justify-center">
-          EDITAR PRODUCTO
+          CREAR PRODUCTO
         </h1>
-        <br />
-        <h1 className="text-5xl font-bold flex justify-center">
-          {inputs.nombre.toUpperCase()}
-        </h1>
-        <div className="flex m-auto w-[40%] pt-4 border-b-2 border-black"></div>
-        <div className="container flex flex-row justify-around h-12 my-16">
+        <div className="flex m-auto pt-4 border-b-2 border-black"></div>
+        <div className="flex flex-row justify-around  my-16">
+          <label htmlFor="precio">Nombre: </label>
           <input
             value={inputs.nombre}
             type="text"
             name="nombre"
             onChange={(e) => handleInput(e)}
             className="rounded-lg bg-white/70 pl-4"
-            placeholder="Nombre del producto"
           />
           <div>
             <label htmlFor="precio">Precio: </label>
@@ -139,27 +139,18 @@ const EditarProducto = () => {
             />
           </div>
         </div>
-
         <textarea
           value={inputs.descripcion}
           name="descripcion"
-          rows={10}
           onChange={(e) => handleInput(e)}
-          className="flex m-auto w-[80%] rounded-lg bg-white/70 p-4 mb-8"
+          rows={10}
+          className="flex m-auto rounded-lg bg-white/70 p-4 mb-8 w-[90%]"
           placeholder="Descripción"
         />
-
         <div className="grid grid-cols-[1fr_4fr] gap-4 w-[80%] mx-auto mb-4 ">
-          <div>
-            <img
-              className=" w-40"
-              src={filepreview ? filepreview : producto?.image}
-              alt=""
-            />
-          </div>{" "}
-          <br />
           <input
             type="file"
+            name="file"
             id="imagen"
             accept="image/*"
             className="hidden left-[10%] bottom-1 my-2"
@@ -171,44 +162,31 @@ const EditarProducto = () => {
             className="left-[10%] bottom-1 cursor-pointer my-2"
             htmlFor="imagen"
           >
-            <p className="bg-white/70 rounded-lg px-2">Cambiar imagen?</p>
+            <p className="bg-white/70 rounded-lg px-2">Choose file</p>
           </label>
-          {/* <div className="categoriasagregadas grid grid-cols-7 bg-white/70 rounded-lg gap-4">
-              {inputs.imagen.map((img) => {
-                return (
-                  <div className="bg-white/70 flex flex-row rounded-lg gap-1">
-                    <p>{img}</p>
-                    <AiFillCloseCircle
-                      className=""
-                      onClick={() => deleteImg(img)}
-                    />
-                  </div>
-                );
-              })}
-            </div> */}
         </div>
-
-        <div className="grid grid-cols-[.5fr_4fr] justify-self-center gap-4 w-[80%] m-auto">
+        <div className="flex justify-self-center flex-wrap gap-4  m-auto">
           <select
             name="categorias"
-            onChange={(e) => handleCategoryChange(e)}
-            className="categorias rounded-lg"
+            onChange={(e) => handleGenreChange(e)}
+            className="h-10 rounded-lg"
           >
-            {categoriaProds?.map((cate) => {
+            {categoriaProds.map((cate) => {
               return (
-                <option key={cate._id} id={cate._id} value={cate.name}>
+                <option key={cate._id} value={cate.name}>
                   {cate.name}
                 </option>
               );
             })}
           </select>
-          <div className="categoriasagregadas grid grid-cols-7 bg-white/70 rounded-lg gap-4 ">
-            {inputs?.categorias?.map((cate) => {
+          <div className="grid grid-cols-3 bg-white/70 rounded-lg gap-4 ">
+            {inputs.categorias.map((cate) => {
               return (
-                <div className="bg-white/70 flex flex-row rounded-lg w-fit pl-2">
+                <div className="bg-white/70 relative rounded-lg p-2">
                   <p>{cate}</p>
                   <AiFillCloseCircle
-                    className=""
+                    size={15}
+                    className="absolute top-0 right-0"
                     onClick={() => deleteCate(cate)}
                   />
                 </div>
@@ -221,14 +199,13 @@ const EditarProducto = () => {
             onClick={() => {
               handleCreateOrder();
             }}
-            className="mt-20 mb-4 bg-black text-white w-[10%] rounded-sm p-2 "
+            className="block mt-16 mb-4 bg-black text-white rounded-sm p-2 "
           >
-            EDITAR PRODUCTO
+            CREAR PRODUCTO
           </button>
         </div>
       </div>
     </div>
   );
 };
-
-export default EditarProducto;
+export default CreateProduct;

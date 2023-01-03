@@ -11,7 +11,7 @@ import UserSearch from "../UserSearch";
 
 const user = JSON.parse(window.localStorage.getItem("user") || "{}");
 
-const PanelUsuarios = () => {
+const PanelUsers = () => {
   const dispatch = useAppDispatch();
   const { users } = useAppSelector((state: RootState) => state.admin);
   const token = JSON.parse(window.localStorage.getItem("token") || "{}");
@@ -153,4 +153,4 @@ const PanelUsuarios = () => {
   }
 };
 
-export default PanelUsuarios;
+export default PanelUsers;

@@ -5,7 +5,7 @@ import useHeaders from "../../app/header";
 import { useAppDispatch } from "../../app/hooks";
 import { createCate } from "../slices/admin";
 
-const CrearCategoria = () => {
+const CreateCategory = () => {
   const token = JSON.parse(window.localStorage.getItem("token") || "{}");
   const [categoria, setCategoria] = useState("");
   const header = useHeaders(token);
@@ -58,4 +58,4 @@ const CrearCategoria = () => {
   );
 };
 
-export default CrearCategoria;
+export default CreateCategory;

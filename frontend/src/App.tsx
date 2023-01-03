@@ -3,17 +3,21 @@
 // import { browserLocalPersistence, setPersistence } from "firebase/auth";
 import { Route, Routes } from "react-router-dom";
 import AboutUs from "./components/AboutUs";
-import BorrarCategoria from "./components/admin/BorrarCategoria";
-import CrearCategoria from "./components/admin/CrearCategorias";
-import CrearProducto from "./components/admin/CrearProducto";
-import CrearOffice from "./components/admin/CrearSucursal";
-import EditarProducto from "./components/admin/EditarProducto";
-import OrderProducto from "./components/admin/OrderProducto";
-import OrderUsuario from "./components/admin/OrderUsuario";
-import PanelCompras from "./components/admin/paneles_admin/PanelCompras";
-import PanelProductos from "./components/admin/paneles_admin/PanelProductos";
-import PanleSucuersales from "./components/admin/paneles_admin/PanelSucursales";
-import PanelUsuarios from "./components/admin/paneles_admin/PanelUsuarios";
+
+// admin imports
+import DeleteCategory from "./components/admin/DeleteCategory";
+import CreateCategory from "./components/admin/CreateCategory";
+import CreateProduct from "./components/admin/CreateProduct";
+// import CrearOffice from "./components/admin/CrearSucursal";
+import EditProduct from "./components/admin/EditProduct";
+// import OrderProduct from "./components/admin/OrderProduct";
+// import OrderUsuario from "./components/admin/OrderUsuario"; // order user
+import PanelPurchases from "./components/admin/paneles_admin/PanelPurchases";
+import PanelProducts from "./components/admin/paneles_admin/PanelProducts";
+// import PanleSucuersales from "./components/admin/paneles_admin/PanelSucursales";
+import PanelUsers from "./components/admin/paneles_admin/PanelUsers";
+
+
 import Cancelacion from "./components/carrito/Cancelacion";
 import Confirmacion from "./components/carrito/Cofirmacion";
 import Compra from "./components/carrito/Compra";
@@ -82,37 +86,37 @@ function App() {
         {/* <Route path="/reserve" element={<Reserve />} /> */}
         <Route path="/reserve/barber" element={<MyAppointments />} />
         {/*===================admin=================================*/}
-        <Route path="/admin/compras" element={<PanelCompras />} />
-        <Route path="/admin/compras/:idOrder" element={<OrderUsuario />} />
-        <Route path="/admin/users" element={<PanelUsuarios />} />
-        <Route path="/admin/products" element={<PanelProductos />} />
+        <Route path="/admin/compras" element={<PanelPurchases />} />
+        {/* <Route path="/admin/compras/:idOrder" element={<OrderUsuario />} /> */}
+        <Route path="/admin/users" element={<PanelUsers />} />
+        <Route path="/admin/products" element={<PanelProducts />} />
         <Route
           path="/admin/products/crear-categoria"
-          element={<CrearCategoria />}
+          element={<CreateCategory />}
         />
         <Route
           path="/admin/products/editar-producto/:idProduct"
-          element={<EditarProducto />}
+          element={<EditProduct />}
         />
         <Route
           path="/admin/products/borrar-categoria"
-          element={<BorrarCategoria />}
+          element={<DeleteCategory />}
         />
         <Route
           path="/admin/products/editar-producto/:idProduct"
-          element={<EditarProducto />}
+          element={<EditProduct />}
         />
-        <Route
+        {/* <Route
           path="/admin/products/hisrotial-producto/:id"
-          element={<OrderProducto />}
-        />
+          element={<OrderProduct />}
+        /> */}
         <Route
           path="/admin/products/crear-producto"
-          element={<CrearProducto />}
+          element={<CreateProduct />}
         />
-        <Route path="/admin/users/historial" element={<OrderUsuario />} />
-        <Route path="/admin/offices" element={<PanleSucuersales />} />
-        <Route path="/admin/offices/create" element={<CrearOffice />} />
+        {/* <Route path="/admin/users/historial" element={<OrderUsuario />} /> */}
+        {/* <Route path="/admin/offices" element={<PanleSucuersales />} /> */}
+        {/* <Route path="/admin/offices/create" element={<CrearOffice />} /> */}
         {/*  ======================About Us============================  */}
         <Route path="/contacto" element={<AboutUs />} />
       </Routes>

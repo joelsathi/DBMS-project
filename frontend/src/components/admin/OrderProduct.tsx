@@ -10,7 +10,7 @@ import { ordersProducto } from "../slices/admin";
 import { yaLog } from "../slices/logIn";
 import OrderSearch from "./OrderSearch";
 
-const OrderProducto = () => {
+const OrderProduct = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [productsPerPage] = useState(9);
   const lastPostIndex = currentPage * productsPerPage;
@@ -121,4 +121,4 @@ const OrderProducto = () => {
   }
 };
 
-export default OrderProducto;
+export default OrderProduct;

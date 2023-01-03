@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { borrarCate } from "../slices/admin";
 import { categorias } from "../slices/productSlice";
 
-const CrearCategoria = () => {
+const CreateCategory = () => {
   const token = JSON.parse(window.localStorage.getItem("token") || "{}");
   const header = useHeaders(token);
   const dispatch = useAppDispatch();
@@ -56,4 +56,4 @@ const CrearCategoria = () => {
   );
 };
 
-export default CrearCategoria;
+export default CreateCategory;
