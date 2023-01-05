@@ -1,12 +1,17 @@
-import { Admin, Resource, ListGuesser } from "react-admin";
-import jsonServerProvider from "ra-data-json-server";
+import { Admin, Resource, ListGuesser, CustomRoutes, convertLegacyDataProvider } from "react-admin";
+import { Route } from "react-router-dom";
 
-const dataProvider = jsonServerProvider("https://jsonplaceholder.typicode.com");
+import dataProvider from "./api/dataProvider";
+
+// import { Testing } from "./container";
 
 const App = () => (
   <Admin dataProvider={dataProvider}>
     <Resource name="posts" list={ListGuesser} />
     <Resource name="comments" list={ListGuesser} />
+  <CustomRoutes>
+    {/* <Route path="/testingDP" element={<Testing/>}/> */}
+  </CustomRoutes>
   </Admin>
 );
 

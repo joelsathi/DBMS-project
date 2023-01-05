@@ -4,11 +4,24 @@ from .product.routes import product_router
 from .order.routes import order_router
 from .core.db import connection
 from .core.manager import BaseQueryManager
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 app.include_router(user_router)
 app.include_router(product_router)
 app.include_router(order_router)
+
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
