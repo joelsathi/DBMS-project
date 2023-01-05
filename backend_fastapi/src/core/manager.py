@@ -28,9 +28,11 @@ class MySQLModelCursor(CMySQLCursor):
                 )
             )
 
+        _all_fields = model_class.get_field_names()
+
         obj = model_class(
             **{
-                column_name: model_class._fields[column_name].from_db(value)
+                column_name: _all_fields[column_name].from_db(value)
                 for (column_name, value) in zip(self.column_names, row)
             }
         )
@@ -89,26 +91,34 @@ class BaseQueryManager:
     def _get_cursor(cls) -> CMySQLCursor:
         return cls.connection.cursor(cursor_class=MySQLModelCursor)
 
-    def select(self, field_names: list = [], filters: dict = None):
-        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
+    def _get_field_names_str(self, field_names):
+        _field_names = self.model_class.get_field_names()
 
         # If field names are specified, select only those. Otherwise select all model fields.
         if len(field_names) == 0:
-            field_names = list(self.model_class._fields.keys())
+            field_str = ",".join(_field_names.keys())
 
-        field_str = ""
-        for ind, field_name in enumerate(field_names):
-            # Throw an exception if the field names are not valid
-            if field_name not in self.model_class._fields:
-                raise InvalidFieldException(
-                    "No field named {} found on {}".format(
-                        field_name, self.model_class.__qualname__
+        else:
+            field_str = ""
+            for ind, field_name in enumerate(field_names):
+                # Throw an exception if the field names are not valid
+                if field_name not in _field_names:
+                    raise InvalidFieldException(
+                        "No field named {} found on {}".format(
+                            field_name, self.model_class.__qualname__
+                        )
                     )
-                )
-            else:
-                field_str += field_name
-                if ind < len(field_names) - 1:
-                    field_str += ","
+                else:
+                    field_str += field_name
+                    if ind < len(field_names) - 1:
+                        field_str += ","
+
+        return field_str
+
+    def select(self, field_names: list = [], filters: dict = None):
+        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
+
+        field_str = self._get_field_names_str(field_names)
 
         sql_query_str = "SELECT {} FROM {}".format(
             field_str, self.model_class.__tablename__
@@ -121,3 +131,22 @@ class BaseQueryManager:
         cursor.close()
 
         return rows
+
+    def select_by_id(self, id: int, field_names: list = []):
+        # We will have a specific method just for this since it will be an important application
+
+        field_str = self._get_field_names_str(field_names)
+
+        sql_query_str = "SELECT {} FROM {} WHERE {}=%s".format(
+            field_str,
+            self.model_class.__tablename__,
+            self.model_class.primary_key,
+        )
+
+        cursor: MySQLModelCursor = self._get_cursor()
+        cursor.execute(sql_query_str, (id,))
+        cursor.set_model_class(self.model_class)
+        row = cursor.fetchone()
+        cursor.close()
+
+        return row

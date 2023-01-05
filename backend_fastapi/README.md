@@ -8,3 +8,7 @@
 ### Run server
 
 - `uvicorn src.main:app --reload`
+
+### Development notes
+
+- run `flake8` before committing. use black to format .py files

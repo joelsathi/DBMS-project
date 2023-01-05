@@ -1,5 +1,6 @@
+from functools import lru_cache
 from .manager import BaseQueryManager
-from .field import BaseDBField
+from .field import BaseDBField, ForeignKeyDBField
 
 
 class MetaModel(type):
@@ -17,15 +18,18 @@ class MetaModel(type):
             return super().__new__(cls, name, bases, attrs)
 
         # initialize fields with names and define as an attribute on the class
-        _fields = {}
         new_attrs = {}
+        new_attrs["_fields"] = {}
+        new_attrs["_foreign_key_fields"] = {}
         for attr_name, attr in attrs.items():
             if isinstance(attr, BaseDBField):
-                attr.set_name(attr_name)
-                _fields[attr_name] = attr
+                attr.add_to_model(
+                    model_name=name,
+                    field_name=attr_name,
+                    new_attrs=new_attrs,
+                )
             else:
                 new_attrs[attr_name] = attr
-        new_attrs["_fields"] = _fields
 
         return super().__new__(cls, name, bases, new_attrs)
 
@@ -33,6 +37,17 @@ class MetaModel(type):
     def objects(cls):
         """Syntactic sugar to obtain a manager instance for the class"""
         return cls.__query_manager__(model_class=cls)
+
+    @lru_cache(maxsize=1)
+    def get_field_names(cls):
+        return {
+            **cls._fields,
+            **{f.name_id: f for f in cls._foreign_key_fields.values()},
+        }
+
+    @lru_cache(maxsize=1)
+    def get_fields(self):
+        return [*self._fields.values(), *self._foreign_key_fields.values()]
 
 
 class BaseDBModel(metaclass=MetaModel):
@@ -53,6 +68,17 @@ class BaseDBModel(metaclass=MetaModel):
                 value = f.get_default()
             setattr(self, f.name, value)
 
+        for f in self._foreign_key_fields.values():
+            try:
+                value = kwargs[f.name]  # entire related object
+                setattr(self, f.name, value)
+            except KeyError:
+                try:
+                    value = kwargs[f.name_id]  # id only
+                except KeyError:
+                    value = None
+                setattr(self, f.name_id, value)
+
         # TODO check for extra kwargs / args
 
     def save(self):
@@ -68,4 +94,24 @@ class BaseDBModel(metaclass=MetaModel):
             Generally a dict with the relevant model fields and values would be returned.
         """
 
-        return {f: getattr(self, f) for f in self._fields.keys()}
+        return {f: getattr(self, f) for f in self.get_field_names()}
+
+    def serialize_with_related(self):
+        """
+        Convert the model object into a representation suitable for sending as an API response,
+        including a representation of related objects. Similar to `serialize`, except this would
+        include nested related objects instead of just their ids.
+        """
+
+        serialized_obj = {}
+
+        for f in self.__class__.get_fields():
+            if isinstance(f, ForeignKeyDBField):
+                serialized_obj[f.name] = f.related_model.serialize(
+                    getattr(self, f.name)
+                )
+
+            else:
+                serialized_obj[f.name] = getattr(self, f.name)
+
+        return serialized_obj
