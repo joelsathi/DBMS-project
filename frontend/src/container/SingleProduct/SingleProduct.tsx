@@ -17,6 +17,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, EffectFade } from "swiper";
 import "swiper/css/navigation";
 import "swiper/css/effect-fade";
+import "swiper/css"
 
 import iphone_pro_max_black from "../../Images/iph_14_pro_max.png";
 import iphone_pro_max_silver from "../../Images/iph_14_pro_max_silver.png";
@@ -144,7 +145,7 @@ function App() {
           <Grid container spacing={2} disableEqualOverflow>
             <Grid xs={8} style={{ maxHeight: "100%", overflow: "hidden" }}>
               {/* <img src={iphone_pro_max_black} className="myImg" alt="logo" /> */}
-              <div className="container">
+              <div className="swiper-container">
                 <Swiper
                   modules={[Navigation, EffectFade]}
                   navigation
@@ -152,17 +153,16 @@ function App() {
                   speed={800}
                   slidesPerView={1}
                   loop
-                  className="mySwiper"
                 >
-                  <SwiperSlide className="swiperSlide">
+                  <SwiperSlide className="swiper-slide">
                     <img className="myImg" src={iphone_pro_max_black} alt="" />
                   </SwiperSlide>
 
-                  <SwiperSlide className="swiperSlide">
+                  <SwiperSlide className="swiper-slide">
                     <img className="myImg" src={iphone_pro_max_silver} alt="" />
                   </SwiperSlide>
 
-                  <SwiperSlide className="swiperSlide">
+                  <SwiperSlide className="swiper-slide">
                     <img
                       className="myImg"
                       src={iphone_pro_max_deep_purple}
@@ -170,7 +170,7 @@ function App() {
                     />
                   </SwiperSlide>
 
-                  <SwiperSlide className="swiperSlide">
+                  <SwiperSlide className="swiper-slide">
                     <img className="myImg" src={iphone_pro_max_gold} alt="" />
                   </SwiperSlide>
                 </Swiper>

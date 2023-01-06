@@ -36,13 +36,13 @@ h1 {
   height: 100vh;
 }
 
-.swiper-button-next{
-  background-image:  "../../Images/rightArr";
+/* .swiper-button-next{
+  background-image:  "../Images/rightArr.png";
 }
 
 .swiper-button-prev{
   background-image:  "../../Images/leftArr";
-}
+} */
 
 .swiper-button-next,
 .swiper-button-prev{
