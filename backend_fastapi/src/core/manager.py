@@ -150,3 +150,37 @@ class BaseQueryManager:
         cursor.close()
 
         return row
+    
+    # def get_count(self):
+
+    #     sql_query_str = "SELECT COUNT(*) FROM {}".format(
+    #         self.model_class.__tablename__
+    #     )
+
+    #     cursor: MySQLModelCursor = self._get_cursor()
+    #     cursor.execute(sql_query_str)
+    #     cursor.set_model_class(self.model_class)
+    #     count = cursor.fetchone()
+    #     print(count)
+    #     cursor.close()
+
+    #     return count
+    
+    def select_by_page(self, field_names: list = [], page_num: int = 1, page_size: int = 10, filters: dict = None):
+        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
+
+        field_str = self._get_field_names_str(field_names)
+
+        start = (page_num - 1)*page_size
+
+        sql_query_str = "SELECT {} FROM {} LIMIT {} OFFSET {}".format(
+            field_str, self.model_class.__tablename__, page_size, start
+        )
+
+        cursor: MySQLModelCursor = self._get_cursor()
+        cursor.execute(sql_query_str)
+        cursor.set_model_class(self.model_class)
+        rows = cursor.fetchall()
+        cursor.close()
+
+        return rows
