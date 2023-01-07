@@ -18,11 +18,13 @@ import OrderDetails from './pages/cart/order-details';
 import Products from './pages/products';
 import AuthProvider from './utils/auth-provider';
 import AdminProvider from './utils/admin-provider';
-
+import TemporaryPage from './pages/temp';
 const App = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/temporary" element={<TemporaryPage />} />
+        
         <Route path='/' element={<HomePage />} />
         <Route path='/home' element={<Products />} />
         <Route path='/search/:keyword' element={<Products />} />
