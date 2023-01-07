@@ -184,3 +184,45 @@ class BaseQueryManager:
         cursor.close()
 
         return rows
+
+    def select_by_all(self, field_names: list = [], page_num: int = 1, page_size: int = 10, filters: dict = None, sort_fields: list = None, sort_orders: list = None):
+        field_str = self._get_field_names_str(field_names)
+
+        start = (page_num - 1)*page_size
+
+        # Check if any sort fields and sort orders were provided
+        if sort_fields is not None and sort_orders is not None:
+            sort_clause = "ORDER BY "
+            # Add each sort field and sort order to the clause
+            for i in range(len(sort_fields)):
+                sort_clause += "{} {}".format(sort_fields[i], sort_orders[i])
+                # Add a comma after each field/order pair except for the last one
+                if i < len(sort_fields) - 1:
+                    sort_clause += ", "
+        else:
+            sort_clause = ""
+
+        # Check if any filters were provided
+        if filters is not None and len(filters) > 0:
+            # Build the WHERE clause based on the filters
+            where_clause = "WHERE "
+            for field, value in filters.items():
+                # Add each filter condition to the clause
+                where_clause += "{} = '{}'".format(field, value)
+                # Add an AND operator after each condition except for the last one
+                if field != list(filters.keys())[-1]:
+                    where_clause += " AND "
+        else:
+            where_clause = ""
+
+        sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
+            field_str, self.model_class.__tablename__, where_clause, sort_clause, page_size, start
+        )
+
+        cursor: MySQLModelCursor = self._get_cursor()
+        cursor.execute(sql_query_str)
+        cursor.set_model_class(self.model_class)
+        rows = cursor.fetchall()
+        cursor.close()
+
+        return rows
