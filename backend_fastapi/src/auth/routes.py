@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, status
 
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
-from ..core.pagination import getPagination
+from ..core.pagination import get_pagination
 
 user_router = APIRouter(
     prefix="/auth",
@@ -23,7 +23,7 @@ def get_registered_user_list(response: Response, page_num: int = 1, page_size: i
     total = None # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
-    ret = getPagination("/registered_user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
+    ret = get_pagination("/registered_user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
 
     return ret
 
@@ -47,7 +47,7 @@ def get_user_list(response: Response, page_num: int = 1, page_size: int = 10):
     rows = UserDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
     total = None # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [UserDBModel.serialize(row) for row in rows]
-    ret = getPagination("/user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
+    ret = get_pagination("/user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
     return ret
 
 
@@ -56,5 +56,5 @@ def get_payment_detail_list(response: Response, page_num: int = 1, page_size: in
     rows = PaymentDetailDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
     total = None # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [PaymentDetailDBModel.serialize(row) for row in rows]
-    ret = getPagination("/payment_detail", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
+    ret = get_pagination("/payment_detail", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
     return ret
