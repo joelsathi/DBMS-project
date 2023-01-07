@@ -12,8 +12,8 @@ user_router = APIRouter(
 
 
 @user_router.get("/registered_user")
-def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10, sort_fields: Optional[str] = Query(None, alias="sort_fields"), sort_orders: Optional[str] = Query(None, alias="sort_orders")):
-    
+def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10, sort_fields: Optional[str] = Query(None, alias="sort_fields"), sort_orders: Optional[str] = Query(None, alias="sort_orders"), filters: dict = None):
+
     if sort_fields is not None:
         sort_fields = sort_fields.split(",")
     if sort_orders is not None:
