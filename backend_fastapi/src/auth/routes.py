@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Query
+
+from typing import Optional
 
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
@@ -10,8 +12,14 @@ user_router = APIRouter(
 
 
 @user_router.get("/registered_user")
-def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = RegisteredUserDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10, sort_fields: Optional[str] = Query(None, alias="sort_fields"), sort_orders: Optional[str] = Query(None, alias="sort_orders")):
+    
+    if sort_fields is not None:
+        sort_fields = sort_fields.split(",")
+    if sort_orders is not None:
+        sort_orders = sort_orders.split(",")
+    
+    rows = RegisteredUserDBModel.objects.select_by_all(page_num=page_num, page_size=page_size, sort_fields=sort_fields, sort_orders=sort_orders)
 
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -20,7 +28,7 @@ def get_registered_user_list(response: Response, page_num: int = 1, page_size: i
             "Message": "No entries on page {}".format(page_num)
         }
     
-    total = None # NEED TO IMPLEMENT THE FUNCTION
+    total = 18 # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
     ret = get_pagination("/registered_user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
