@@ -1,4 +1,4 @@
-def getPagination(path: str, total: int, serialized_rows: list=[], page_num: int = 1, page_size: int = 10):
+def get_pagination(path: str, total: int, serialized_rows: list=[], page_num: int = 1, page_size: int = 10):
     start = (page_num - 1) * page_size
     end = start + page_size
 
