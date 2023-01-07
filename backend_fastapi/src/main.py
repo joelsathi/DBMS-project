@@ -25,3 +25,10 @@ async def on_shutdown():
 @app.get("/about")
 def get_about(response: Response):
     return {"project_name": "Thulasi", "description": "Some Description"}
+
+@app.middleware("http")
+async def cors_middleware(request, call_next):
+    response = await call_next(request)
+    # response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+    return response
