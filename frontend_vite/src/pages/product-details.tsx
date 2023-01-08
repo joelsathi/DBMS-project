@@ -23,7 +23,7 @@ import { addToCart } from '../redux/cart/cart-slice';
 import { getProductById } from '../redux/products/slice-details';
 import authAxios from '../utils/auth-axios';
 import { setError } from '../utils/error';
-import { formatCurrencry, getDate } from '../utils/helper';
+import { formatCurrency, getDate } from '../utils/helper';
 
 const ProductDetails = () => {
   const dispatch = useAppDispatch();
@@ -73,7 +73,7 @@ const ProductDetails = () => {
                 <Image
                   className=' p-2'
                   rounded
-                  src={product?.image}
+                  src={product?.image_url}
                   style={{ width: '600px', height: '100%' }}
                 />
               </Card>
@@ -90,7 +90,7 @@ const ProductDetails = () => {
                   {' '}
                   <h5 className=' d-flex justify-content-between align-items-center'>
                     <span>Price:</span>
-                    <span>{formatCurrencry(product.price)}</span>
+                    <span>{formatCurrency(product.price)}</span>
                   </h5>
                 </ListGroup.Item>
 

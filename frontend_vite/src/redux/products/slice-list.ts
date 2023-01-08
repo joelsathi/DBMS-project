@@ -20,7 +20,9 @@ const initialState: ProductSliceState = {
 
 export const getProducts = createAsyncThunk('products/list', async () => {
   try {
-    const { data } = await publicAxios.get('/products');
+    // const { data } = await publicAxios.get('/products');
+    const { data } = await publicAxios.get('/product/variant');
+    console.log('IN PRODUCT LIST, data', data);
     return data;
   } catch (error: any) {
     const message = setError(error);

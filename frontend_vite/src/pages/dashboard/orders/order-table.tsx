@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux';
 import { getOrdersList } from '../../../redux/orders/slice-list';
 import authAxios from '../../../utils/auth-axios';
 import { setError } from '../../../utils/error';
-import { formatCurrencry, getDate } from '../../../utils/helper';
+import { formatCurrency, getDate } from '../../../utils/helper';
 
 function OrdersTable() {
   const dispatch = useAppDispatch();
@@ -54,7 +54,7 @@ function OrdersTable() {
               <tr key={order._id}>
                 <td>{order._id}</td>
 
-                <td>{formatCurrencry(order?.totalPrice)}</td>
+                <td>{formatCurrency(order?.totalPrice)}</td>
                 <td>{order?.shippingAddress?.address}</td>
                 <td>
                   {order.isPaid ? (

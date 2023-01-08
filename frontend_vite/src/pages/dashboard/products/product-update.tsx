@@ -77,7 +77,7 @@ const ProductUpdate = () => {
                     type='text'
                     placeholder='image url'
                     {...register('image', {
-                      value: product?.image,
+                      value: product?.image_url,
                     })}
                     className={errors.image?.message && 'is-invalid'}
                   />
