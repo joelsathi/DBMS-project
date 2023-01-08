@@ -8,7 +8,7 @@ type Props = {
 };
 
 const Meta = ({
-  title = 'Welcome To Type-shop',
+  title = 'Welcome To Thulasi Stores',
   description = 'the best online store :)',
   keywords,
 }: Props) => {

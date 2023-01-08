@@ -42,7 +42,7 @@ const Sidebar = () => {
           to='/'
         >
           <h2 className='logo text-white'>
-            <span className='text-danger'>Type</span> Shop
+            <span className='text-danger'>Thulasi</span> Stores
           </h2>
         </Link>
 
@@ -50,7 +50,7 @@ const Sidebar = () => {
           <ul className='navbar-nav'>
             <li className='nav-item  '>
               <Link className='nav-link p-5' to='/dashboard'>
-                <AiFillDashboard className='me-2' size={'1.5rem'} /> Accueil
+                <AiFillDashboard className='me-2' size={'1.5rem'} /> Dashboard
               </Link>
             </li>
             <li className='nav-item '>

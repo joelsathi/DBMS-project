@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux';
 import { getFilterProducts } from '../../../redux/products/search-list';
 import authAxios from '../../../utils/auth-axios';
 import { setError } from '../../../utils/error';
-import { formatCurrencry, getDate } from '../../../utils/helper';
+import { formatCurrency, getDate } from '../../../utils/helper';
 
 // Then, use it in a component.
 function ProductTable() {
@@ -75,12 +75,12 @@ function ProductTable() {
             {products.map((product) => (
               <tr key={product._id}>
                 <td>
-                  <Image className='avatar' roundedCircle src={product.image} />
+                  <Image className='avatar' roundedCircle src={product.image_url} />
                 </td>
                 <td>{product.name}</td>
                 <td>{product.brand}</td>
                 <td>{product.category}</td>
-                <td>{formatCurrencry(product.price)}</td>
+                <td>{formatCurrency(product.price)}</td>
                 <td>{getDate(product?.createdAt)}</td>
                 <td>
                   <Link
