@@ -6,7 +6,7 @@ INSERT INTO product(name, description, base_price, discount_id, brand)
 VALUES ('Iphone 14 Pro Max', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
 200000.00, 1, 'Apple');
 INSERT INTO product_variant 
-VALUES ('ABCD1234', 'Brown Teddy bear', 1, 1000.00, NULL); 
+VALUES ('ABCD1234', 'Brown Teddy bear', 1, 1000.00, 'https://www.buildabear.co.uk/dw/image/v2/BBNG_PRD/on/demandware.static/-/Sites-buildabear-master/default/dw2b81d8a7/28502x.jpg?sw=600&sh=600&sm=fit&q=70'); 
 INSERT INTO product_variant VALUES ('ABCD1235', 'Iphone 14 Pro Max green 64GB',2, 200000, 'https://celltronics.lk/wp-content/uploads/2022/09/Apple-iPhone-14-Pro-Max-2.jpg'); 
 INSERT INTO options(prod_description, price_diff) 
 VALUES ('Sample description', 100.00);
