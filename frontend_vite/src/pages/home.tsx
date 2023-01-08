@@ -18,7 +18,7 @@ const HomePage = () => {
     <DefaultLayout>
       <Container>
         <h2 style={{ color: '#e03a3c' }} className='mt-3'>
-          Least Products
+          Latest Products
         </h2>
         {loading || !products ? (
           <Loader />

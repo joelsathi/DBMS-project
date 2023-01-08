@@ -13,7 +13,7 @@ import authAxios from '../../utils/auth-axios';
 import toast from 'react-hot-toast';
 import { setError } from '../../utils/error';
 import { getUserOrder } from '../../redux/orders/user-orders';
-import { formatCurrencry, getDate } from '../../utils/helper';
+import { formatCurrency, getDate } from '../../utils/helper';
 import { FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
 import { GrView } from 'react-icons/gr';
 
@@ -170,7 +170,7 @@ const Profile = () => {
                   <tr key={order._id}>
                     <td>{order._id}</td>
 
-                    <td>{formatCurrencry(order?.totalPrice)}</td>
+                    <td>{formatCurrency(order?.totalPrice)}</td>
                     <td>{order?.shippingAddress?.address}</td>
                     <td>
                       {order.isPaid ? (
