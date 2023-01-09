@@ -12,14 +12,30 @@ user_router = APIRouter(
 
 
 @user_router.get("/registered_user")
-def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10, sort_fields: Optional[str] = Query(None, alias="sort_fields"), sort_orders: Optional[str] = Query(None, alias="sort_orders"), filters: dict = None):
+# "{BASE_URL}/auth/registered_user?page_num=1&page_size=10&sort_by=id,username&sort_order=ASC,DESC&username=thulasithang"
+def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10, sort_by: str = None, sort_orders: str = None, filters: str = None):
 
-    if sort_fields is not None:
-        sort_fields = sort_fields.split(",")
+    if sort_by is not None:
+        sort_by = sort_by.split(",")
     if sort_orders is not None:
         sort_orders = sort_orders.split(",")
     
-    rows = RegisteredUserDBModel.objects.select_by_all(page_num=page_num, page_size=page_size, sort_fields=sort_fields, sort_orders=sort_orders)
+    if sort_by and sort_orders:
+        sort_dict = dict(zip(sort_by, sort_orders))
+    else:
+        sort_dict = dict()
+    
+    # Filter implementation not working
+    where_params = dict()
+    if filters is not None:
+        cur = filters.split(",")
+        for pair in cur:
+            key, val = pair.split("=")
+            where_params[key] = val
+
+    # TODO add field validation
+    
+    rows = RegisteredUserDBModel.objects.select_by_all(page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params)
 
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
