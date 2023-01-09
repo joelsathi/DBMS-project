@@ -121,7 +121,7 @@ const ProductDetails = () => {
                 <Card.Body>
                   <h3 style={{ color: '#e03a3c' }}>Reviews</h3>
                   <ListGroup variant='flush'>
-                    {product.reviews.map((review) => (
+                    {/* {product.reviews.map((review) => (
                       <ListGroup.Item key={review._id}>
                         <div className='d-flex'>
                           <strong>{review.name}</strong>
@@ -130,7 +130,7 @@ const ProductDetails = () => {
                         </div>
                         <p>{review.comment}</p>
                       </ListGroup.Item>
-                    ))}
+                    ))} */}
                   </ListGroup>
                 </Card.Body>
               </Card>
