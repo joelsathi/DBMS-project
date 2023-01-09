@@ -185,20 +185,19 @@ class BaseQueryManager:
 
         return rows
 
-    def select_by_all(self, field_names: list = [], page_num: int = 1, page_size: int = 10, filters: dict = None, sort_fields: list = None, sort_orders: list = None):
+    def select_by_all(self, field_names: list = [], page_num: int = 1, page_size: int = 10, filters: dict = None, sort_ : dict = None):
         field_str = self._get_field_names_str(field_names)
 
         start = (page_num - 1)*page_size
 
-        # Check if any sort fields and sort orders were provided
-        if sort_fields is not None and sort_orders is not None:
+        if sort_ is not None and len(sort_) > 0:
             sort_clause = "ORDER BY "
-            # Add each sort field and sort order to the clause
-            for i in range(len(sort_fields)):
-                sort_clause += "{} {}".format(sort_fields[i], sort_orders[i])
-                # Add a comma after each field/order pair except for the last one
-                if i < len(sort_fields) - 1:
-                    sort_clause += ", "
+            temp = []
+            for field, s_order in sort_.items():
+                sort_clause += "{} {}".format(field, s_order) 
+                if field != list(sort_.keys())[-1]:
+                    sort_clause += ","
+            print(sort_clause)
         else:
             sort_clause = ""
 
