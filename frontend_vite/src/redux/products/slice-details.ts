@@ -18,11 +18,14 @@ export const getProductById = createAsyncThunk(
   'products/details',
   async (id: string | undefined) => {
     try {
-      // const res = await publicAxios.get(`/products/${id}`);
       const res = await publicAxios.get(`/product/variant`);
+      console.log('res.data', res.data[0]);
+      // #########query to get the exact product
+      // const res = await publicAxios.get(`/products/${id}`);
 
       if (res.data) {
-        return res.data;
+        // return res.data;
+        return res.data[0]; //################################
       }
     } catch (error) {}
   }

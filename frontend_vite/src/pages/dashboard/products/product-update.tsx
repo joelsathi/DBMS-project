@@ -23,7 +23,7 @@ const ProductUpdate = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((p) => p._id === id);
+  const product = products.find((p) => p.sku === id);
   const validationSchema = Yup.object().shape({
     name: Yup.string().required(),
     image: Yup.string().required(),
@@ -43,7 +43,7 @@ const ProductUpdate = () => {
 
   const onSubmit = (data: FormValues) => {
     authAxios
-      .put(`/products/${product?._id}`, data)
+      .put(`/products/${product?.sku}`, data)
       .then((res) => {
         toast.success('Product has beend updated');
         navigate('/dashboard/product-list');
