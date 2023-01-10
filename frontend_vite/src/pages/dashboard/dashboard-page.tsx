@@ -3,7 +3,7 @@ import { Row, Col, Card } from 'react-bootstrap';
 import DashboardLayout from '../../components/layouts/dashboard-layout';
 import { useAppDispatch, useAppSelector } from '../../redux';
 import { getOrdersList } from '../../redux/orders/slice-list';
-import { formatCurrencry } from '../../utils/helper';
+import { formatCurrency } from '../../utils/helper';
 
 const DashboardPage = () => {
   const { total } = useAppSelector((state) => state.productFilter);
@@ -39,7 +39,7 @@ const DashboardPage = () => {
                     Price
                   </span>
                   <span className='h3 font-bold mb-0'>
-                    {formatCurrencry(totalPrice)}
+                    {formatCurrency(totalPrice)}
                   </span>
                 </Col>
                 <div className='col-auto'>

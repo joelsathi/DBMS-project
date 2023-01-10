@@ -5,7 +5,7 @@ import DefaultLayout from '../../components/layouts/default-layout';
 import Loader from '../../components/UI/loader';
 import { useAppDispatch, useAppSelector } from '../../redux';
 import { getOrderById } from '../../redux/orders/order-details';
-import { formatCurrencry } from '../../utils/helper';
+import { formatCurrency } from '../../utils/helper';
 import Stripe from 'react-stripe-checkout';
 import authAxios from '../../utils/auth-axios';
 import toast from 'react-hot-toast';
@@ -69,7 +69,7 @@ const OrderDetails = () => {
                         <Row>
                           <Col md={2}>
                             <Image
-                              src={item.image}
+                              src={item.image_url}
                               roundedCircle
                               className='h-16 w-16'
                             />
@@ -79,7 +79,7 @@ const OrderDetails = () => {
                           </Col>
                           <Col>{item?.qty}</Col>
 
-                          <Col>{formatCurrencry(item.price * item.qty)}</Col>
+                          <Col>{formatCurrency(item.price * item.qty)}</Col>
                         </Row>
                       </ListGroup.Item>
                     ))}
@@ -103,7 +103,7 @@ const OrderDetails = () => {
                     <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                       <span>Total Price :</span>
                       <span>
-                        {formatCurrencry(
+                        {formatCurrency(
                           order?.cartItems.reduce(
                             (acc, item) => acc + item.price * item.qty,
                             0
@@ -113,23 +113,23 @@ const OrderDetails = () => {
                     </ListGroup.Item>
                     <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                       <span>Tax Price</span>
-                      <span>{formatCurrencry(taxPrice)}</span>
+                      <span>{formatCurrency(taxPrice)}</span>
                     </ListGroup.Item>
                     <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                       <span>Shipping Price</span>
-                      <span>{formatCurrencry(shippingPrice)}</span>
+                      <span>{formatCurrency(shippingPrice)}</span>
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <h5 className=' d-flex justify-content-between align-items-center'>
                         <span>Total Price</span>
-                        <span>{formatCurrencry(totalPrice)}</span>
+                        <span>{formatCurrency(totalPrice)}</span>
                       </h5>
                     </ListGroup.Item>
                     {!order?.isPaid && (
                       <ListGroup.Item className='stripe__container'>
                         <Stripe
                           currency='USD'
-                          description={`Total Price ${formatCurrencry(
+                          description={`Total Price ${formatCurrency(
                             order?.totalPrice
                           )}`}
                           name='Type Shop'

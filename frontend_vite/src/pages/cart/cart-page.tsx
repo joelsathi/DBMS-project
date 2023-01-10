@@ -14,7 +14,7 @@ import DefaultLayout from '../../components/layouts/default-layout';
 import Message from '../../components/UI/message';
 import { useAppDispatch, useAppSelector } from '../../redux';
 import { addToCart, removeFromCart } from '../../redux/cart/cart-slice';
-import { formatCurrencry } from '../../utils/helper';
+import { formatCurrency } from '../../utils/helper';
 
 const CartPage = () => {
   const { cartItems } = useAppSelector((state) => state.cart);
@@ -38,21 +38,20 @@ const CartPage = () => {
               <ListGroup variant='flush'>
                 {cartItems.map((item) => (
                   <ListGroup.Item
-                    key={item._id}
+                    key={item.sku}
                     className='shadow rounded p-5 bg-white mb-2'
                   >
                     <Row className='d-flex align-items-center'>
                       <Col md={2}>
                         <Image
-                          src={item.image}
+                          src={item.image_url}
                           roundedCircle
                           className='h-16 w-16'
                         />
                       </Col>
                       <Col className='d-none d-lg-block'>{item.name}</Col>
                       <Col>{item?.qty}</Col>
-
-                      <Col>{formatCurrencry(item.price * item.qty)}</Col>
+                      <Col>{formatCurrency(item.price * item.qty)}</Col>
                       <Col>
                         <FaPlus
                           onClick={() => dispatch(addToCart(item))}
@@ -77,13 +76,12 @@ const CartPage = () => {
                 <Card.Body>
                   <ListGroup variant='flush'>
                     <ListGroup.Item as='h2'>
-                      SubTotal (
-                      {cartItems.reduce((acc, item) => acc + item.qty, 0)}) item
+                      SubTotal: {cartItems.reduce((acc, item) => acc + item.qty, 0)} item(s)
                     </ListGroup.Item>
                     <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                       <span>Total Price :</span>
                       <span>
-                        {formatCurrencry(
+                        {formatCurrency(
                           cartItems.reduce(
                             (acc, item) => acc + item.price * item.qty,
                             0

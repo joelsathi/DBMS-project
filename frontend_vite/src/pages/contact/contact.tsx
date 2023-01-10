@@ -13,7 +13,7 @@ const Contact = () => {
           <div className='section-title'>
             <h2 className='text-center'>Contact</h2>
             <p>
-              If you have any questions or suggestions about our products and services, please contact us. We will reply to you as soon as possible. Thank you!
+            If you have any questions or suggestions about our products and services, please contact us. We will reply to you as soon as possible. Thank you!
             </p>
           </div>
           <Row data-aos='fade-up' data-aos-delay={100}>
