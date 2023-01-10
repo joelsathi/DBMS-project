@@ -133,7 +133,7 @@ const OrderDetails = () => {
                             order?.totalPrice
                           )}`}
                           name='Type Shop'
-                          image='/LogoMakr-6Tit9e.png'
+                          image='/NewLogoFooter.png'
                           stripeKey={import.meta.env.VITE_API_STRIPE}
                           token={tokenHandler}
                         />

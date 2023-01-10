@@ -8,12 +8,12 @@ const Footer = () => {
         <div className='copyright'>
           © Copyright{' '}
           <strong>
-            <span>Type Shop</span>
+            <span>Thulasi Stores</span>
           </strong>
           . All Rights Reserved
         </div>
         <div className='credits'>
-          Designed by <a href='#'>Type Shop</a>
+          Designed by <a href='#'>Thulasi Stores</a>
         </div>
       </div>
       <div className='social-links text-center text-md-end pt-3 pt-md-0'>
@@ -25,9 +25,6 @@ const Footer = () => {
         </a>
         <a href='#' className='instagram'>
           <i className='bx bxl-instagram' />
-        </a>
-        <a href='#' className='google-plus'>
-          <i className='bx bxl-skype' />
         </a>
         <a href='#' className='linkedin'>
           <i className='bx bxl-linkedin' />
