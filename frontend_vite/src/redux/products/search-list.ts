@@ -66,15 +66,12 @@ export const getFilterProducts = createAsyncThunk(
   async (u: any) => {
     try {
       console.log('IN SEARCH LIST##############, u', u);
-      // const [productResponse, categoriesResponse, subCategoriesResponse] = await Promise.all([
-      //   publicAxios.get(`/product/variant`),
-      //   publicAxios.get(`/product/supercategory`),
-      //   publicAxios.get(`/product/subcategory`)
-      // ]);
-      const productResponse = await publicAxios.get('/product/variant');
+      const productResponse = await publicAxios.get(`/product/variant`);
+      // const productResponse = await publicAxios.get(`/product/variant/search?category=${u.c}&subcategory=${u.sc}&query=${u.q}`);
       const categoriesResponse = await publicAxios.get(`/product/supercategory`);
+      // const categoriesResponse = await publicAxios.get(`/product/subcategory/search?category=${u.c}&subcategory=${u.sc}&query=${u.q}`);
+
       const subCategoriesResponse = await publicAxios.get(`/product/subcategory`);
-      
       console.log('IN SEARCH LIST, productResponse.data', productResponse.data);
       console.log('IN SEARCH LIST, categoriesResponse.data', categoriesResponse.data);
       console.log('IN SEARCH LIST, subCategoriesResponse.data', subCategoriesResponse.data);

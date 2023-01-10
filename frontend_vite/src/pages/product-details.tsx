@@ -58,6 +58,8 @@ const ProductDetails = () => {
 
   useEffect(() => {
     dispatch(getProductById(id));
+    // dispatch(getProductById('1'));
+
     window.scrollTo(0, 0);
   }, [id, dispatch, refresh]);
 
@@ -99,6 +101,12 @@ const ProductDetails = () => {
                     <span>Category:</span>
                     <span>{product.category}</span>
                   </h5>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                  <h5 className=' d-flex justify-content-between align-items-center'>
+                    <span>Sub category:</span>
+                    <span>{product.subcategory}</span>
+                  </h5>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <h5 className=' d-flex justify-content-between align-items-center'>
@@ -116,12 +124,12 @@ const ProductDetails = () => {
             </Col>
           </Row>
           <Row className='mt-2'>
-            <Col md={7}>
+            {/* <Col md={7}>
               <Card>
                 <Card.Body>
                   <h3 style={{ color: '#e03a3c' }}>Reviews</h3>
                   <ListGroup variant='flush'>
-                    {/* {product.reviews.map((review) => (
+                    {product.reviews.map((review) => (
                       <ListGroup.Item key={review._id}>
                         <div className='d-flex'>
                           <strong>{review.name}</strong>
@@ -130,11 +138,11 @@ const ProductDetails = () => {
                         </div>
                         <p>{review.comment}</p>
                       </ListGroup.Item>
-                    ))} */}
+                    ))}
                   </ListGroup>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
             <Col md={5}>
               <ListGroup className='bg-white p-3'>
                 <ListGroup.Item>

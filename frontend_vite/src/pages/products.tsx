@@ -82,10 +82,7 @@ const Products = () => {
     dispatch(
       // getFilterProducts({ n: pageNumber, b: brand, c: category, q: search })
       // getFilterProducts({ n: pageNumber, c: category, sc: subCategory, q: search })
-      getFilterProducts({ n: pageNumber, c: category, sc: subCategory })
-      // getFilterProducts({ products, categories, subCategories })
-
-
+      getFilterProducts({ c: category, sc: subCategory, q: search})
     );
   }, [dispatch, pageNumber, category, subCategory, search]);
 // }, [dispatch, products, categories, subCategories]);
