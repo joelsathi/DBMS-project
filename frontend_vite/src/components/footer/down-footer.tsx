@@ -10,19 +10,19 @@ const DownFooter = () => {
           <Row>
             <Col lg={3} md={6} xs={12} className=' footer-contact'>
               <h3>
-                <Image width={100} src='/LogoMakr-4g0P6C.png' alt='' />
+                <Image width={100} src='/NewLogoFooter.png' alt='' />
               </h3>
               <p>
-                2 Allée Andersen
+                2 Example Lane
                 <br />
-                69780 Mions Lyon
+                Colombo
                 <br />
-                France
+                Sri Lanka
                 <br />
                 <br />
-                <strong>Phone:</strong> 06 76 56 48 93
+                <strong>Phone:</strong> 011 2 720 720
                 <br />
-                <strong>Email:</strong> typeshop@me.com
+                <strong>Email:</strong> email@example.com
                 <br />
               </p>
             </Col>
@@ -48,7 +48,7 @@ const DownFooter = () => {
                 </li>
               </ul>
             </Col>
-            <Col lg={3} md={6} xs={6} className='footer-links'>
+            {/* <Col lg={3} md={6} xs={6} className='footer-links'>
               <h4>Our Services</h4>
               <ul>
                 <li>
@@ -72,8 +72,8 @@ const DownFooter = () => {
                   <a href='#'>Graphic Design</a>
                 </li>
               </ul>
-            </Col>
-            <Col lg={4} md={6} className='footer-newsletter'>
+            </Col> */}
+            {/* <Col lg={4} md={6} className='footer-newsletter'>
               <h4>Join Our Newsletter</h4>
               <p>
                 Tamen quem nulla quae legam multos aute sint culpa legam noster
@@ -88,7 +88,7 @@ const DownFooter = () => {
                 />
                 <input type='submit' defaultValue='Subscribe' />
               </form>
-            </Col>
+            </Col> */}
           </Row>
         </Container>
       </div>
