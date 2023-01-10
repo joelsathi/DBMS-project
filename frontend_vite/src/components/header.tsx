@@ -30,14 +30,14 @@ const Header = () => {
                 className='navbar-sm-brand text-light text-sm text-decoration-none'
                 href='mailto:info@company.com'
               >
-                typeshop@me.com
+                email@example.com
               </a>
               <i className='fa text-sm  fa-phone mx-2'></i>
               <a
                 className='navbar-sm-brand text-sm  text-light text-decoration-none'
                 href='tel:010-020-0340'
               >
-                06 76 56 48 93
+                011 2 720 720
               </a>
             </div>
             <div>
@@ -86,7 +86,7 @@ const Header = () => {
           {/* Logo */}
           <Navbar.Brand as={NavLink} to='/'>
             <img
-              src='/LogoMakr-6Tit9e.png'
+              src='/NewLogo.png'
               className='avatar rounded me-lg-10'
               alt='...'
             />
