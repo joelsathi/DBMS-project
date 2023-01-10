@@ -73,7 +73,7 @@ function ProductTable() {
           </h3>
           <TableContainer cols={cols}>
             {products.map((product) => (
-              <tr key={product._id}>
+              <tr key={product.sku}>
                 <td>
                   <Image className='avatar' roundedCircle src={product.image_url} />
                 </td>
@@ -85,12 +85,12 @@ function ProductTable() {
                 <td>
                   <Link
                     className='btn btn-sm btn-primary me-2'
-                    to={`/dashboard/product-edit/${product._id}`}
+                    to={`/dashboard/product-edit/${product.sku}`}
                   >
                     <FaEdit />
                   </Link>
                   <Button
-                    onClick={() => onDelete(product._id)}
+                    onClick={() => onDelete(product.sku)}
                     variant='danger'
                     size='sm'
                   >
