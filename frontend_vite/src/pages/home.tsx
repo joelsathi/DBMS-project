@@ -25,7 +25,7 @@ const HomePage = () => {
         ) : (
           <Row md={3} xs={1} lg={3}>
             {products.map((product) => (
-              <Col key={product._id}>
+              <Col key={product.sku}>
                 <ProductCard product={product} />
               </Col>
             ))}

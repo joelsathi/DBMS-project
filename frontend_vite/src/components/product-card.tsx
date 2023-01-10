@@ -4,7 +4,7 @@ import { formatCurrency } from '../utils/helper';
 import { ReviewTypes } from '../utils/interfaces';
 
 export type Product = {
-  _id: number | string; // sku
+  sku: number | string; // sku
   name: string;
   price: number;
   image_url: string;
@@ -30,7 +30,7 @@ type Props = {
 const ProductCard = ({ product }: Props) => {
   return (
     <Card className='my-3 p-3 rounded' style={{ height: '400px' }}>
-      <Link to={`/products/${product._id}`}> 
+      <Link to={`/products/${product.sku}`}> 
       {/* <Link to={`/product/variant`}> */}
         <Card.Img
           src={product.image_url}

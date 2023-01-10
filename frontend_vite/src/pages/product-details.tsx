@@ -48,7 +48,7 @@ const ProductDetails = () => {
       rating,
     };
     authAxios
-      .post(`/products/${product?._id}/reviews`, review)
+      .post(`/products/${product?.sku}/reviews`, review)
       .then((res) => {
         toast.success('thank you for the comment 🙂');
         setRefresh((prev) => (prev = !prev));
@@ -58,8 +58,6 @@ const ProductDetails = () => {
 
   useEffect(() => {
     dispatch(getProductById(id));
-    // dispatch(getProductById('1'));
-
     window.scrollTo(0, 0);
   }, [id, dispatch, refresh]);
 
@@ -130,7 +128,7 @@ const ProductDetails = () => {
                   <h3 style={{ color: '#e03a3c' }}>Reviews</h3>
                   <ListGroup variant='flush'>
                     {product.reviews.map((review) => (
-                      <ListGroup.Item key={review._id}>
+                      <ListGroup.Item key={review.sku}>
                         <div className='d-flex'>
                           <strong>{review.name}</strong>
                           <Rating value={review.rating} />
