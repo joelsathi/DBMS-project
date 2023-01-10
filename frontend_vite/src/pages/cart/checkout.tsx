@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../redux';
 import { reset } from '../../redux/cart/cart-slice';
 import authAxios from '../../utils/auth-axios';
 import { setError } from '../../utils/error';
-import { formatCurrencry } from '../../utils/helper';
+import { formatCurrency } from '../../utils/helper';
 
 const Checkout = () => {
   const { shippingAddress, cartItems } = useAppSelector((state) => state.cart);
@@ -64,7 +64,7 @@ const Checkout = () => {
                       <Row className='d-flex align-items-center'>
                         <Col md={2}>
                           <Image
-                            src={item.image}
+                            src={item.image_url}
                             roundedCircle
                             className='avatar'
                           />
@@ -72,7 +72,7 @@ const Checkout = () => {
                         <Col md={6}>{item.name}</Col>
                         <Col>{item?.qty}</Col>
 
-                        <Col>{formatCurrencry(item.price * item.qty)}</Col>
+                        <Col>{formatCurrency(item.price * item.qty)}</Col>
                         <Col></Col>
                       </Row>
                     </ListGroup.Item>
@@ -92,7 +92,7 @@ const Checkout = () => {
                   <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                     <span>Total Price :</span>
                     <span>
-                      {formatCurrencry(
+                      {formatCurrency(
                         cartItems.reduce(
                           (acc, item) => acc + item.price * item.qty,
                           0
@@ -102,15 +102,15 @@ const Checkout = () => {
                   </ListGroup.Item>
                   <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                     <span>Tax Price</span>
-                    <span>{formatCurrencry(taxPrice)}</span>
+                    <span>{formatCurrency(taxPrice)}</span>
                   </ListGroup.Item>
                   <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                     <span>Shipping Price</span>
-                    <span>{formatCurrencry(shippingPrice)}</span>
+                    <span>{formatCurrency(shippingPrice)}</span>
                   </ListGroup.Item>
                   <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                     <span>Total Price</span>
-                    <span>{formatCurrencry(totalPrice)}</span>
+                    <span>{formatCurrency(totalPrice)}</span>
                   </ListGroup.Item>
                   <ListGroup.Item className=' d-flex justify-content-between align-items-center'>
                     <RedButton

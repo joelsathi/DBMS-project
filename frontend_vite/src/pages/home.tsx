@@ -18,14 +18,14 @@ const HomePage = () => {
     <DefaultLayout>
       <Container>
         <h2 style={{ color: '#e03a3c' }} className='mt-3'>
-          Least Products
+          Latest Products
         </h2>
         {loading || !products ? (
           <Loader />
         ) : (
           <Row md={3} xs={1} lg={3}>
             {products.map((product) => (
-              <Col key={product._id}>
+              <Col key={product.sku}>
                 <ProductCard product={product} />
               </Col>
             ))}

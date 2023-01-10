@@ -23,7 +23,7 @@ import { addToCart } from '../redux/cart/cart-slice';
 import { getProductById } from '../redux/products/slice-details';
 import authAxios from '../utils/auth-axios';
 import { setError } from '../utils/error';
-import { formatCurrencry, getDate } from '../utils/helper';
+import { formatCurrency, getDate } from '../utils/helper';
 
 const ProductDetails = () => {
   const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ const ProductDetails = () => {
       rating,
     };
     authAxios
-      .post(`/products/${product?._id}/reviews`, review)
+      .post(`/products/${product?.sku}/reviews`, review)
       .then((res) => {
         toast.success('thank you for the comment 🙂');
         setRefresh((prev) => (prev = !prev));
@@ -73,7 +73,7 @@ const ProductDetails = () => {
                 <Image
                   className=' p-2'
                   rounded
-                  src={product?.image}
+                  src={product?.image_url}
                   style={{ width: '600px', height: '100%' }}
                 />
               </Card>
@@ -90,7 +90,7 @@ const ProductDetails = () => {
                   {' '}
                   <h5 className=' d-flex justify-content-between align-items-center'>
                     <span>Price:</span>
-                    <span>{formatCurrencry(product.price)}</span>
+                    <span>{formatCurrency(product.price)}</span>
                   </h5>
                 </ListGroup.Item>
 
@@ -98,6 +98,12 @@ const ProductDetails = () => {
                   <h5 className=' d-flex justify-content-between align-items-center'>
                     <span>Category:</span>
                     <span>{product.category}</span>
+                  </h5>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                  <h5 className=' d-flex justify-content-between align-items-center'>
+                    <span>Sub category:</span>
+                    <span>{product.subcategory}</span>
                   </h5>
                 </ListGroup.Item>
                 <ListGroup.Item>
@@ -116,13 +122,13 @@ const ProductDetails = () => {
             </Col>
           </Row>
           <Row className='mt-2'>
-            <Col md={7}>
+            {/* <Col md={7}>
               <Card>
                 <Card.Body>
                   <h3 style={{ color: '#e03a3c' }}>Reviews</h3>
                   <ListGroup variant='flush'>
                     {product.reviews.map((review) => (
-                      <ListGroup.Item key={review._id}>
+                      <ListGroup.Item key={review.sku}>
                         <div className='d-flex'>
                           <strong>{review.name}</strong>
                           <Rating value={review.rating} />
@@ -134,7 +140,7 @@ const ProductDetails = () => {
                   </ListGroup>
                 </Card.Body>
               </Card>
-            </Col>
+            </Col> */}
             <Col md={5}>
               <ListGroup className='bg-white p-3'>
                 <ListGroup.Item>

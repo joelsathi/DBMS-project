@@ -26,6 +26,7 @@ async def on_shutdown():
 def get_about(response: Response):
     return {"project_name": "Thulasi", "description": "Some Description"}
 
+# added to allow request from frontend
 @app.middleware("http")
 async def cors_middleware(request, call_next):
     response = await call_next(request)
