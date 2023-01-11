@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Request
 
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
-from ..core.pagination import getPagination
+from ..core.pagination import get_pagination, get_params
 
 user_router = APIRouter(
     prefix="/auth",
@@ -10,20 +10,37 @@ user_router = APIRouter(
 
 
 @user_router.get("/registered_user")
-def get_registered_user_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = RegisteredUserDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+# "{BASE_URL}/auth/registered_user?page_num=1&page_size=10&sort_by=id,username&sort_order=ASC,DESC&username=thulasithang"
+def get_registered_user_list(
+    response: Response,
+    request: Request,
+):
+
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = RegisteredUserDBModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    )
 
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
             "Error": "Detail not Found",
-            "Message": "No entries on page {}".format(page_num)
+            "Message": "No entries on page {}".format(page_num),
         }
-    
-    total = None # NEED TO IMPLEMENT THE FUNCTION
+
+    total = 18  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
-    ret = getPagination("/registered_user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
+    ret = get_pagination(
+        "/registered_user",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
 
     return ret
 
@@ -45,16 +62,30 @@ def get_registered_user(id: int, response: Response):
 @user_router.get("/user")
 def get_user_list(response: Response, page_num: int = 1, page_size: int = 10):
     rows = UserDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-    total = None # NEED TO IMPLEMENT THE FUNCTION
+    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [UserDBModel.serialize(row) for row in rows]
-    ret = getPagination("/user", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
+    ret = get_pagination(
+        "/user",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
     return ret
 
 
 @user_router.get("/payment_detail")
 def get_payment_detail_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = PaymentDetailDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-    total = None # NEED TO IMPLEMENT THE FUNCTION
+    rows = PaymentDetailDBModel.objects.select_by_page(
+        page_num=page_num, page_size=page_size
+    )
+    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [PaymentDetailDBModel.serialize(row) for row in rows]
-    ret = getPagination("/payment_detail", total=total, serialized_rows=serialized_rows, page_num=page_num, page_size=page_size)
+    ret = get_pagination(
+        "/payment_detail",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
     return ret
