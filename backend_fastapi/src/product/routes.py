@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Response, Request, status
 
 from .models import (
     ProductModel,
@@ -12,7 +12,7 @@ from .models import (
     ProductVarientOptionsModel,
 )
 
-from ..core.pagination import get_pagination
+from ..core.pagination import get_pagination, get_params
 
 product_router = APIRouter(
     prefix="/product",
@@ -20,8 +20,23 @@ product_router = APIRouter(
 
 
 @product_router.get("/product")
-def get_product_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = ProductModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+def get_product_list(response: Response, request: Request):
+    
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = ProductModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+    
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -35,10 +50,23 @@ def get_product_list(response: Response, page_num: int = 1, page_size: int = 10)
 
 
 @product_router.get("/variant")
-def get_variant_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = ProductVariantModel.objects.select_by_page(
-        page_num=page_num, page_size=page_size
+def get_variant_list(response: Response, request: Request):
+
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = ProductVariantModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -52,10 +80,23 @@ def get_variant_list(response: Response, page_num: int = 1, page_size: int = 10)
 
 
 @product_router.get("/subcategory")
-def get_subcategory_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = SubCategoryModel.objects.select_by_page(
-        page_num=page_num, page_size=page_size
+def get_subcategory_list(response: Response, request: Request):
+    
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = SubCategoryModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+    
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -69,10 +110,23 @@ def get_subcategory_list(response: Response, page_num: int = 1, page_size: int =
 
 
 @product_router.get("/supercategory")
-def get_supercategory_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = SuperCategoryModel.objects.select_by_page(
-        page_num=page_num, page_size=page_size
+def get_supercategory_list(response: Response, request: Request):
+    
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = SuperCategoryModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SuperCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -86,8 +140,23 @@ def get_supercategory_list(response: Response, page_num: int = 1, page_size: int
 
 
 @product_router.get("/discount")
-def get_discount_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = DiscountModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+def get_discount_list(response: Response, request: Request):
+    
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = DiscountModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [DiscountModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -101,8 +170,23 @@ def get_discount_list(response: Response, page_num: int = 1, page_size: int = 10
 
 
 @product_router.get("/options")
-def get_options_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = OptionsModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+def get_options_list(response: Response, request: Request):
+
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = OptionsModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+    
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [OptionsModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -116,8 +200,23 @@ def get_options_list(response: Response, page_num: int = 1, page_size: int = 10)
 
 
 @product_router.get("/inventory")
-def get_inventory_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = InventoryModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+def get_inventory_list(response: Response, request: Request):
+    
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = InventoryModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [InventoryModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -132,11 +231,24 @@ def get_inventory_list(response: Response, page_num: int = 1, page_size: int = 1
 
 @product_router.get("/product_subcategory")
 def get_product_subcategory_list(
-    response: Response, page_num: int = 1, page_size: int = 10
+    response: Response, request: Request
 ):
-    rows = ProductSubCategoryModel.objects.select_by_page(
-        page_num=page_num, page_size=page_size
+
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = ProductSubCategoryModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+    
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductSubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -151,11 +263,24 @@ def get_product_subcategory_list(
 
 @product_router.get("/product_variant_options")
 def get_product_variant_options_list(
-    response: Response, page_num: int = 1, page_size: int = 10
+    response: Response, request: Request
 ):
-    rows = ProductVarientOptionsModel.objects.select_by_page(
-        page_num=page_num, page_size=page_size
+    
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = ProductVarientOptionsModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductVarientOptionsModel.serialize(row) for row in rows]
     ret = get_pagination(

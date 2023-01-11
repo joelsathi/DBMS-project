@@ -46,7 +46,10 @@ def get_registered_user_list(
 
 
 @user_router.get("/registered_user/{id}")
-def get_registered_user(id: int, response: Response):
+def get_registered_user(
+    id: int,
+    response: Response,
+):
     row = RegisteredUserDBModel.objects.select_by_id(id)
     if row is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -60,8 +63,26 @@ def get_registered_user(id: int, response: Response):
 
 
 @user_router.get("/user")
-def get_user_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = UserDBModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+def get_user_list(
+    response: Response,
+    request: Request,
+):
+
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = UserDBModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [UserDBModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -75,10 +96,26 @@ def get_user_list(response: Response, page_num: int = 1, page_size: int = 10):
 
 
 @user_router.get("/payment_detail")
-def get_payment_detail_list(response: Response, page_num: int = 1, page_size: int = 10):
-    rows = PaymentDetailDBModel.objects.select_by_page(
-        page_num=page_num, page_size=page_size
+def get_payment_detail_list(
+    response: Response,
+    request: Request,
+):
+
+    page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+    # TODO add field validation
+
+    rows = PaymentDetailDBModel.objects.select_by_all(
+        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [PaymentDetailDBModel.serialize(row) for row in rows]
     ret = get_pagination(
