@@ -1,9 +1,9 @@
 import mysql.connector
-from mysql.connector import CMySQLConnection
+from mysql.connector.pooling import PooledMySQLConnection
 
 from ..settings import settings
 
-connection: CMySQLConnection = mysql.connector.connect(
+connection_pool: PooledMySQLConnection = mysql.connector.pooling.MySQLConnectionPool(
     use_pure=False,
     host=settings.DB_HOST,
     port=settings.DB_PORT,
