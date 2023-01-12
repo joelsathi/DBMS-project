@@ -44,6 +44,13 @@ def get_registered_user_list(
 
     return ret
 
+@user_router.post("/registered_user")
+async def post_registered_user(request: Request):
+    field_dict = await request.json()
+    new_obj = RegisteredUserDBModel(**field_dict)
+    new_obj.save()
+    print(new_obj)
+
 
 @user_router.get("/registered_user/{id}")
 def get_registered_user(

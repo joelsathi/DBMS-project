@@ -2,6 +2,8 @@ from functools import lru_cache
 from .manager import BaseQueryManager
 from .field import BaseDBField, ForeignKeyDBField
 
+class DBModelException(Exception):
+    pass
 
 class MetaModel(type):
     __query_manager__ = BaseQueryManager
@@ -30,6 +32,9 @@ class MetaModel(type):
                 )
             else:
                 new_attrs[attr_name] = attr
+
+        if "primary_key" not in new_attrs:
+            raise DBModelException("Model {} does not have a primary key!".format(name))
 
         return super().__new__(cls, name, bases, new_attrs)
 
@@ -82,7 +87,29 @@ class BaseDBModel(metaclass=MetaModel):
         # TODO check for extra kwargs / args
 
     def save(self):
-        raise NotImplementedError
+        field_dict: dict = self.__class__.get_field_names()
+        field_dict = {}
+        for fname, field in self._fields.items():
+            fval = getattr(self, fname)
+            # perform validation on field values
+            field.validate(fval)
+            field_dict[fname] = fval
+        for fname, field in self._foreign_key_fields.items():
+            fval = getattr(self, fname)
+            # perform validation on field values
+            field.validate(fval)
+            field_dict[field.name_id] = fval
+
+        self.__class__.objects._insert(field_dict=field_dict)        
+
+        # TODO implement update
+        # validate -> call validate method on each field, any model specific validation?
+        # save -> manager save method, manager update method
+        # how to know if updating or saving?
+        # save related here too?
+
+    def __repr__(self) -> str:
+        return "<{} object {}>".format(self.__class__.__qualname__, getattr(self, self.primary_key))
 
     def serialize(self):
         """Convert the model object into a representation suitable for sending as an API response.
