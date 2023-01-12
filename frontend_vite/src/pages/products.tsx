@@ -159,7 +159,7 @@ const Products = () => {
             </Row>
             <Row style={{ minHeight: '80vh' }}>
               {products.map((product) => (
-                <Col lg={4} md={6} xs={12} key={product.sku}>
+                <Col lg={4} md={6} xs={12} key={product.id}>
                   <ProductCard product={product} />
                 </Col>
               ))}
