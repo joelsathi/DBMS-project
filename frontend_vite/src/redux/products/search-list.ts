@@ -79,9 +79,9 @@ export const getFilterProducts = createAsyncThunk(
       // console.log('END ###################');
 
       return {
-        products: productResponse.data,
-        categories: categoriesResponse.data,
-        subCategories: subCategoriesResponse.data,
+        products: productResponse.data.data,
+        categories: categoriesResponse.data.data,
+        subCategories: subCategoriesResponse.data.data,
 
      
       };

@@ -25,7 +25,7 @@ export const getProductById = createAsyncThunk(
 
       if (res.data) {
         // return res.data;
-        return res.data[0]; //################################
+        return res.data.data[0]; //################################
       }
     } catch (error) {}
   }
