@@ -30,6 +30,7 @@ CREATE TABLE product (
     base_price NUMERIC(10, 2),
     discount_id INT,
     brand VARCHAR(50),
+    image_url VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (discount_id) REFERENCES discount(id) ON DELETE
     SET NULL

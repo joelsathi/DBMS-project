@@ -9,6 +9,7 @@ class ProductModel(model.BaseDBModel):
     description = field.TextDBField()
     base_price = field.FloatDBField()
     brand = field.CharDBField(max_length=50)
+    image_url = field.CharDBField(max_length=255)
 
     discount_id = None  # TODO foriengn key
 
@@ -19,6 +20,7 @@ class ProductModel(model.BaseDBModel):
             "description",
             "base_price",
             "brand",
+            "image_url",
         ]
 
         return {f: getattr(self, f) for f in fields}
