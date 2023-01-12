@@ -159,6 +159,7 @@ class BaseQueryManager:
         page_size: int = 10,
         filters: dict = {},
         sort_keys: dict = {},
+        get_row_count: bool = False
     ):
         field_str = self._get_field_names_str(field_names)
 
@@ -176,6 +177,10 @@ class BaseQueryManager:
 
         where_clause = self._get_where_clause(filters)
 
+        _count = None
+        if get_row_count:
+            _count = self._get_count(where_clause)
+
         sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
             field_str,
             self.model_class.__tablename__,
@@ -191,7 +196,7 @@ class BaseQueryManager:
             cursor.set_model_class(self.model_class)
             rows = cursor.fetchall()
 
-        return rows
+        return rows, _count
 
     def select_by_id(self, id: int, field_names: list = []):
         # We will have a specific method just for this since it will be an important application
@@ -212,20 +217,18 @@ class BaseQueryManager:
 
         return row
 
-    # def get_count(self):
+    def _get_count(self, _filter_str):
+        sql_query_str = "SELECT COUNT(*) FROM {} {}".format(
+            self.model_class.__tablename__,
+            _filter_str
+        )
 
-    #     sql_query_str = "SELECT COUNT(*) FROM {}".format(
-    #         self.model_class.__tablename__
-    #     )
+        _count = None
+        with self._get_cursor(CMySQLCursor) as cursor:
+            cursor.execute(sql_query_str)
+            _count = cursor.fetchone()
 
-    #     cursor: MySQLModelCursor = self._get_cursor()
-    #     cursor.execute(sql_query_str)
-    #     cursor.set_model_class(self.model_class)
-    #     count = cursor.fetchone()
-    #     print(count)
-    #     cursor.close()
-
-    #     return count
+        return _count[0]
 
     def _insert(self, field_dict: dict):
         """

@@ -88,8 +88,12 @@ def get_registered_user_list(
 
     # TODO add field validation
 
-    rows = RegisteredUserDBModel.objects.select(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = RegisteredUserDBModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -99,12 +103,11 @@ def get_registered_user_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
     ret = get_pagination(
         "/registered_user",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -165,8 +168,12 @@ def get_user_list(
 
     # TODO add field validation
 
-    rows = UserDBModel.objects.select(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = UserDBModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -176,11 +183,10 @@ def get_user_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [UserDBModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/user",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -206,8 +212,12 @@ def get_payment_detail_list(
 
     # TODO add field validation
 
-    rows = PaymentDetailDBModel.objects.select(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = PaymentDetailDBModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -217,11 +227,10 @@ def get_payment_detail_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [PaymentDetailDBModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/payment_detail",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
