@@ -21,7 +21,7 @@ class PaymentDetailDBModel(model.BaseDBModel):
 class RegisteredUserDBModel(model.BaseDBModel):
     __tablename__ = "registered_user"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     username = field.CharDBField(max_length=255)
     password = field.CharDBField(max_length=512)
     firstname = field.CharDBField(max_length=255)
@@ -30,7 +30,9 @@ class RegisteredUserDBModel(model.BaseDBModel):
     address = field.CharDBField(max_length=512, allow_null=True)
     mobile_no = field.CharDBField(max_length=10)
     created_date = None  # TODO
-    payment_detail_id = field.ForeignKeyDBField(related_model=PaymentDetailDBModel)
+    payment_detail_id = field.ForeignKeyDBField(
+        related_model=PaymentDetailDBModel, allow_null=True
+    )
 
     def serialize(self):
         fields = [
