@@ -4,11 +4,11 @@ from functools import cached_property
 DEFAULT_DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 
 
-class InvalidRelatedModelException(Exception):
+class FieldException(Exception):
     pass
 
 
-class FieldException(Exception):
+class ValidationException(Exception):
     pass
 
 
@@ -44,12 +44,43 @@ class LazyFieldAttribute:
 
 
 class BaseDBField:
-    def __init__(self, allow_null=False, default=None, is_primary_key=False):
+    def __init__(
+        self,
+        allow_null=False,
+        default=None,
+        is_primary_key=False,
+        validators=[],
+        auto_generated=False,
+    ):
         self.allow_null = allow_null
         self.is_primary_key = is_primary_key
         self.default = default
+        self.auto_generated = auto_generated
+
+        for validator in validators:
+            if not callable(validator):
+                raise FieldException(
+                    "Invalid validator {}. All validators must be callables".format(
+                        validator
+                    )
+                )
+        self.validators = validators
 
         self.name = None
+
+    def _validate(self, value):
+        if not self.allow_null and value is None and not self.auto_generated:
+            raise ValidationException("Field {} cannot be null".format(self.name))
+
+    def validate(self, value):
+        """
+        Will throw an exception if data is invalid for field. This method is expected to be called
+        before saving or updating an instance to make sure that the
+        """
+
+        self._validate(value)
+        for validator in self.validators:
+            validator(value)
 
     def add_to_model(self, model_name, field_name, new_attrs):
         """Add this field to a model
@@ -169,7 +200,7 @@ class ForeignKeyDBField(BaseDBField):
 
     def _check_valid_relation(self):
         if getattr(self.related_model, "__tablename__", None) is None:
-            raise InvalidRelatedModelException(
+            raise FieldException(
                 "{} is not a valid related model!".format(self.related_model)
             )
 
