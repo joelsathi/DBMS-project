@@ -29,7 +29,7 @@ class MySQLModelCursor(CMySQLCursor):
                 )
             )
 
-        _all_fields = model_class.get_field_names()
+        _all_fields = model_class.get_fields_by_name()
 
         obj = model_class(
             is_existing=True,
@@ -101,8 +101,8 @@ class BaseQueryManager:
             cursor.close()
             connection.close()
 
-    def _get_field_names_str(self, field_names):
-        _field_names = self.model_class.get_field_names()
+    def _get_fields_by_name_str(self, field_names):
+        _field_names = self.model_class.get_fields_by_name()
 
         # If field names are specified, select only those. Otherwise select all model fields.
         if len(field_names) == 0:
@@ -126,30 +126,51 @@ class BaseQueryManager:
         return field_str
 
     def _get_where_clause(self, filters: dict):
-        _field_names = self.model_class.get_field_names()
+        _field_names = self.model_class.get_fields_by_name()
 
-        field_names = list(filters.keys())
+        FILTER_CONDITIONS = {
+            "": " = %s",
+            "gt": " > %s",
+            "gte": " >= %s",
+            "lt": " < %s",
+            "lte": " <= %s",
+            "in": " IN (%s)",
+            "like": " LIKE %s"
+        }
 
-        # If there are no filtering just return an empty string
-        if len(field_names) == 0:
+        # If there are no filters just return an empty string
+        if len(filters) == 0:
             where_clause = ""
+            filter_vals_list = []
 
         else:
             where_clause = "WHERE "
-            for ind, field_name in enumerate(field_names):
+            filter_vals_list = []
+            first_iter = True
+            for field_name in filters.keys():
+                # We will allow different conditions to be used as filters by allowing a suffix
+                # appended to the actual field name with a "__" to determine said operation.
+                # For eg: `id__gt=2` would be a greater than condition resulting in SQL that looks
+                # like `id >= 2`.
+                try:
+                    stripped_field_name, suffix = field_name.split("__")
+                    filter_condition = FILTER_CONDITIONS[suffix]
+                except:
+                    stripped_field_name = field_name
+                    suffix = ""
+                    filter_condition = FILTER_CONDITIONS[suffix]
+                    
                 # Silently pass if the field name does not exist: we don't want to fail from a
                 # filter, we would return an unfiltered queryset in that case
-                if field_name in _field_names:
-                    val_list = ",".join(filters[field_name])
-                    where_clause += f"{field_name} IN ({val_list})"
-                    if ind < len(field_names) - 1:
+                if stripped_field_name in _field_names:
+                    if not first_iter and where_clause[-4:] != "AND ":
                         where_clause += " AND "
+                    first_iter = False
 
-            # get rid of trailing ands
-            if where_clause[-4:] == "AND ":
-                where_clause = where_clause[:-4]
+                    where_clause += "{} {}".format(stripped_field_name, filter_condition) 
+                    filter_vals_list.append(filters[field_name]) # TODO escape and fix for lists
 
-        return where_clause
+        return where_clause, filter_vals_list
 
     def select(
         self,
@@ -160,7 +181,7 @@ class BaseQueryManager:
         sort_keys: dict = {},
         get_row_count: bool = False,
     ):
-        field_str = self._get_field_names_str(field_names)
+        field_str = self._get_fields_by_name_str(field_names)
 
         start = (page_num - 1) * page_size
 
@@ -174,11 +195,11 @@ class BaseQueryManager:
         else:
             sort_clause = ""
 
-        where_clause = self._get_where_clause(filters)
+        where_clause, filter_values_list = self._get_where_clause(filters)
 
         _count = None
         if get_row_count:
-            _count = self._get_count(where_clause)
+            _count = self._get_count(where_clause, filter_values_list)
 
         sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
             field_str,
@@ -191,7 +212,7 @@ class BaseQueryManager:
 
         rows = []
         with self._get_cursor(MySQLModelCursor) as cursor:
-            cursor.execute(sql_query_str)
+            cursor.execute(sql_query_str, filter_values_list)
             cursor.set_model_class(self.model_class)
             rows = cursor.fetchall()
 
@@ -200,7 +221,7 @@ class BaseQueryManager:
     def select_by_id(self, id: int, field_names: list = []):
         # We will have a specific method just for this since it will be an important application
 
-        field_str = self._get_field_names_str(field_names)
+        field_str = self._get_fields_by_name_str(field_names)
 
         sql_query_str = "SELECT {} FROM {} WHERE {}=%s".format(
             field_str,
@@ -216,14 +237,14 @@ class BaseQueryManager:
 
         return row
 
-    def _get_count(self, _filter_str):
+    def _get_count(self, _filter_str, filter_values_list):
         sql_query_str = "SELECT COUNT(*) FROM {} {}".format(
             self.model_class.__tablename__, _filter_str
         )
 
         _count = None
         with self._get_cursor(CMySQLCursor) as cursor:
-            cursor.execute(sql_query_str)
+            cursor.execute(sql_query_str, filter_values_list)
             _count = cursor.fetchone()
 
         return _count[0]

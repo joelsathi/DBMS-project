@@ -7,13 +7,10 @@ class DBModelException(Exception):
     pass
 
 
-<<<<<<< HEAD
 class ModelSaveException(Exception):
     pass
 
 
-=======
->>>>>>> format (black)
 class MetaModel(type):
     __query_manager__ = BaseQueryManager
 
@@ -53,7 +50,7 @@ class MetaModel(type):
         return cls.__query_manager__(model_class=cls)
 
     @lru_cache(maxsize=1)
-    def get_field_names(cls):
+    def get_fields_by_name(cls):
         return {
             **cls._fields,
             **{f.name_id: f for f in cls._foreign_key_fields.values()},
@@ -165,7 +162,7 @@ class BaseDBModel(metaclass=MetaModel):
             Generally a dict with the relevant model fields and values would be returned.
         """
 
-        return {f: getattr(self, f) for f in self.get_field_names()}
+        return {f: getattr(self, f) for f in self.get_fields_by_name()}
 
     def serialize_with_related(self):
         """
