@@ -66,8 +66,7 @@ export const getFilterProducts = createAsyncThunk(
   async (u: any) => {
     try {
       console.log('IN SEARCH LIST##############, u', u);
-      const productResponse = await publicAxios.get(`/product/variant`);
-      // const productResponse = await publicAxios.get(`/product/variant/search?category=${u.c}&subcategory=${u.sc}&query=${u.q}`);
+      const productResponse = await publicAxios.get(`/product/product_filtered/search?category=${u.c}&subCategory=${u.sc}&query=${u.q}`);
       const categoriesResponse = await publicAxios.get(`/product/supercategory`);
       // const categoriesResponse = await publicAxios.get(`/product/subcategory/search?category=${u.c}&subcategory=${u.sc}&query=${u.q}`);
 
