@@ -22,7 +22,7 @@ product_router = APIRouter(
 @product_router.get("/product")
 def get_product_list(response: Response, page_num: int = 1, page_size: int = 10):
     rows = ProductModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
+    total = 2  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/product",
@@ -39,7 +39,7 @@ def get_variant_list(response: Response, page_num: int = 1, page_size: int = 10)
     rows = ProductVariantModel.objects.select_by_page(
         page_num=page_num, page_size=page_size
     )
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
+    total = 2  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/variant",
@@ -56,7 +56,7 @@ def get_subcategory_list(response: Response, page_num: int = 1, page_size: int =
     rows = SubCategoryModel.objects.select_by_page(
         page_num=page_num, page_size=page_size
     )
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
+    total = 2  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/subcategory",
@@ -73,7 +73,7 @@ def get_supercategory_list(response: Response, page_num: int = 1, page_size: int
     rows = SuperCategoryModel.objects.select_by_page(
         page_num=page_num, page_size=page_size
     )
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
+    total = 2  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SuperCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/supercategory",
