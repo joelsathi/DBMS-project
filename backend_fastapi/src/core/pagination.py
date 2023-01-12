@@ -8,10 +8,12 @@ def get_pagination(
     start = (page_num - 1) * page_size
     end = start + page_size
 
+    print(start, end, total, page_size, page_num)
+
     ret = {
         "data": serialized_rows,
         "total": total,
-        "count": page_size,
+        "count": page_size if end <= total else (total - start),
         "pagination": {},
     }
 
