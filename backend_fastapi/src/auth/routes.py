@@ -88,7 +88,7 @@ def get_registered_user_list(
 
     # TODO add field validation
 
-    rows = RegisteredUserDBModel.objects.select_by_all(
+    rows = RegisteredUserDBModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -165,7 +165,7 @@ def get_user_list(
 
     # TODO add field validation
 
-    rows = UserDBModel.objects.select_by_all(
+    rows = UserDBModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -206,7 +206,7 @@ def get_payment_detail_list(
 
     # TODO add field validation
 
-    rows = PaymentDetailDBModel.objects.select_by_all(
+    rows = PaymentDetailDBModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 

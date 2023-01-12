@@ -27,7 +27,7 @@ def get_order_cart_list(
 
     # TODO add field validation
 
-    rows = OrderCartModel.objects.select_by_all(
+    rows = OrderCartModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -67,7 +67,7 @@ def get_product_order_list(
 
     # TODO add field validation
 
-    rows = ProductOrderModel.objects.select_by_all(
+    rows = ProductOrderModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -107,7 +107,7 @@ def get_order_payment_detail_list(
 
     # TODO add field validation
 
-    rows = OrderPaymentDetailModel.objects.select_by_all(
+    rows = OrderPaymentDetailModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -147,7 +147,7 @@ def get_delivery_list(
 
     # TODO add field validation
 
-    rows = DeliveryModel.objects.select_by_all(
+    rows = DeliveryModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -186,7 +186,7 @@ def get_location_list(
 
     # TODO add field validation
 
-    rows = LocationModel.objects.select_by_all(
+    rows = LocationModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 

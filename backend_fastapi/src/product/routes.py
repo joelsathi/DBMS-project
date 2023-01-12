@@ -28,7 +28,7 @@ def get_product_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductModel.objects.select_by_all(
+    rows = ProductModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -64,7 +64,7 @@ def get_variant_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductVariantModel.objects.select_by_all(
+    rows = ProductVariantModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -101,7 +101,7 @@ def get_subcategory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = SubCategoryModel.objects.select_by_all(
+    rows = SubCategoryModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -138,7 +138,7 @@ def get_supercategory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = SuperCategoryModel.objects.select_by_all(
+    rows = SuperCategoryModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -177,7 +177,7 @@ def get_discount_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = DiscountModel.objects.select_by_all(
+    rows = DiscountModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -214,7 +214,7 @@ def get_options_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = OptionsModel.objects.select_by_all(
+    rows = OptionsModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -253,7 +253,7 @@ def get_inventory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = InventoryModel.objects.select_by_all(
+    rows = InventoryModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -290,7 +290,7 @@ def get_product_subcategory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductSubCategoryModel.objects.select_by_all(
+    rows = ProductSubCategoryModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 
@@ -327,7 +327,7 @@ def get_product_variant_options_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductVarientOptionsModel.objects.select_by_all(
+    rows = ProductVarientOptionsModel.objects.select(
         page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
     )
 

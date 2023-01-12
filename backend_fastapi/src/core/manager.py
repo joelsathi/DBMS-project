@@ -152,13 +152,37 @@ class BaseQueryManager:
 
         return where_clause
 
-    def select(self, field_names: list = [], filters: dict = None):
-        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
-
+    def select(
+        self,
+        field_names: list = [],
+        page_num: int = 1,
+        page_size: int = 10,
+        filters: dict = {},
+        sort_keys: dict = {},
+    ):
         field_str = self._get_field_names_str(field_names)
 
-        sql_query_str = "SELECT {} FROM {}".format(
-            field_str, self.model_class.__tablename__
+        start = (page_num - 1) * page_size
+
+        if sort_keys is not None and len(sort_keys) > 0:
+            sort_clause = "ORDER BY "
+            for field, s_order in sort_keys.items():
+                sort_clause += "{} {}".format(field, s_order)
+                if field != list(sort_keys.keys())[-1]:
+                    sort_clause += ","
+            print(sort_clause)
+        else:
+            sort_clause = ""
+
+        where_clause = self._get_where_clause(filters)
+
+        sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
+            field_str,
+            self.model_class.__tablename__,
+            where_clause,
+            sort_clause,
+            page_size,
+            start,
         )
 
         rows = []
@@ -202,72 +226,6 @@ class BaseQueryManager:
     #     cursor.close()
 
     #     return count
-
-    def select_by_page(
-        self,
-        field_names: list = [],
-        page_num: int = 1,
-        page_size: int = 10,
-        filters: dict = None,
-    ):
-        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
-
-        field_str = self._get_field_names_str(field_names)
-
-        start = (page_num - 1) * page_size
-
-        sql_query_str = "SELECT {} FROM {} LIMIT {} OFFSET {}".format(
-            field_str, self.model_class.__tablename__, page_size, start
-        )
-
-        rows = []
-        with self._get_cursor(MySQLModelCursor) as cursor:
-            cursor.execute(sql_query_str)
-            cursor.set_model_class(self.model_class)
-            rows = cursor.fetchall()
-
-        return rows
-
-    def select_by_all(
-        self,
-        field_names: list = [],
-        page_num: int = 1,
-        page_size: int = 10,
-        filters: dict = {},
-        sort_: dict = {},
-    ):
-        field_str = self._get_field_names_str(field_names)
-
-        start = (page_num - 1) * page_size
-
-        if sort_ is not None and len(sort_) > 0:
-            sort_clause = "ORDER BY "
-            for field, s_order in sort_.items():
-                sort_clause += "{} {}".format(field, s_order)
-                if field != list(sort_.keys())[-1]:
-                    sort_clause += ","
-            print(sort_clause)
-        else:
-            sort_clause = ""
-
-        where_clause = self._get_where_clause(filters)
-
-        sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
-            field_str,
-            self.model_class.__tablename__,
-            where_clause,
-            sort_clause,
-            page_size,
-            start,
-        )
-
-        rows = []
-        with self._get_cursor(MySQLModelCursor) as cursor:
-            cursor.execute(sql_query_str)
-            cursor.set_model_class(self.model_class)
-            rows = cursor.fetchall()
-
-        return rows
 
     def _insert(self, field_dict: dict):
         """
