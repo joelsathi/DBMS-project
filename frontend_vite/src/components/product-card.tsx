@@ -4,9 +4,12 @@ import { formatCurrency } from '../utils/helper';
 import { ReviewTypes } from '../utils/interfaces';
 
 export type Product = {
-  sku: number | string; // sku
+  sku: string; // sku for product variant
+  id: number; // for product
+
   name: string;
   price: number;
+  base_price: number;
   image_url: string;
 
   category: string; //super category
@@ -41,7 +44,7 @@ const ProductCard = ({ product }: Props) => {
           <Card.Title className='d-flex justify-content-between align-items-baseline mb-4'>
             <span className='fs-2'>{product.name}</span>
             <span className='ms-2 text-muted'>
-              {formatCurrency(product.price)}
+              {formatCurrency(product.price | product.base_price)}
             </span>
           </Card.Title>
         </Card.Body>
