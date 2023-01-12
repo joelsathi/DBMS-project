@@ -88,7 +88,7 @@ class BaseQueryManager:
         cls.connection = connection
 
     @classmethod
-    def _get_cursor(cls, cursor_class = CMySQLConnection) -> CMySQLCursor:
+    def _get_cursor(cls, cursor_class = CMySQLCursor) -> CMySQLCursor:
         return cls.connection.cursor(cursor_class=cursor_class)
 
     def _get_field_names_str(self, field_names):
@@ -210,7 +210,7 @@ class BaseQueryManager:
             field_str, self.model_class.__tablename__, page_size, start
         )
 
-        cursor: MySQLModelCursor = self._get_cursor()
+        cursor: MySQLModelCursor = self._get_cursor(MySQLModelCursor)
         cursor.execute(sql_query_str)
         cursor.set_model_class(self.model_class)
         rows = cursor.fetchall()
@@ -251,7 +251,7 @@ class BaseQueryManager:
             start,
         )
 
-        cursor: MySQLModelCursor = self._get_cursor()
+        cursor: MySQLModelCursor = self._get_cursor(MySQLModelCursor)
         cursor.execute(sql_query_str)
         cursor.set_model_class(self.model_class)
         rows = cursor.fetchall()
