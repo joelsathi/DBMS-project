@@ -7,10 +7,13 @@ class DBModelException(Exception):
     pass
 
 
+<<<<<<< HEAD
 class ModelSaveException(Exception):
     pass
 
 
+=======
+>>>>>>> format (black)
 class MetaModel(type):
     __query_manager__ = BaseQueryManager
 
