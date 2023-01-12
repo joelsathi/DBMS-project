@@ -13,21 +13,23 @@ const Carousels = () => {
       <Carousel.Item className='carsouel__item'>
         <img
           className='d-block w-full '
-          src='https://cdn.shopify.com/s/files/1/2301/4381/files/MSI_BANNER_1080x.jpg?v=1641895460'
+          // src='https://cdn.shopify.com/s/files/1/2301/4381/files/MSI_BANNER_1080x.jpg?v=1641895460'
+          // src = 'https://i.insider.com/540f3701eab8eaf81065a627?width=700'
+          src = '/imgs/iphone.jpg'
           alt='First slide'
         />
       </Carousel.Item>
       <Carousel.Item className='carsouel__item'>
         <img
           className='d-block w-full '
-          src='/images/p2.jpg'
+          src = 'https://c8.alamy.com/comp/2K2K5J1/robot-with-gift-boxes-isolated-contains-clipping-path-2K2K5J1.jpg'
           alt='Second slide'
         />
       </Carousel.Item>
       <Carousel.Item className='carsouel__item'>
         <img
           className='d-block w-full '
-          src='https://www.sammobile.com/wp-content/uploads/2020/01/galaxy-s20-wallpaper-note-10.jpg'
+          src='https://m.media-amazon.com/images/I/71sXNOSFUlL._SL1100_.jpg'
           alt='Third slide'
         />
       </Carousel.Item>

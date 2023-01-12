@@ -23,7 +23,7 @@ const Contact = () => {
                   <div className='info-box bg-white'>
                     <i className='bx bx-map' />
                     <h3>Our Address</h3>
-                    <p>A108 Adam Street, New York, NY 535022</p>
+                    <p>2 Example Lane, Colombo, Sri Lanka.</p>
                   </div>
                 </Col>
                 <Col md={6}>
@@ -31,7 +31,7 @@ const Contact = () => {
                     <i className='bx bx-envelope' />
                     <h3>Email Us</h3>
                     <p>
-                      info@example.com
+                      email@example.com
                       <br />
                       contact@example.com
                     </p>
@@ -42,9 +42,9 @@ const Contact = () => {
                     <i className='bx bx-phone-call' />
                     <h3>Call Us</h3>
                     <p>
-                      +1 5589 55488 55
+                      011 2 720 720
                       <br />
-                      +1 6678 254445 41
+                      011 2 729 729
                     </p>
                   </div>
                 </Col>
