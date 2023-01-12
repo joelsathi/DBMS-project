@@ -68,9 +68,8 @@ export const getFilterProducts = createAsyncThunk(
       console.log('IN SEARCH LIST##############, u', u);
       const productResponse = await publicAxios.get(`/product/product_filtered/search?category=${u.c}&subCategory=${u.sc}&query=${u.q}`);
       const categoriesResponse = await publicAxios.get(`/product/supercategory`);
-      // const categoriesResponse = await publicAxios.get(`/product/subcategory/search?category=${u.c}&subcategory=${u.sc}&query=${u.q}`);
-
-      const subCategoriesResponse = await publicAxios.get(`/product/subcategory`);
+      //filter based on super category
+      const subCategoriesResponse = await publicAxios.get(`/product/subcategory_filtered/search?category=${u.c}`);
       console.log('IN SEARCH LIST, productResponse.data', productResponse.data);
       console.log('IN SEARCH LIST, categoriesResponse.data', categoriesResponse.data);
       console.log('IN SEARCH LIST, subCategoriesResponse.data', subCategoriesResponse.data);
