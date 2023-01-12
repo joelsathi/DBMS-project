@@ -79,7 +79,8 @@ def get_filtered_product_list(
             checks.append("p.name LIKE '%{}%'".format(query))
         sql_query_where += " AND ".join(checks)
         start = (page_num - 1) * page_size
-        # discount_id didn't work p.discount_id,
+        # TODO discount_id didn't work p.discount_id,
+        # TODO way to get column names in product
         sql_query_str = "SELECT p.id, p.name, p.description, p.base_price, p.brand, p.image_url FROM product p \
                 JOIN product_sub_category ON p.id = product_sub_category.product_id \
                 JOIN sub_category ON product_sub_category.subcategory_id = sub_category.id \
@@ -189,6 +190,51 @@ async def post_subcategory_list(request: Request):
     new_obj.save()
 
 
+@product_router.get("/subcategory_filtered/search")
+def get_filtered_product_list(
+    category: str,
+    response: Response,
+    request: Request, page_num: int = 1, page_size: int = 10
+):
+
+    # TODO add field validation
+    sql_query_where = ""
+    if category:
+        sql_query_where = " WHERE super_category.cat_name = '{}'".format(category)
+    start = (page_num - 1) * page_size
+    # TODO way to get column names in subcategory
+    sql_query_str = "SELECT sub_category.id, sub_category.name, sub_category.description FROM sub_category \
+            JOIN super_category ON sub_category.super_category_id =  super_category.id\
+            {} LIMIT {} OFFSET {}".format(
+            sql_query_where,
+            page_size,
+            start,
+        )
+    cursor = BaseQueryManager._get_cursor()
+    cursor.execute(sql_query_str)
+    cursor.set_model_class(SubCategoryModel)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
+    total = 4  # NEED TO IMPLEMENT THE FUNCTION
+    serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+
+    ret = get_pagination(
+        "/product",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
+
+    return ret 
 
 @product_router.get("/supercategory")
 def get_supercategory_list(response: Response, request: Request):
