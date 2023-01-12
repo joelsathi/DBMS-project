@@ -137,18 +137,17 @@ class BaseQueryManager:
         else:
             where_clause = "WHERE "
             for ind, field_name in enumerate(field_names):
-                # Throw an exception if the field names are not valid
-                if field_name not in _field_names:
-                    raise InvalidFieldException(
-                        "No field named {} found on {}".format(
-                            field_name, self.model_class.__qualname__
-                        )
-                    )
-                else:
+                # Silently pass if the field name does not exist: we don't want to fail from a
+                # filter, we would return an unfiltered queryset in that case
+                if field_name in _field_names:
                     val_list = ",".join(filters[field_name])
                     where_clause += f"{field_name} IN ({val_list})"
                     if ind < len(field_names) - 1:
                         where_clause += " AND "
+
+            # get rid of trailing ands
+            if where_clause[-4:] == "AND ":
+                where_clause = where_clause[:-4]
 
         return where_clause
 
@@ -159,7 +158,7 @@ class BaseQueryManager:
         page_size: int = 10,
         filters: dict = {},
         sort_keys: dict = {},
-        get_row_count: bool = False
+        get_row_count: bool = False,
     ):
         field_str = self._get_field_names_str(field_names)
 
@@ -219,8 +218,7 @@ class BaseQueryManager:
 
     def _get_count(self, _filter_str):
         sql_query_str = "SELECT COUNT(*) FROM {} {}".format(
-            self.model_class.__tablename__,
-            _filter_str
+            self.model_class.__tablename__, _filter_str
         )
 
         _count = None
