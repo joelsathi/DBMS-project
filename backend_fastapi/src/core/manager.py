@@ -1,4 +1,5 @@
-from mysql.connector import CMySQLConnection
+from contextlib import contextmanager
+from mysql.connector.pooling import PooledMySQLConnection, CMySQLConnection
 from mysql.connector.cursor_cext import CMySQLCursor
 
 
@@ -78,18 +79,26 @@ class MySQLModelCursor(CMySQLCursor):
 class BaseQueryManager:
     """NOTE: Currently all the methods depend on using the python mysql connector"""
 
-    connection: CMySQLConnection = None
+    connection_pool: PooledMySQLConnection = None
 
     def __init__(self, model_class):
         self.model_class = model_class
 
     @classmethod
-    def set_connection(cls, connection: CMySQLConnection):
-        cls.connection = connection
+    def set_connection_pool(cls, connection_pool: PooledMySQLConnection):
+        cls.connection_pool = connection_pool
 
     @classmethod
-    def _get_cursor(cls, cursor_class = CMySQLCursor) -> CMySQLCursor:
-        return cls.connection.cursor(cursor_class=cursor_class)
+    @contextmanager
+    def _get_cursor(cls, cursor_class=CMySQLCursor) -> CMySQLCursor:
+        connection: CMySQLConnection = cls.connection_pool.get_connection()
+        cursor: CMySQLCursor = connection.cursor(cursor_class=cursor_class)
+        try:
+            yield cursor
+            connection.commit()
+        finally:
+            cursor.close()
+            connection.close()
 
     def _get_field_names_str(self, field_names):
         _field_names = self.model_class.get_field_names()
@@ -151,11 +160,11 @@ class BaseQueryManager:
             field_str, self.model_class.__tablename__
         )
 
-        cursor: MySQLModelCursor = self._get_cursor(MySQLModelCursor)
-        cursor.execute(sql_query_str)
-        cursor.set_model_class(self.model_class)
-        rows = cursor.fetchall()
-        cursor.close()
+        rows = []
+        with self._get_cursor(MySQLModelCursor) as cursor:
+            cursor.execute(sql_query_str)
+            cursor.set_model_class(self.model_class)
+            rows = cursor.fetchall()
 
         return rows
 
@@ -170,11 +179,11 @@ class BaseQueryManager:
             self.model_class.primary_key,
         )
 
-        cursor: MySQLModelCursor = self._get_cursor(MySQLModelCursor)
-        cursor.execute(sql_query_str, (id,))
-        cursor.set_model_class(self.model_class)
-        row = cursor.fetchone()
-        cursor.close()
+        row = None
+        with self._get_cursor(MySQLModelCursor) as cursor:
+            cursor.execute(sql_query_str, (id,))
+            cursor.set_model_class(self.model_class)
+            row = cursor.fetchone()
 
         return row
 
@@ -210,11 +219,11 @@ class BaseQueryManager:
             field_str, self.model_class.__tablename__, page_size, start
         )
 
-        cursor: MySQLModelCursor = self._get_cursor(MySQLModelCursor)
-        cursor.execute(sql_query_str)
-        cursor.set_model_class(self.model_class)
-        rows = cursor.fetchall()
-        cursor.close()
+        rows = []
+        with self._get_cursor(MySQLModelCursor) as cursor:
+            cursor.execute(sql_query_str)
+            cursor.set_model_class(self.model_class)
+            rows = cursor.fetchall()
 
         return rows
 
@@ -251,17 +260,18 @@ class BaseQueryManager:
             start,
         )
 
-        cursor: MySQLModelCursor = self._get_cursor(MySQLModelCursor)
-        cursor.execute(sql_query_str)
-        cursor.set_model_class(self.model_class)
-        rows = cursor.fetchall()
-        cursor.close()
+        rows = []
+        with self._get_cursor(MySQLModelCursor) as cursor:
+            cursor.execute(sql_query_str)
+            cursor.set_model_class(self.model_class)
+            rows = cursor.fetchall()
 
         return rows
+
     def _insert(self, field_dict: dict):
         """
         Insert a record into the database.
-        
+
         NOTE: This should probably not be used directly, instead using the save method on a model
             which would in turn call this.
         """
@@ -269,13 +279,12 @@ class BaseQueryManager:
         sql_query_str = "INSERT INTO {} ({}) VALUES ({})".format(
             self.model_class.__tablename__,
             ",".join(tuple(field_dict.keys())),
-            ",".join(["%s" for f in field_dict.keys()])
+            ",".join(["%s" for f in field_dict.keys()]),
         )
 
-        cursor: CMySQLCursor = self._get_cursor(CMySQLCursor)
-        cursor.execute(sql_query_str, tuple(field_dict.values()))
-        cursor.close()
-        cursor._check_executed()
+        with self._get_cursor(CMySQLCursor) as cursor:
+            cursor.execute(sql_query_str, tuple(field_dict.values()))
+            cursor._check_executed()
 
         return True
 
