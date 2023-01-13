@@ -274,13 +274,15 @@ class BaseQueryManager:
         )
 
         success = False
+        row_id = None
         with self._get_cursor(CMySQLCursor) as cursor:
             cursor: CMySQLCursor
             cursor.execute(sql_query_str, tuple(field_dict.values()))
             if cursor.rowcount > 0:
                 success = True
+                row_id = cursor.lastrowid
 
-        return success
+        return success, row_id
 
     def _update(self, field_dict: dict, filter_dict: dict):
         """
