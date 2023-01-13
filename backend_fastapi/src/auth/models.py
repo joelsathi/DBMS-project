@@ -30,7 +30,9 @@ class RegisteredUserDBModel(model.BaseDBModel):
     address = field.CharDBField(max_length=512, allow_null=True)
     mobile_no = field.CharDBField(max_length=10)
     is_admin = field.BooleanDBField()
-    created_date = field.DateTimeDBField(datetime_format="%Y-%m-%d %H:%M:%S")
+    created_date = field.DateTimeDBField(
+        datetime_format="%Y-%m-%d %H:%M:%S", auto_generated=True
+    )
     payment_detail_id = field.ForeignKeyDBField(
         related_model=PaymentDetailDBModel, allow_null=True
     )
@@ -46,6 +48,7 @@ class RegisteredUserDBModel(model.BaseDBModel):
             "mobile_no",
             "payment_detail_id",
             "is_admin",
+            "created_date"
         ]
 
         return {f: getattr(self, f) for f in fields}
