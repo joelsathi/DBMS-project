@@ -356,7 +356,7 @@ async def create_normal_user(request: Request):
         return JSONResponse(content={"message": "User created successfully"})
     except Exception as e:
         conn.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     finally:
         if cursor:
             cursor.close()

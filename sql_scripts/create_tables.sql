@@ -185,3 +185,49 @@ BEGIN
 
 END$$
 DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE create_order(IN field_dict JSON)
+BEGIN
+    
+    DECLARE location_id INT;
+    DECLARE delivery_id INT;
+    DECLARE order_id INT;
+    
+    -- Check if location already exists
+    SELECT ID INTO location_id FROM location WHERE name = field_dict->>'$.location_name' LIMIT 1;
+    -- If location does not exist, insert new location
+    IF location_id IS NULL THEN
+        INSERT INTO location (name, is_main_city, delivery_cost) 
+        VALUES (field_dict->>'$.location_name', field_dict->>'$.is_main_city', field_dict->>'$.delivery_cost');
+        SET location_id = LAST_INSERT_ID();
+    END IF;
+    
+    -- Insert data into delivery table
+    INSERT INTO delivery (delivery_method, provider, location_id) 
+    VALUES (field_dict->>'$.delivery_method', field_dict->>'$.provider_delivery', location_id);
+    SET delivery_id = LAST_INSERT_ID();
+    
+    -- Insert data into order_cart table
+    INSERT INTO order_cart (user_id, billing_date, is_billed, delivery_id) 
+    VALUES (field_dict->>'$.user_id', field_dict->>'$.billing_date', field_dict->>'$.is_billed', delivery_id);
+    SET order_id = LAST_INSERT_ID();
+
+    -- Insert data into product_order table
+    INSERT INTO product_order (sku, order_id, price, quantity) 
+    VALUES (field_dict->>'$.sku', order_id, field_dict->>'$.price', field_dict->>'$.quantity');
+
+    -- Update the inventory
+    SELECT quantity INTO @quantity FROM inventory WHERE sku = field_dict->>'$.sku';
+    IF @quantity < field_dict->>'$.quantity' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not enough stock';
+    ELSE
+        UPDATE inventory SET quantity = quantity - field_dict->>'$.quantity' WHERE sku = field_dict->>'$.sku';
+    END IF;
+    
+    -- Insert data into order_payment_details table
+    INSERT INTO order_payment_details (order_id, cardnumber, provider) 
+    VALUES (order_id, field_dict->>'$.cardnumber', field_dict->>'$.provider');
+
+END$$
+DELIMITER ;
