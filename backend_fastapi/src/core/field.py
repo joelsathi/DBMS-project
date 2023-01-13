@@ -1,5 +1,5 @@
 from functools import cached_property
-
+import datetime
 
 DEFAULT_DATETIME_FORMAT = "%d-%m-%Y %H:%M:%S"
 
@@ -160,10 +160,10 @@ class DateTimeDBField(BaseDBField):
         self.datetime_format = datetime_format
 
     def from_db(self, value):
-        raise NotImplementedError
+        return datetime.datetime.strptime(value, self.datetime_format)
 
     def to_db(self, value):
-        raise NotImplementedError
+        return value.strftime(self.datetime_format)
 
 
 class FloatDBField(BaseDBField):
