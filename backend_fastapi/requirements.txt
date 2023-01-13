@@ -4,3 +4,5 @@ flake8==6.0.0
 mysql-connector-python==8.0.31
 python-dotenv==0.21.0
 uvicorn==0.20.0
+passlib[bcrypt]
+python-jose[cryptography]
