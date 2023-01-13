@@ -4,7 +4,7 @@ from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
 from ..core.pagination import get_pagination, get_params
 
-from .utils import get_password_hash, encode_token, decode_token
+from .utils import get_password_hash, encode_token, decode_token, verify_password
 from fastapi.responses import JSONResponse
 
 from ..core.db import connection
@@ -30,10 +30,10 @@ async def login(username: str = Form(...), password: str = Form(...)):
         #### hashed_password, role = result
         hashed_password = result[0]
 
-        password = get_password_hash(password=password)
+        # password = get_password_hash(password=password)
 
         # Perform authentication and authorization here
-        if password == hashed_password:
+        if verify_password(plain_password=password, hashed_password=hashed_password):
             #### for Authorization
             #### payload = {"username": username, "role": role}
 
@@ -42,9 +42,9 @@ async def login(username: str = Form(...), password: str = Form(...)):
             token = encode_token(payload=payload)
             return JSONResponse(content={"message": "Welcome registered user!", "token": token})
         else:
-            return JSONResponse(content={"message": "Invalid credentials."}, status_code=401)
+            return JSONResponse(content={"message": "Invalid credentials."}, status_code=status.HTTP_401_UNAUTHORIZED)
     else:
-            return JSONResponse(content={"message": "Invalid credentials."}, status_code=401)
+        return JSONResponse(content={"message": "Invalid credentials."}, status_code=status.HTTP_401_UNAUTHORIZED)
 
 @user_router.get("/secure")
 async def secure_route(authorization: str = Header(None)):
