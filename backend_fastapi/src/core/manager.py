@@ -147,7 +147,7 @@ class BaseQueryManager:
             filter_vals_list = []
 
         else:
-            where_clause = "WHERE "
+            where_clause = ""
             filter_vals_list = []
             first_iter = True
             for field_name in filters.keys():
@@ -167,12 +167,14 @@ class BaseQueryManager:
                 if stripped_field_name in _field_names:
                     if not first_iter and where_clause[-4:] != "AND ":
                         where_clause += " AND "
+                    else:
+                        where_clause += "WHERE "
                     first_iter = False
 
                     filter_condition: Callable = FILTER_CONDITIONS[suffix]
                     where_clause += "{} {}".format(
                         stripped_field_name, filter_condition(filters[field_name])
-                    )
+                       )
 
                     if suffix == "in":
                         filter_vals = filters[field_name].split(",")

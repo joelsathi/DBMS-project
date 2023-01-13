@@ -28,6 +28,7 @@ class ProductModel(model.BaseDBModel):
     description = field.TextDBField()
     base_price = field.FloatDBField()
     brand = field.CharDBField(max_length=50)
+    image_url = field.CharDBField(max_length=255)
 
     discount_id = field.ForeignKeyDBField(related_model=DiscountModel, allow_null=True)
 
@@ -38,6 +39,7 @@ class ProductModel(model.BaseDBModel):
             "description",
             "base_price",
             "brand",
+            "image_url",
             "discount_id",
         ]
 
