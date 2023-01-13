@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, status,Response
+from fastapi import APIRouter, Request, status, Response
 
 from ..core.db import connection_pool
 
@@ -55,12 +55,14 @@ def get_product_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/product")
 async def post_product_list(request: Request):
     checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = ProductModel(**field_dict)
     new_obj.save()
+
 
 @product_router.get("/product/{id}")
 def get_product_by_id(id: int, response: Response):
@@ -75,15 +77,20 @@ def get_product_by_id(id: int, response: Response):
 
     return ProductModel.serialize_with_related(row)
 
+
 @product_router.get("/product_filtered/search")
 def get_filtered_product_list(
-    category: str, subCategory: str, query: str,
+    category: str,
+    subCategory: str,
+    query: str,
     response: Response,
-    request: Request, page_num: int = 1, page_size: int = 10
+    request: Request,
+    page_num: int = 1,
+    page_size: int = 10,
 ):
 
     # TODO add field validation
-    
+
     if category or subCategory or query:
         sql_query_where = " WHERE "
         checks = []
@@ -102,10 +109,10 @@ def get_filtered_product_list(
                 JOIN sub_category ON product_sub_category.subcategory_id = sub_category.id \
                 JOIN super_category ON sub_category.super_category_id =  super_category.id\
                 {} LIMIT {} OFFSET {}".format(
-                sql_query_where,
-                page_size,
-                start,
-            )
+            sql_query_where,
+            page_size,
+            start,
+        )
 
         cnx = connection_pool.get_connection()
         cursor = cnx.cursor()
@@ -154,7 +161,8 @@ def get_filtered_product_list(
         page_num=page_num,
         page_size=page_size,
     )
-    return ret 
+    return ret
+
 
 @product_router.get("/variant")
 def get_variant_list(response: Response, request: Request):
@@ -188,6 +196,7 @@ def get_variant_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/variant")
 async def post_varient_list(request: Request):
     checkAdmin(request=request)
@@ -197,7 +206,9 @@ async def post_varient_list(request: Request):
 
 
 @product_router.get("/product_variant_filtered/search")
-def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 1, page_size: int = 10):
+def get_filtered_variant(
+    id: int, sku: str, response: Response, page_num: int = 1, page_size: int = 10
+):
     # TODO add field validation
     if sku or id:
         start = (page_num - 1) * page_size
@@ -208,10 +219,10 @@ def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 
             sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url, product.brand FROM product_variant \
                     JOIN product ON product_variant.product_id = product.id \
                     WHERE product_variant.sku = '{}' LIMIT {} OFFSET {}".format(
-                    sku,
-                    page_size,
-                    start,
-                )
+                sku,
+                page_size,
+                start,
+            )
             cnx = connection_pool.get_connection()
             cursor = cnx.cursor()
             cursor.execute(sql_query_str)
@@ -228,16 +239,16 @@ def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 
                     "name": row[1],
                     "price": row[2],
                     "image_url": row[3],
-                    "brand": row[4]
+                    "brand": row[4],
                 }
-                serialized_rows.append(serialized_row) 
+                serialized_rows.append(serialized_row)
         else:
             sql_query_str = "SELECT p.id, p.name, p.description, p.base_price, p.brand, p.image_url FROM product p \
                     WHERE p.id = '{}' LIMIT {} OFFSET {}".format(
-                    id,
-                    page_size,
-                    start,
-                )
+                id,
+                page_size,
+                start,
+            )
 
             cnx = connection_pool.get_connection()
             cursor = cnx.cursor()
@@ -273,10 +284,17 @@ def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 
         #     page_size=page_size,
         # )
 
-        return serialized_rows 
+        return serialized_rows
+
 
 @product_router.get("/variants/{id}")
-def get_filtered_variants(id: int, response: Response, request: Request, page_num: int = 1, page_size: int = 10):
+def get_filtered_variants(
+    id: int,
+    response: Response,
+    request: Request,
+    page_num: int = 1,
+    page_size: int = 10,
+):
     # TODO add field validation
     if id:
         sql_query_where = " WHERE "
@@ -288,10 +306,10 @@ def get_filtered_variants(id: int, response: Response, request: Request, page_nu
         # TODO way to get column names, foriegn key product_variant.product_id,
         sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url FROM product_variant \
                 {} LIMIT {} OFFSET {}".format(
-                sql_query_where,
-                page_size,
-                start,
-            )
+            sql_query_where,
+            page_size,
+            start,
+        )
         cnx = connection_pool.get_connection()
         cursor = cnx.cursor()
         cursor.execute(sql_query_str)
@@ -344,7 +362,9 @@ def get_filtered_variants(id: int, response: Response, request: Request, page_nu
         page_num=page_num,
         page_size=page_size,
     )
-    return ret  
+    return ret
+
+
 @product_router.get("/subcategory")
 def get_subcategory_list(response: Response, request: Request):
 
@@ -377,6 +397,7 @@ def get_subcategory_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/subcategory")
 async def post_subcategory_list(request: Request):
     checkAdmin(request=request)
@@ -389,7 +410,9 @@ async def post_subcategory_list(request: Request):
 def get_filtered_subcategories(
     category: str,
     response: Response,
-    request: Request, page_num: int = 1, page_size: int = 10
+    request: Request,
+    page_num: int = 1,
+    page_size: int = 10,
 ):
 
     # TODO add field validation
@@ -401,10 +424,10 @@ def get_filtered_subcategories(
     sql_query_str = "SELECT sub_category.id, sub_category.name, sub_category.description FROM sub_category \
             JOIN super_category ON sub_category.super_category_id =  super_category.id\
             {} LIMIT {} OFFSET {}".format(
-            sql_query_where,
-            page_size,
-            start,
-        )
+        sql_query_where,
+        page_size,
+        start,
+    )
 
     cnx = connection_pool.get_connection()
     cursor = cnx.cursor()
@@ -424,9 +447,9 @@ def get_filtered_subcategories(
     serialized_rows = []
     for row in rows:
         serialized_row = {
-            'id': row[0],
-            'name': row[1],
-            'description': row[2],
+            "id": row[0],
+            "name": row[1],
+            "description": row[2],
         }
         serialized_rows.append(serialized_row)
 
@@ -438,7 +461,8 @@ def get_filtered_subcategories(
         page_size=page_size,
     )
 
-    return ret 
+    return ret
+
 
 @product_router.get("/supercategory")
 def get_supercategory_list(response: Response, request: Request):
@@ -471,6 +495,7 @@ def get_supercategory_list(response: Response, request: Request):
         page_size=page_size,
     )
     return ret
+
 
 @product_router.post("/supercategory")
 async def post_supercategory_list(request: Request):
@@ -514,6 +539,7 @@ def get_discount_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/discount")
 async def post_discount_list(request: Request):
     checkAdmin(request=request)
@@ -554,6 +580,7 @@ def get_options_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/options")
 async def post_options_list(request: Request):
     checkAdmin(request=request)
@@ -566,7 +593,9 @@ async def post_options_list(request: Request):
 def get_filtered_options(
     id: int,
     response: Response,
-    request: Request, page_num: int = 1, page_size: int = 10
+    request: Request,
+    page_num: int = 1,
+    page_size: int = 10,
 ):
 
     # TODO add field validation
@@ -580,10 +609,10 @@ def get_filtered_options(
             JOIN product_variant pv ON pv.sku=pvo.sku\
             JOIN product p ON pv.product_id=p.id\
             {} LIMIT {} OFFSET {}".format(
-            sql_query_where,
-            page_size,
-            start,
-        )
+        sql_query_where,
+        page_size,
+        start,
+    )
 
     cnx = connection_pool.get_connection()
     cursor = cnx.cursor()
@@ -617,7 +646,7 @@ def get_filtered_options(
         page_size=page_size,
     )
 
-    return ret 
+    return ret
 
 
 @product_router.get("/inventory")
@@ -653,6 +682,7 @@ def get_inventory_list(response: Response, request: Request):
         page_size=page_size,
     )
     return ret
+
 
 @product_router.post("/inventory")
 async def post_inventory_list(request: Request):
@@ -694,6 +724,7 @@ def get_product_subcategory_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/product_subcategory")
 async def post_product_subcategory_list(request: Request):
     checkAdmin(request=request)
@@ -734,10 +765,10 @@ def get_product_variant_options_list(response: Response, request: Request):
     )
     return ret
 
+
 @product_router.post("/product_variant_option")
 async def post_product_product_variant_option_list(request: Request):
     checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = ProductVarientOptionsModel(**field_dict)
     new_obj.save()
-

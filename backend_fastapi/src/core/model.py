@@ -120,6 +120,8 @@ class BaseDBModel(metaclass=MetaModel):
                 # update pk if relevant and insert is successful
                 setattr(self, self.primary_key, row_id)
 
+            return insert_success
+
         # Otherwise update existing record
         else:
             field_dict = {}
@@ -150,6 +152,8 @@ class BaseDBModel(metaclass=MetaModel):
                 field_dict=field_dict, filter_dict={self.primary_key: pk_val}
             )
 
+            return update_success
+
         # TODO
         # validate -> call validate method on each field, any model specific validation?
         # save -> manager save method, manager update method
@@ -163,6 +167,7 @@ class BaseDBModel(metaclass=MetaModel):
             delete_success = self.__class__.objects._delete(
                 filter_dict={self.primary_key: pk_val}
             )
+            return delete_success
 
     def __repr__(self) -> str:
         return "<{} object {}>".format(

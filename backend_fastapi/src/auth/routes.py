@@ -75,7 +75,7 @@ async def secure_route(authorization: str = Header(None, prefix="Bearer ")):
         # Verify the JWT token
         payload = decode_token(token)
         return JSONResponse(content={"message": f"Welcome {payload['username']}!"})
-    except:
+    except: # noqa
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token."
         )
