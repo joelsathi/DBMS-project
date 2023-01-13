@@ -20,6 +20,7 @@ async def on_startup():
 async def on_shutdown():
     connection_pool._remove_connections()
 
+
 # temporary routes
 @app.get("/about")
 def get_about(response: Response):

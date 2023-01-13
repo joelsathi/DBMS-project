@@ -7,7 +7,7 @@ from .models import (
     LocationModel,
 )
 
-from ..auth.utils import checkAdmin, checkCustomer
+from ..auth.utils import checkAdmin
 
 from ..core.pagination import get_pagination, get_params
 
@@ -90,7 +90,7 @@ def get_order_payment_detail_list(
     request: Request,
 ):
     checkAdmin(request=request)
-    
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation

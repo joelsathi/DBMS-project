@@ -123,11 +123,7 @@ async def post_registered_user(request: Request):
 
 
 @user_router.get("/registered_user/{id}")
-def get_registered_user(
-    id: int,
-    response: Response,
-    request: Request
-):
+def get_registered_user(id: int, response: Response, request: Request):
     checkAdmin(request=request)
 
     row = RegisteredUserDBModel.objects.select_by_id(id)
