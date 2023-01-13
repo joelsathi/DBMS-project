@@ -140,6 +140,19 @@ def get_registered_user(id: int, response: Response, request: Request):
     return RegisteredUserDBModel.serialize_with_related(row)
 
 
+@user_router.put("/registered_user/{id}")
+async def put_registered_user(
+    id: int,
+    request: Request,
+    response: Response
+):
+    field_dict = await request.json()
+    field_dict["id"] = id
+    upd_obj = RegisteredUserDBModel(**field_dict, is_existing=True)
+    upd_obj.save()
+    print(upd_obj)
+
+
 @user_router.get("/user")
 def get_user_list(
     response: Response,
