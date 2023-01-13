@@ -7,14 +7,14 @@ from ..product.models import ProductVariantModel
 class LocationModel(model.BaseDBModel):
     __tablename__ = "location"
 
-    ID = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     name = field.CharDBField(max_length=20)
     is_main_city = field.BooleanDBField()
     delivery_cost = field.FloatDBField()
 
     def serialize(self):
         fields = [
-            "ID",
+            "id",
             "name",
             "is_main_city",
             "delivery_cost",
@@ -26,7 +26,7 @@ class LocationModel(model.BaseDBModel):
 class DeliveryModel(model.BaseDBModel):
     __tablename__ = "delivery"
 
-    ID = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     delivery_method = field.CharDBField(max_length=20)
     provider = field.CharDBField(max_length=20)
 
@@ -34,7 +34,7 @@ class DeliveryModel(model.BaseDBModel):
 
     def serialize(self):
         fields = [
-            "ID",
+            "id",
             "delivery_method",
             "provider",
             "location_id",
@@ -46,7 +46,7 @@ class DeliveryModel(model.BaseDBModel):
 class OrderCartModel(model.BaseDBModel):
     __tablename__ = "order_cart"
 
-    order_id = field.IntegerDBField(is_primary_key=True)
+    order_id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     billing_date = None  # TODO
     is_billed = field.BaseDBField()
 
@@ -67,7 +67,7 @@ class OrderCartModel(model.BaseDBModel):
 class ProductOrderModel(model.BaseDBModel):
     __tablename__ = "product_order"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     price = field.FloatDBField()
     quantity = field.IntegerDBField()
 
@@ -89,7 +89,7 @@ class ProductOrderModel(model.BaseDBModel):
 class OrderPaymentDetailModel(model.BaseDBModel):
     __tablename__ = "order_payment_details"
 
-    ID = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     cardnumber = field.CharDBField(max_length=16)
     provider = field.CharDBField(max_length=20)
 
@@ -97,7 +97,7 @@ class OrderPaymentDetailModel(model.BaseDBModel):
 
     def serialize(self):
         fields = [
-            "ID",
+            "id",
             "cardnumber",
             "provider",
             "order_id",
