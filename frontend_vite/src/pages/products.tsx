@@ -16,49 +16,13 @@ import Paginate from '../components/UI/paginate';
 import { useAppDispatch, useAppSelector } from '../redux';
 import { getFilterProducts } from '../redux/products/search-list';
 
-// const Products = () => {
-//   const params = useParams();
-//   // const { products, categories, brands, page, pages } = useAppSelector(
-//   const { products, categories, subCategories} = useAppSelector(
-  
-//     (state) => state.productFilter
-//   );
-//   const dispatch = useAppDispatch();
-//   // const [brand, setBrand] = useState<string>('');
-//   const [category, setCategory] = useState<string>('');
-//   const [subCategory, setSubCategory] = useState<string>('');
-//   const [search, setSearch] = useState<string>('');
-//   const keyword = params.keyword;
-
-//   const pageNumber = params.pageNumber || 1;
-
-//   const reset = () => {
-//     // setBrand('');
-//     setCategory('');
-//     setSubCategory('');
-//     setSearch('');
-//   };
-
-//   useEffect(() => {
-//     dispatch(
-//       // getFilterProducts({ n: pageNumber, b: brand, c: category, q: search })
-//       // getFilterProducts({ n: pageNumber, c: category, sc: subCategory, q: search })
-//       getFilterProducts({ n: pageNumber, c: category, sc: subCategory, q: search })
-//       // do nothing
-      
-//     );
-//   }, [dispatch, pageNumber, category, subCategory, search]);
 const Products = () => {
   console.log('IN Products.tsx#######');
   const params = useParams();
-  console.log('params:', params);
   const { products, categories, subCategories} = useAppSelector(
   
     (state) => state.productFilter
   );
-  console.log('products:', products);
-  console.log('categories:', categories);
-  console.log('subCategories:', subCategories);
 
   const dispatch = useAppDispatch();
   const [category, setCategory] = useState<string>('');
@@ -80,12 +44,9 @@ const Products = () => {
   useEffect(() => {
     console.log('Fetching data in useEffect');
     dispatch(
-      // getFilterProducts({ n: pageNumber, b: brand, c: category, q: search })
-      // getFilterProducts({ n: pageNumber, c: category, sc: subCategory, q: search })
       getFilterProducts({ c: category, sc: subCategory, q: search})
     );
   }, [dispatch, pageNumber, category, subCategory, search]);
-// }, [dispatch, products, categories, subCategories]);
 
   return (
     <DefaultLayout>
@@ -117,7 +78,6 @@ const Products = () => {
                   </FormSelect>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  {/* <h4 className='mb-2'>Brand</h4> */}
                   <h4 className='mb-2'>Sub Category</h4>
                   <FormSelect
                     defaultValue={'All'}

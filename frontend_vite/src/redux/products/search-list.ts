@@ -30,36 +30,6 @@ const initialState: ProductSliceState = {
   total: 1,
 };
 
-// export const getFilterProducts = createAsyncThunk(
-//   'products/filter',
-//   async (u: any) => {
-//     try {
-//       // const { data } = await publicAxios.get(
-//       //   `/products/search?page=${u.n}&brand=${u.b}&category=${u.c}&query=${u.q}`
-//       // );
-//       // const { data } = await publicAxios.get(`/product/supercategory`);
-//       // return data;
-//       // const { data: categories } = await publicAxios.get(`/product/supercategory`);
-//       // const { data: subCategories } = await publicAxios.get(`/product/subcategory`);
-//       // return {
-//       // categories,
-//       // subCategories,
-//       const productResponse = await publicAxios.get('/product/variant');
-//       const categoriesResponse = await publicAxios.get(`/product/supercategory`);
-//       const subCategoriesResponse = await publicAxios.get(`/product/subcategory`);
-//       console.log('IN SEARCH LIST, productResponse.data', productResponse.data);
-//       return {
-//       products: productResponse.data,
-//       categories: categoriesResponse.data,
-//       subCategories: subCategoriesResponse.data,
-//       };
-//     } catch (error: any) {
-//       const message = setError(error);
-//       toast.error(message);
-//     }
-//   }
-// );
-
 
 export const getFilterProducts = createAsyncThunk(
   'products/filter',
@@ -104,24 +74,15 @@ export const productFilterSlice = createSlice({
     });
     builder.addCase(getFilterProducts.fulfilled, (state, action) => {
       state.loading = false;
-      // state.products = action.payload.productDocs;
-      // state.page = action.payload.page;
       state.page = 1;
-
       state.pages = 1;
-      // state.brands = action.payload.brands;
       state.brands = [];
-
-      // state.categories = action.payload.categories;
-      // state.total = action.payload.countProducts;
       state.total = 1;
 
       state.categories = action.payload?.categories;
       console.log('IN SEARCH LIST, action.payload?.categories', action.payload?.categories);
       state.subCategories = action.payload?.subCategories;
       state.products = action.payload?.products;
-      // state.categories = action.payload.categories;
-      // state.subCategories = action.payload.subCategories;
     });
     builder.addCase(getFilterProducts.rejected, (state) => {
       state.loading = false;

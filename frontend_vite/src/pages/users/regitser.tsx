@@ -79,7 +79,7 @@ const Register = () => {
           <p className='invalid-feedback'>{errors.email?.message}</p>
         </Form.Group>
         <Form.Group controlId='password'>
-          <Form.Label>Mot de Passe </Form.Label>
+          <Form.Label>Password </Form.Label>
 
           <Form.Control
             type='password'
