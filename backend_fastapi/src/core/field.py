@@ -160,7 +160,9 @@ class DateTimeDBField(BaseDBField):
         self.datetime_format = datetime_format
 
     def from_db(self, value):
-        return datetime.datetime.strptime(value, self.datetime_format)
+        # return datetime.datetime.strptime(value, self.datetime_format)
+        # It appears the connector internally converts datetime fields to python datetime objects
+        return value
 
     def to_db(self, value):
         return value.strftime(self.datetime_format)
