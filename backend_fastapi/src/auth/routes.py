@@ -1,6 +1,6 @@
 import json
 from fastapi import APIRouter, Response, status, Request, HTTPException, Header, Form
-
+from pydantic import BaseModel
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
 from ..core.pagination import get_pagination, get_params
@@ -22,15 +22,19 @@ user_router = APIRouter(
     prefix="/auth",
 )
 
+class LoginType(BaseModel):
+    email: str
+    password: str
 
-@user_router.post("/login")
-async def login(username: str = Form(...), password: str = Form(...)):
+
+@user_router.post("/login", status_code=status.HTTP_200_OK)
+async def login(params: LoginType):
 
     cnx = connection_pool.get_connection()
     cursor = cnx.cursor()
 
     query = "SELECT password, is_admin, id FROM registered_user WHERE username = %s"
-    cursor.execute(query, (username,))
+    cursor.execute(query, (params.email,))
     result = cursor.fetchone()
     cursor.close()
     cnx.close()
@@ -39,12 +43,12 @@ async def login(username: str = Form(...), password: str = Form(...)):
         hashed_password, is_admin, id = result
 
         # Perform authentication and authorization here
-        if verify_password(plain_password=password, hashed_password=hashed_password):
+        if verify_password(plain_password=params.password, hashed_password=hashed_password):
             # for Authorization
             role = "customer"
             if is_admin:
                 role = "admin"
-            payload = {"username": username, "role": role, "id": id}
+            payload = {"username": params.email, "role": role, "id": id}
 
             # Create a JWT token with user information
             token = encode_token(payload=payload)
