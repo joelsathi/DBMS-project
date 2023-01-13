@@ -79,7 +79,7 @@ def get_registered_user_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = 18  # NEED TO IMPLEMENT THE FUNCTION
+    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
     ret = get_pagination(
