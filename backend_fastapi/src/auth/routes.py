@@ -120,7 +120,7 @@ def get_registered_user_list(
 @user_router.post("/registered_user")
 async def post_registered_user(request: Request):
 
-    checkAdmin(request=request)
+    # checkAdmin(request=request)
 
     field_dict = await request.json()
     field_dict["password"] = get_password_hash(field_dict["password"])
