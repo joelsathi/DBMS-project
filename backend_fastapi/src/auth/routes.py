@@ -48,7 +48,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
             # Create a JWT token with user information
             token = encode_token(payload=payload)
             return JSONResponse(
-                content={"message": "Welcome registered user!", "token": token}
+                content={"message": "Welcome registered user!", "token": token, "isAdmin": is_admin}
             )
         else:
             return JSONResponse(
@@ -144,6 +144,7 @@ def get_registered_user(id: int, response: Response, request: Request):
 
 @user_router.put("/registered_user/{id}")
 async def put_registered_user(id: int, request: Request, response: Response):
+    checkCustomer(request=request, id=id)
     field_dict = await request.json()
     field_dict["id"] = id
     if "password" in field_dict:
@@ -188,10 +189,11 @@ def get_user_list(
 
 @user_router.post("/user")
 async def post_user(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = UserDBModel(**field_dict)
     new_obj.save()
-    print(new_obj)
+
 
 @user_router.get("/payment_detail")
 def get_payment_detail_list(
@@ -228,6 +230,7 @@ def get_payment_detail_list(
 
 @user_router.post("/payment_detail")
 async def post_payment_detail(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = PaymentDetailDBModel(**field_dict)
     new_obj.save()
