@@ -27,8 +27,12 @@ def get_order_cart_list(
 
     # TODO add field validation
 
-    rows = OrderCartModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = OrderCartModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -38,11 +42,10 @@ def get_order_cart_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [OrderCartModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/order_cart",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -67,8 +70,12 @@ def get_product_order_list(
 
     # TODO add field validation
 
-    rows = ProductOrderModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = ProductOrderModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -78,11 +85,10 @@ def get_product_order_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductOrderModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/product_order",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -107,8 +113,12 @@ def get_order_payment_detail_list(
 
     # TODO add field validation
 
-    rows = OrderPaymentDetailModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = OrderPaymentDetailModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -118,11 +128,10 @@ def get_order_payment_detail_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [OrderPaymentDetailModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/order_payment_detail",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -147,8 +156,12 @@ def get_delivery_list(
 
     # TODO add field validation
 
-    rows = DeliveryModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = DeliveryModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -158,11 +171,10 @@ def get_delivery_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [DeliveryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/delivery",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -186,8 +198,12 @@ def get_location_list(
 
     # TODO add field validation
 
-    rows = LocationModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = LocationModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -197,11 +213,10 @@ def get_location_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [LocationModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/location",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
