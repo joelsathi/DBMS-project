@@ -60,7 +60,7 @@ const Checkout = () => {
                   </ListGroup.Item>
                   <h3 className='my-3'>Items</h3>
                   {cartItems.map((item) => (
-                    <ListGroup.Item key={item._id} className=' mb-2'>
+                    <ListGroup.Item key={item.id} className=' mb-2'>
                       <Row className='d-flex align-items-center'>
                         <Col md={2}>
                           <Image
