@@ -47,13 +47,15 @@ async def login(username: str = Form(...), password: str = Form(...)):
         return JSONResponse(content={"message": "Invalid credentials."}, status_code=status.HTTP_401_UNAUTHORIZED)
 
 @user_router.get("/secure")
-async def secure_route(authorization: str = Header(None)):
-    # Verify the JWT token
+async def secure_route(authorization: str = Header(None, prefix='Bearer ')):
     try:
-        payload = decode_token(authorization=authorization)
+        # Separate the token from the "Bearer " prefix
+        token = authorization.replace("Bearer ", "")
+        # Verify the JWT token
+        payload = decode_token(token)
         return JSONResponse(content={"message": f"Welcome {payload['username']}!"})
     except:
-        raise HTTPException(status_code=401, detail="Invalid token.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
 
 @user_router.get("/registered_user")
 # "{BASE_URL}/auth/registered_user?page_num=1&page_size=10&sort_by=id,username&sort_order=ASC,DESC&username=thulasithang"
