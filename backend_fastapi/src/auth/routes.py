@@ -14,42 +14,47 @@ user_router = APIRouter(
     prefix="/auth",
 )
 
+
 @user_router.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
 
     cursor = connection.cursor()
-    
-    #### This is for Authorization
-    #### query = "SELECT password, is_admin FROM users WHERE username = %s"
-    query = "SELECT password FROM registered_user WHERE username = %s"
+
+    query = "SELECT password, is_admin FROM registered_user WHERE username = %s"
     cursor.execute(query, (username,))
     result = cursor.fetchone()
     cursor.close()
 
     if result:
-        #### hashed_password, is_admin = result
-        hashed_password = result[0]
-
-        # password = get_password_hash(password=password)
+        hashed_password, is_admin = result
 
         # Perform authentication and authorization here
         if verify_password(plain_password=password, hashed_password=hashed_password):
-            #### for Authorization
-            #### role = "customer"
-            #### if (is_admin): role = "admin"
-            #### payload = {"username": username, "role": role}
+            # for Authorization
+            role = "customer"
+            if is_admin:
+                role = "admin"
+            payload = {"username": username, "role": role}
 
             # Create a JWT token with user information
-            payload = {"username": username}
             token = encode_token(payload=payload)
-            return JSONResponse(content={"message": "Welcome registered user!", "token": token})
+            return JSONResponse(
+                content={"message": "Welcome registered user!", "token": token}
+            )
         else:
-            return JSONResponse(content={"message": "Invalid credentials."}, status_code=status.HTTP_401_UNAUTHORIZED)
+            return JSONResponse(
+                content={"message": "Invalid credentials."},
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
     else:
-        return JSONResponse(content={"message": "Invalid credentials."}, status_code=status.HTTP_401_UNAUTHORIZED)
+        return JSONResponse(
+            content={"message": "Invalid credentials."},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
 
 @user_router.get("/secure")
-async def secure_route(authorization: str = Header(None, prefix='Bearer ')):
+async def secure_route(authorization: str = Header(None, prefix="Bearer ")):
     try:
         # Separate the token from the "Bearer " prefix
         token = authorization.replace("Bearer ", "")
@@ -57,7 +62,10 @@ async def secure_route(authorization: str = Header(None, prefix='Bearer ')):
         payload = decode_token(token)
         return JSONResponse(content={"message": f"Welcome {payload['username']}!"})
     except:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token."
+        )
+
 
 @user_router.get("/registered_user")
 # "{BASE_URL}/auth/registered_user?page_num=1&page_size=10&sort_by=id,username&sort_order=ASC,DESC&username=thulasithang"
@@ -93,6 +101,7 @@ def get_registered_user_list(
     )
 
     return ret
+
 
 @user_router.post("/registered_user")
 async def post_registered_user(request: Request):
