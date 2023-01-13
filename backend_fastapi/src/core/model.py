@@ -2,8 +2,10 @@ from functools import lru_cache
 from .manager import BaseQueryManager
 from .field import BaseDBField, ForeignKeyDBField
 
+
 class DBModelException(Exception):
     pass
+
 
 class MetaModel(type):
     __query_manager__ = BaseQueryManager
@@ -100,7 +102,7 @@ class BaseDBModel(metaclass=MetaModel):
             field.validate(fval)
             field_dict[field.name_id] = fval
 
-        self.__class__.objects._insert(field_dict=field_dict)        
+        self.__class__.objects._insert(field_dict=field_dict)
 
         # TODO implement update
         # validate -> call validate method on each field, any model specific validation?
@@ -109,7 +111,9 @@ class BaseDBModel(metaclass=MetaModel):
         # save related here too?
 
     def __repr__(self) -> str:
-        return "<{} object {}>".format(self.__class__.__qualname__, getattr(self, self.primary_key))
+        return "<{} object {}>".format(
+            self.__class__.__qualname__, getattr(self, self.primary_key)
+        )
 
     def serialize(self):
         """Convert the model object into a representation suitable for sending as an API response.

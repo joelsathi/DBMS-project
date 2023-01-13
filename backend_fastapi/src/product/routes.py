@@ -12,6 +12,8 @@ from .models import (
     ProductVarientOptionsModel,
 )
 
+from ..auth.utils import checkAdmin
+
 from ..core.pagination import get_pagination, get_params
 
 product_router = APIRouter(
@@ -21,7 +23,7 @@ product_router = APIRouter(
 
 @product_router.get("/product")
 def get_product_list(response: Response, request: Request):
-    
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -36,7 +38,7 @@ def get_product_list(response: Response, request: Request):
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
-    
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -81,7 +83,7 @@ def get_variant_list(response: Response, request: Request):
 
 @product_router.get("/subcategory")
 def get_subcategory_list(response: Response, request: Request):
-    
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -96,7 +98,7 @@ def get_subcategory_list(response: Response, request: Request):
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
-    
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -111,7 +113,7 @@ def get_subcategory_list(response: Response, request: Request):
 
 @product_router.get("/supercategory")
 def get_supercategory_list(response: Response, request: Request):
-    
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -141,7 +143,9 @@ def get_supercategory_list(response: Response, request: Request):
 
 @product_router.get("/discount")
 def get_discount_list(response: Response, request: Request):
-    
+
+    checkAdmin(request=request)
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -186,7 +190,7 @@ def get_options_list(response: Response, request: Request):
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
-    
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [OptionsModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -201,7 +205,9 @@ def get_options_list(response: Response, request: Request):
 
 @product_router.get("/inventory")
 def get_inventory_list(response: Response, request: Request):
-    
+
+    checkAdmin(request=request)
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -230,9 +236,7 @@ def get_inventory_list(response: Response, request: Request):
 
 
 @product_router.get("/product_subcategory")
-def get_product_subcategory_list(
-    response: Response, request: Request
-):
+def get_product_subcategory_list(response: Response, request: Request):
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -248,7 +252,7 @@ def get_product_subcategory_list(
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
-    
+
     total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductSubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
@@ -262,10 +266,8 @@ def get_product_subcategory_list(
 
 
 @product_router.get("/product_variant_options")
-def get_product_variant_options_list(
-    response: Response, request: Request
-):
-    
+def get_product_variant_options_list(response: Response, request: Request):
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation

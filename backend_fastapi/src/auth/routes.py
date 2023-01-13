@@ -4,7 +4,14 @@ from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
 from ..core.pagination import get_pagination, get_params
 
-from .utils import get_password_hash, encode_token, decode_token, verify_password
+from .utils import (
+    get_password_hash,
+    encode_token,
+    decode_token,
+    verify_password,
+    checkAdmin,
+    checkCustomer,
+)
 from fastapi.responses import JSONResponse
 
 from ..core.db import connection
@@ -20,13 +27,13 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
     cursor = connection.cursor()
 
-    query = "SELECT password, is_admin FROM registered_user WHERE username = %s"
+    query = "SELECT password, is_admin, id FROM registered_user WHERE username = %s"
     cursor.execute(query, (username,))
     result = cursor.fetchone()
     cursor.close()
 
     if result:
-        hashed_password, is_admin = result
+        hashed_password, is_admin, id = result
 
         # Perform authentication and authorization here
         if verify_password(plain_password=password, hashed_password=hashed_password):
@@ -34,7 +41,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
             role = "customer"
             if is_admin:
                 role = "admin"
-            payload = {"username": username, "role": role}
+            payload = {"username": username, "role": role, "id": id}
 
             # Create a JWT token with user information
             token = encode_token(payload=payload)
@@ -73,6 +80,7 @@ def get_registered_user_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -105,6 +113,9 @@ def get_registered_user_list(
 
 @user_router.post("/registered_user")
 async def post_registered_user(request: Request):
+
+    checkAdmin(request=request)
+
     field_dict = await request.json()
     field_dict["password"] = get_password_hash(field_dict["password"])
     new_obj = RegisteredUserDBModel(**field_dict)
@@ -113,10 +124,10 @@ async def post_registered_user(request: Request):
 
 
 @user_router.get("/registered_user/{id}")
-def get_registered_user(
-    id: int,
-    response: Response,
-):
+def get_registered_user(id: int, response: Response, request: Request):
+
+    checkCustomer(request=request, id=id)
+
     row = RegisteredUserDBModel.objects.select_by_id(id)
     if row is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -134,6 +145,7 @@ def get_user_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -167,6 +179,7 @@ def get_payment_detail_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
