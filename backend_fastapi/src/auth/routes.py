@@ -229,6 +229,6 @@ def get_payment_detail_list(
 @user_router.post("/payment_detail")
 async def post_payment_detail(request: Request):
     field_dict = await request.json()
-    new_obj = payment_detailsDBModel(**field_dict)
+    new_obj = PaymentDetailDBModel(**field_dict)
     new_obj.save()
 
