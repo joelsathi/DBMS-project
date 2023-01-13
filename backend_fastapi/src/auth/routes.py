@@ -144,7 +144,7 @@ def get_registered_user(id: int, response: Response, request: Request):
 
 @user_router.put("/registered_user/{id}")
 async def put_registered_user(id: int, request: Request, response: Response):
-    checkAdmin(request=request)
+    checkCustomer(request=request, id=id)
     field_dict = await request.json()
     field_dict["id"] = id
     if "password" in field_dict:
