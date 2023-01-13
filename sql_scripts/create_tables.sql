@@ -30,6 +30,7 @@ CREATE TABLE product (
     base_price NUMERIC(10, 2),
     discount_id INT,
     brand VARCHAR(50),
+    image_url VARCHAR(255),
     PRIMARY KEY (id),
     FOREIGN KEY (discount_id) REFERENCES discount(id) ON DELETE
     SET NULL
@@ -45,8 +46,8 @@ CREATE TABLE product_variant (
 );
 CREATE TABLE options (
     option_id INT NOT NULL AUTO_INCREMENT,
-    prod_description TEXT(100000),
-    price_diff NUMERIC(10, 2) CHECK (price_diff > 0),
+    option_name	VARCHAR(255),
+    price_diff NUMERIC(10, 2) CHECK (price_diff >= 0),
     PRIMARY KEY (option_id)
 );
 CREATE TABLE product_variant_option (
@@ -66,8 +67,8 @@ CREATE TABLE sub_category(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(20),
     description TEXT(10000),
-    super_category_id VARCHAR(20),
-    FOREIGN KEY(id) REFERENCES super_category(id) ON DELETE CASCADE on update cascade
+    super_category_id INT,
+    FOREIGN KEY(super_category_id) REFERENCES super_category(id) ON DELETE CASCADE 
 );
 CREATE TABLE product_sub_category (
     id INT NOT NULL AUTO_INCREMENT,
@@ -84,7 +85,7 @@ CREATE TABLE payment_detail (
 );
 CREATE TABLE registered_user (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL,
     password VARCHAR(512) NOT NULL,
     firstname VARCHAR(255) NOT NULL,
     lastname VARCHAR(255) NOT NULL,
