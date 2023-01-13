@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from typing import Callable
 from mysql.connector.pooling import PooledMySQLConnection, CMySQLConnection
 from mysql.connector.cursor_cext import CMySQLCursor
 
@@ -129,13 +130,15 @@ class BaseQueryManager:
         _field_names = self.model_class.get_fields_by_name()
 
         FILTER_CONDITIONS = {
-            "": " = %s",
-            "gt": " > %s",
-            "gte": " >= %s",
-            "lt": " < %s",
-            "lte": " <= %s",
-            "in": " IN (%s)",
-            "like": " LIKE %s"
+            "": lambda param: " = %s",
+            "gt": lambda param: " > %s",
+            "gte": lambda param: " >= %s",
+            "lt": lambda param: " < %s",
+            "lte": lambda param: " <= %s",
+            "in": lambda param: " IN ({})".format(
+                ", ".join(["%s" for _ in range(len(param.split(",")))])
+            ),
+            "like": " LIKE %s",
         }
 
         # If there are no filters just return an empty string
@@ -154,12 +157,11 @@ class BaseQueryManager:
                 # like `id >= 2`.
                 try:
                     stripped_field_name, suffix = field_name.split("__")
-                    filter_condition = FILTER_CONDITIONS[suffix]
-                except:
+                except ValueError:
                     stripped_field_name = field_name
                     suffix = ""
-                    filter_condition = FILTER_CONDITIONS[suffix]
                     
+
                 # Silently pass if the field name does not exist: we don't want to fail from a
                 # filter, we would return an unfiltered queryset in that case
                 if stripped_field_name in _field_names:
@@ -167,8 +169,16 @@ class BaseQueryManager:
                         where_clause += " AND "
                     first_iter = False
 
-                    where_clause += "{} {}".format(stripped_field_name, filter_condition) 
-                    filter_vals_list.append(filters[field_name]) # TODO escape and fix for lists
+                    filter_condition: Callable = FILTER_CONDITIONS[suffix]
+                    where_clause += "{} {}".format(
+                        stripped_field_name, filter_condition(filters[field_name])
+                    )
+
+                    if suffix == "in":
+                        filter_vals = filters[field_name].split(",")
+                        filter_vals_list.extend(filter_vals)
+                    else:
+                        filter_vals_list.append(filters[field_name])
 
         return where_clause, filter_vals_list
 
@@ -283,12 +293,14 @@ class BaseQueryManager:
         sql_query_str = "UPDATE {} SET {} WHERE {}".format(
             self.model_class.__tablename__,
             ",".join(["{}=%s".format(fname) for fname in field_dict.keys()]),
-            ",".join(["{}=%s".format(fname) for fname in filter_dict.keys()])
+            ",".join(["{}=%s".format(fname) for fname in filter_dict.keys()]),
         )
 
         success = False
         with self._get_cursor(CMySQLCursor) as cursor:
-            cursor.execute(sql_query_str, tuple([*field_dict.values(), *filter_dict.values()]))
+            cursor.execute(
+                sql_query_str, tuple([*field_dict.values(), *filter_dict.values()])
+            )
             if cursor.rowcount > 0:
                 success = True
 
