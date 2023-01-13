@@ -193,7 +193,6 @@ BEGIN
     DECLARE location_id INT;
     DECLARE delivery_id INT;
     DECLARE order_id INT;
-    DECLARE inventory_id INT;
     
     -- Check if location already exists
     SELECT ID INTO location_id FROM location WHERE name = field_dict->>'$.location_name' LIMIT 1;
@@ -206,7 +205,7 @@ BEGIN
     
     -- Insert data into delivery table
     INSERT INTO delivery (delivery_method, provider, location_id) 
-    VALUES (field_dict->>'$.delivery_method', field_dict->>'$.provider', location_id);
+    VALUES (field_dict->>'$.delivery_method', field_dict->>'$.provider_delivery', location_id);
     SET delivery_id = LAST_INSERT_ID();
     
     -- Insert data into order_cart table
@@ -221,7 +220,7 @@ BEGIN
     -- Update the inventory
     SELECT quantity INTO @quantity FROM inventory WHERE sku = field_dict->>'$.sku';
     IF @quantity < field_dict->>'$.quantity' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not enough stock for sku: ' + field_dict->>'$.sku';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Not enough stock';
     ELSE
         UPDATE inventory SET quantity = quantity - field_dict->>'$.quantity' WHERE sku = field_dict->>'$.sku';
     END IF;
