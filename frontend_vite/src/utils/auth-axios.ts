@@ -2,7 +2,8 @@ import axios from 'axios';
 import { baseUrl } from './helper';
 
 const authAxios = axios.create({
-  baseURL: `${baseUrl}/api`,
+  // baseURL: `${baseUrl}/api`,
+  baseURL: `${baseUrl}`,
 });
 
 export const authorizationProvider = (store: any) => {

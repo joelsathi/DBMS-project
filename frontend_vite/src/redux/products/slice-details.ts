@@ -6,28 +6,55 @@ export interface ProductSliceState {
   product: Product | null;
   loading: boolean;
   error: null | object;
+  variant_options: string[];
+  variant: string[];
+  product_variants: string[];
 }
 
 const initialState: ProductSliceState = {
   product: null,
   loading: false,
   error: null,
+  variant_options: [],
+  variant: [], 
+  product_variants: [],
 };
 
 export const getProductById = createAsyncThunk(
   'products/details',
-  async (id: string | undefined) => {
-    try {
-      const res = await publicAxios.get(`/product/variant`);
-      console.log('res.data', res.data[0]);
-      // #########query to get the exact product
-      // const res = await publicAxios.get(`/products/${id}`);
+  async (u: any) => {
+    if (u.id) {
+      try {
+        const productResponse = await publicAxios.get(`/product/product/${u.id}`);
+        console.log('IN PRODUCT DETAILS, productResponse.data', productResponse.data);
+        // if u.id is not null, then get the variant
 
-      if (res.data) {
-        // return res.data;
-        return res.data.data[0]; //################################
-      }
-    } catch (error) {}
+        const productVariantsResponse = await publicAxios.get(`/product/variants/${u.id}`);
+        console.log('IN PRODUCT DETAILS, productVariantsResponse.data', productVariantsResponse.data);
+        // const productVariantResponse = await publicAxios.get(`/product/variant_filtered/search?sku=${u.sku}`);
+        // console.log('IN PRODUCT DETAILS, productVariantResponse.data', productVariantResponse.data);
+
+        let variant = null;
+        if (u.sku && u.sku.length === 8) {
+        const productVariantResponse = await publicAxios.get(`/product/variant_filtered/search?sku=${u.sku}`);
+        console.log('IN PRODUCT DETAILS, productVariantResponse.data', productVariantResponse.data);
+        variant = productVariantResponse.data.data;
+        }
+        
+        
+
+        // const productOptionsResponse = await publicAxios.get(`/product/options/${u.id}`);
+        // console.log('IN PRODUCT DETAILS, productOptionsResponse.data', productOptionsResponse.data);
+
+
+      return {
+        product: productResponse.data,
+        productVariantsResponse: productVariantsResponse.data.data,
+        variant: variant,
+        // variant_options: productOptionsResponse.data.data,
+      };
+    } catch (error) { }
+  }
   }
 );
 
@@ -42,7 +69,10 @@ export const productDetailsSlice = createSlice({
     });
     builder.addCase(getProductById.fulfilled, (state, action) => {
       state.loading = false;
-      state.product = action.payload;
+      state.product = action.payload?.product;
+      state.variant = action.payload?.variant;
+      state.product_variants = action.payload?.productVariantsResponse;
+      // state.variant_options = action.payload?.variant_options;
     });
     builder.addCase(
       getProductById.rejected,

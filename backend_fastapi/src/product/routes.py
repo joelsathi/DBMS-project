@@ -58,6 +58,18 @@ async def post_product_list(request: Request):
     new_obj = ProductDBModel(**field_dict)
     new_obj.save()
 
+@product_router.get("/product/{id}")
+def get_product_by_id(id: int, response: Response):
+    row = ProductModel.objects.select_by_id(id)
+    if row is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        # TODO create a error response class
+        return {
+            "Error": "Detail Not Found",
+            "Message": "Product with id {} not found".format(id),
+        }
+
+    return ProductModel.serialize_with_related(row)
 
 @product_router.get("/product_filtered/search")
 def get_filtered_product_list(
@@ -153,7 +165,141 @@ async def post_varient_list(request: Request):
     new_obj = VariantDBModel(**field_dict)
     new_obj.save()
 
+# @product_router.get("/variant_filtered/search")
+# def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 1, page_size: int = 10):
+#     # TODO add field validation
+#     if id or sku:
+#         sql_query_where = " WHERE "
+#         checks = []
+#         if id:
+#             checks.append("product_variant.product_id = '{}'".format(id))
+#         if sku:
+#             checks.append("product_variant.sku = '{}'".format(sku))
+#         sql_query_where += " AND ".join(checks)
+#         start = (page_num - 1) * page_size
+#         # TODO way to get column names, foriegn key product_variant.product_id,
+#         sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url FROM product_variant \
+#                 {} LIMIT {} OFFSET {}".format(
+#                 sql_query_where,
+#                 page_size,
+#                 start,
+#             )
+#         cursor = BaseQueryManager._get_cursor()
+#         cursor.execute(sql_query_str)
+#         cursor.set_model_class(ProductVariantModel)
+#         rows = cursor.fetchall()
+#         cursor.close()
+#     else:
+#         rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+#     if rows is None:
+#         response.status_code = status.HTTP_404_NOT_FOUND
+#         return {
+#             "Error": "Detail not Found",
+#             "Message": "No entries on page {}".format(page_num),
+#         }
 
+#     total = 4  # NEED TO IMPLEMENT THE FUNCTION
+#     serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
+
+#     ret = get_pagination(
+#         "/product",
+#         total=total,
+#         serialized_rows=serialized_rows,
+#         page_num=page_num,
+#         page_size=page_size,
+#     )
+
+#     return ret
+
+
+@product_router.get("/variant_filtered/search")
+def get_filtered_variant(sku: str, response: Response, page_num: int = 1, page_size: int = 10):
+    # TODO add field validation
+    if sku:
+        sql_query_where = " WHERE "
+        checks = []
+        if sku:
+            checks.append("product_variant.sku = '{}'".format(sku))
+        sql_query_where += " AND ".join(checks)
+        start = (page_num - 1) * page_size
+        # TODO way to get column names, foriegn key product_variant.product_id,
+        sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url FROM product_variant \
+                {} LIMIT {} OFFSET {}".format(
+                sql_query_where,
+                page_size,
+                start,
+            )
+        cursor = BaseQueryManager._get_cursor()
+        cursor.execute(sql_query_str)
+        cursor.set_model_class(ProductVariantModel)
+        rows = cursor.fetchall()
+        cursor.close()
+    else:
+        rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
+    total = 4  # NEED TO IMPLEMENT THE FUNCTION
+    serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
+
+    ret = get_pagination(
+        "/product",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
+
+    return ret
+
+
+@product_router.get("/variants/{id}")
+def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_size: int = 10):
+    # TODO add field validation
+    if id:
+        sql_query_where = " WHERE "
+        checks = []
+        if id:
+            checks.append("product_variant.product_id = '{}'".format(id))
+        sql_query_where += " AND ".join(checks)
+        start = (page_num - 1) * page_size
+        # TODO way to get column names, foriegn key product_variant.product_id,
+        sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url FROM product_variant \
+                {} LIMIT {} OFFSET {}".format(
+                sql_query_where,
+                page_size,
+                start,
+            )
+        cursor = BaseQueryManager._get_cursor()
+        cursor.execute(sql_query_str)
+        cursor.set_model_class(ProductVariantModel)
+        rows = cursor.fetchall()
+        cursor.close()
+    else:
+        rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
+    total = 4  # NEED TO IMPLEMENT THE FUNCTION
+    serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
+
+    ret = get_pagination(
+        "/product",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
+
+    return ret
 @product_router.get("/subcategory")
 def get_subcategory_list(response: Response, request: Request):
 
@@ -191,7 +337,7 @@ async def post_subcategory_list(request: Request):
 
 
 @product_router.get("/subcategory_filtered/search")
-def get_filtered_product_list(
+def get_filtered_subcategories(
     category: str,
     response: Response,
     request: Request, page_num: int = 1, page_size: int = 10
@@ -344,6 +490,55 @@ async def post_options_list(request: Request):
     field_dict = await request.json()
     new_obj = OptionsDBModel(**field_dict)
     new_obj.save()
+
+
+@product_router.get("/options/{id}")
+def get_filtered_options(
+    id: int,
+    response: Response,
+    request: Request, page_num: int = 1, page_size: int = 10
+):
+
+    # TODO add field validation
+    sql_query_where = ""
+    if id:
+        sql_query_where = " WHERE p.id = '{}'".format(id)
+    start = (page_num - 1) * page_size
+    # TODO way to get column names in subcategory
+    sql_query_str = "SELECT options.option_id, options.prod_description, options.price_diff FROM options \
+            JOIN product_variant_option pvo ON options.option_id=pvo.option_id \
+            JOIN product_variant pv ON pv.sku=pvo.sku\
+            JOIN product p ON pv.product_id=p.id\
+            {} LIMIT {} OFFSET {}".format(
+            sql_query_where,
+            page_size,
+            start,
+        )
+    cursor = BaseQueryManager._get_cursor()
+    cursor.execute(sql_query_str)
+    cursor.set_model_class(OptionsModel)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    if rows is None:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "Error": "Detail not Found",
+            "Message": "No entries on page {}".format(page_num),
+        }
+
+    total = 4  # NEED TO IMPLEMENT THE FUNCTION
+    serialized_rows = [OptionsModel.serialize(row) for row in rows]
+
+    ret = get_pagination(
+        "/product",
+        total=total,
+        serialized_rows=serialized_rows,
+        page_num=page_num,
+        page_size=page_size,
+    )
+
+    return ret 
 
 
 @product_router.get("/inventory")
