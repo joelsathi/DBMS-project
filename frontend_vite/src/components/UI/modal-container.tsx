@@ -1,3 +1,4 @@
+import React from 'react';
 import { ReactNode } from 'react';
 import { Col, Container, Modal, Row } from 'react-bootstrap';
 

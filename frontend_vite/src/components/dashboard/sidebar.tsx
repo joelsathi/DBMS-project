@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../redux';
 import { reset } from '../../redux/cart/cart-slice';
 import { userLogout } from '../../redux/users/login-slice';
 import { NavLink } from 'react-router-dom';
+import React from 'react';
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -76,7 +77,7 @@ const Sidebar = () => {
           <div className='' />
           <ul className='navbar-nav'>
             <li className='nav-item'>
-              <Nav.Link as={NavLink} to={`/profile/${userInfo?.id}`}>
+              <Nav.Link as={NavLink} to={`/profile/${userInfo?._id}`}>
                 <i className='bi bi-person-square' /> Profile
               </Nav.Link>
             </li>

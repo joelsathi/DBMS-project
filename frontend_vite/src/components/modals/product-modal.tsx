@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { setError } from '../../utils/error';
 import { ChangeEvent, useState } from 'react';
 import { baseUrl } from '../../utils/helper';
+import React from 'react';
 
 type Props = {
   show: boolean;

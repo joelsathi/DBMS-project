@@ -1,3 +1,4 @@
+import React from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../redux';
@@ -168,7 +169,7 @@ const Header = () => {
                   )}
                   <NavDropdown.Item
                     as={NavLink}
-                    to={`/profile/${userInfo.id}`}
+                    to={`/profile/${userInfo._id}`}
                   >
                     Profile
                   </NavDropdown.Item>
