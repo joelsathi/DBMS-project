@@ -52,8 +52,9 @@ def get_product_list(response: Response, request: Request):
 
 @product_router.post("/product")
 async def post_product_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = ProductDBModel(**field_dict)
+    new_obj = ProductModel(**field_dict)
     new_obj.save()
 
 @product_router.get("/variant")
@@ -87,8 +88,9 @@ def get_variant_list(response: Response, request: Request):
 
 @product_router.post("/variant")
 async def post_varient_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = VariantDBModel(**field_dict)
+    new_obj = ProductVariantModel(**field_dict)
     new_obj.save()
 
 
@@ -123,8 +125,9 @@ def get_subcategory_list(response: Response, request: Request):
 
 @product_router.post("/subcategory")
 async def post_subcategory_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = SubcategoryDBModel(**field_dict)
+    new_obj = SubCategoryModel(**field_dict)
     new_obj.save()
 
 
@@ -159,8 +162,9 @@ def get_supercategory_list(response: Response, request: Request):
 
 @product_router.post("/supercategory")
 async def post_supercategory_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = SupercategoryDBModel(**field_dict)
+    new_obj = SuperCategoryModel(**field_dict)
     new_obj.save()
 
 
@@ -197,8 +201,9 @@ def get_discount_list(response: Response, request: Request):
 
 @product_router.post("/discount")
 async def post_discount_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = DiscountDBModel(**field_dict)
+    new_obj = DiscountModel(**field_dict)
     new_obj.save()
 
 
@@ -233,8 +238,9 @@ def get_options_list(response: Response, request: Request):
 
 @product_router.post("/options")
 async def post_options_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = OptionsDBModel(**field_dict)
+    new_obj = OptionsModel(**field_dict)
     new_obj.save()
 
 
@@ -271,8 +277,9 @@ def get_inventory_list(response: Response, request: Request):
 
 @product_router.post("/inventory")
 async def post_inventory_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = InventoryDBModel(**field_dict)
+    new_obj = InventoryModel(**field_dict)
     new_obj.save()
 
 
@@ -307,8 +314,9 @@ def get_product_subcategory_list(response: Response, request: Request):
 
 @product_router.post("/product_subcategory")
 async def post_product_subcategory_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = ProductSubcategoryDBModel(**field_dict)
+    new_obj = ProductSubCategoryModel(**field_dict)
     new_obj.save()
 
 
@@ -343,7 +351,8 @@ def get_product_variant_options_list(response: Response, request: Request):
 
 @product_router.post("/product_variant_option")
 async def post_product_product_variant_option_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = ProductVariantOptionListDBModel(**field_dict)
+    new_obj = ProductVarientOptionsModel(**field_dict)
     new_obj.save()
 

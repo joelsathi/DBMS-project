@@ -51,8 +51,9 @@ def get_order_cart_list(
 
 @order_router.post("/order_cart")
 async def post_order_cart_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = OrderCartDBModel(**field_dict)
+    new_obj = OrderCartModel(**field_dict)
     new_obj.save()
 
 @order_router.get("/product_order")
@@ -90,8 +91,9 @@ def get_product_order_list(
 
 @order_router.post("/product_order")
 async def post_product_order_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = ProductOrderDBModel(**field_dict)
+    new_obj = ProductOrderModel(**field_dict)
     new_obj.save()
 
 @order_router.get("/order_payment_detail")
@@ -129,8 +131,9 @@ def get_order_payment_detail_list(
 
 @order_router.post("/order_payment_detail")
 async def post_order_payment_detail_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = OrderPaymentDetailDBModel(**field_dict)
+    new_obj = OrderPaymentDetailModel(**field_dict)
     new_obj.save()
 
 @order_router.get("/delivery")
@@ -168,8 +171,9 @@ def get_delivery_list(
 
 @order_router.post("/delivery")
 async def post_delivery_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = DeliveryDBModel(**field_dict)
+    new_obj = DeliveryModel(**field_dict)
     new_obj.save()
 
 @order_router.get("/location")
@@ -207,6 +211,7 @@ def get_location_list(
 
 @order_router.post("/location")
 async def post_location_list(request: Request):
+    checkAdmin(request=request)
     field_dict = await request.json()
-    new_obj = LocationDBModel(**field_dict)
+    new_obj = LocationModel(**field_dict)
     new_obj.save()
