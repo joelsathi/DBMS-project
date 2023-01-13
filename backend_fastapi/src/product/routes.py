@@ -30,8 +30,12 @@ def get_product_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = ProductModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -41,11 +45,10 @@ def get_product_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/product",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -151,8 +154,12 @@ def get_variant_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductVariantModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = ProductVariantModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -162,11 +169,10 @@ def get_variant_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/variant",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -321,8 +327,12 @@ def get_subcategory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = SubCategoryModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = SubCategoryModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -332,11 +342,10 @@ def get_subcategory_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/subcategory",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -413,8 +422,12 @@ def get_supercategory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = SuperCategoryModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = SuperCategoryModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -424,11 +437,10 @@ def get_supercategory_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [SuperCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/supercategory",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -452,8 +464,12 @@ def get_discount_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = DiscountModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = DiscountModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -463,11 +479,10 @@ def get_discount_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [DiscountModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/discount",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -489,8 +504,12 @@ def get_options_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = OptionsModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = OptionsModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -500,11 +519,10 @@ def get_options_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [OptionsModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/options",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -586,8 +604,12 @@ def get_inventory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = InventoryModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = InventoryModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -597,11 +619,10 @@ def get_inventory_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [InventoryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/inventory",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -623,8 +644,12 @@ def get_product_subcategory_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductSubCategoryModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = ProductSubCategoryModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -634,11 +659,10 @@ def get_product_subcategory_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductSubCategoryModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/product_subcategory",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -660,8 +684,12 @@ def get_product_variant_options_list(response: Response, request: Request):
 
     # TODO add field validation
 
-    rows = ProductVarientOptionsModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = ProductVarientOptionsModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -671,11 +699,10 @@ def get_product_variant_options_list(response: Response, request: Request):
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [ProductVarientOptionsModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/product_variant_options",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,

@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from typing import Callable
 from mysql.connector.pooling import PooledMySQLConnection, CMySQLConnection
 from mysql.connector.cursor_cext import CMySQLCursor
 
@@ -29,7 +30,7 @@ class MySQLModelCursor(CMySQLCursor):
                 )
             )
 
-        _all_fields = model_class.get_field_names()
+        _all_fields = model_class.get_fields_by_name()
 
         obj = model_class(
             is_existing=True,
@@ -101,8 +102,8 @@ class BaseQueryManager:
             cursor.close()
             connection.close()
 
-    def _get_field_names_str(self, field_names):
-        _field_names = self.model_class.get_field_names()
+    def _get_fields_by_name_str(self, field_names):
+        _field_names = self.model_class.get_fields_by_name()
 
         # If field names are specified, select only those. Otherwise select all model fields.
         if len(field_names) == 0:
@@ -126,53 +127,111 @@ class BaseQueryManager:
         return field_str
 
     def _get_where_clause(self, filters: dict):
-        _field_names = self.model_class.get_field_names()
+        _field_names = self.model_class.get_fields_by_name()
 
-        field_names = list(filters.keys())
+        FILTER_CONDITIONS = {
+            "": lambda param: " = %s",
+            "gt": lambda param: " > %s",
+            "gte": lambda param: " >= %s",
+            "lt": lambda param: " < %s",
+            "lte": lambda param: " <= %s",
+            "in": lambda param: " IN ({})".format(
+                ", ".join(["%s" for _ in range(len(param.split(",")))])
+            ),
+            "like": " LIKE %s",
+        }
 
-        # If there are no filtering just return an empty string
-        if len(field_names) == 0:
+        # If there are no filters just return an empty string
+        if len(filters) == 0:
             where_clause = ""
+            filter_vals_list = []
 
         else:
             where_clause = "WHERE "
-            for ind, field_name in enumerate(field_names):
-                # Throw an exception if the field names are not valid
-                if field_name not in _field_names:
-                    raise InvalidFieldException(
-                        "No field named {} found on {}".format(
-                            field_name, self.model_class.__qualname__
-                        )
-                    )
-                else:
-                    val_list = ",".join(filters[field_name])
-                    where_clause += f"{field_name} IN ({val_list})"
-                    if ind < len(field_names) - 1:
+            filter_vals_list = []
+            first_iter = True
+            for field_name in filters.keys():
+                # We will allow different conditions to be used as filters by allowing a suffix
+                # appended to the actual field name with a "__" to determine said operation.
+                # For eg: `id__gt=2` would be a greater than condition resulting in SQL that looks
+                # like `id >= 2`.
+                try:
+                    stripped_field_name, suffix = field_name.split("__")
+                except ValueError:
+                    stripped_field_name = field_name
+                    suffix = ""
+                    
+
+                # Silently pass if the field name does not exist: we don't want to fail from a
+                # filter, we would return an unfiltered queryset in that case
+                if stripped_field_name in _field_names:
+                    if not first_iter and where_clause[-4:] != "AND ":
                         where_clause += " AND "
+                    first_iter = False
 
-        return where_clause
+                    filter_condition: Callable = FILTER_CONDITIONS[suffix]
+                    where_clause += "{} {}".format(
+                        stripped_field_name, filter_condition(filters[field_name])
+                    )
 
-    def select(self, field_names: list = [], filters: dict = None):
-        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
+                    if suffix == "in":
+                        filter_vals = filters[field_name].split(",")
+                        filter_vals_list.extend(filter_vals)
+                    else:
+                        filter_vals_list.append(filters[field_name])
 
-        field_str = self._get_field_names_str(field_names)
+        return where_clause, filter_vals_list
 
-        sql_query_str = "SELECT {} FROM {}".format(
-            field_str, self.model_class.__tablename__
+    def select(
+        self,
+        field_names: list = [],
+        page_num: int = 1,
+        page_size: int = 10,
+        filters: dict = {},
+        sort_keys: dict = {},
+        get_row_count: bool = False,
+    ):
+        field_str = self._get_fields_by_name_str(field_names)
+
+        start = (page_num - 1) * page_size
+
+        if sort_keys is not None and len(sort_keys) > 0:
+            sort_clause = "ORDER BY "
+            for field, s_order in sort_keys.items():
+                sort_clause += "{} {}".format(field, s_order)
+                if field != list(sort_keys.keys())[-1]:
+                    sort_clause += ","
+            print(sort_clause)
+        else:
+            sort_clause = ""
+
+        where_clause, filter_values_list = self._get_where_clause(filters)
+
+        _count = None
+        if get_row_count:
+            _count = self._get_count(where_clause, filter_values_list)
+
+        sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
+            field_str,
+            self.model_class.__tablename__,
+            where_clause,
+            sort_clause,
+            page_size,
+            start,
         )
 
         rows = []
         with self._get_cursor(MySQLModelCursor) as cursor:
-            cursor.execute(sql_query_str)
+            cursor.execute(sql_query_str, filter_values_list)
             cursor.set_model_class(self.model_class)
             rows = cursor.fetchall()
 
-        return rows
+        return rows, _count
 
     def select_by_id(self, id: int, field_names: list = []):
         # We will have a specific method just for this since it will be an important application
 
-        field_str = self._get_field_names_str(field_names)
+        field_str = self._get_fields_by_name_str(field_names)
 
         sql_query_str = "SELECT {} FROM {} WHERE {}=%s".format(
             field_str,
@@ -188,86 +247,17 @@ class BaseQueryManager:
 
         return row
 
-    # def get_count(self):
-
-    #     sql_query_str = "SELECT COUNT(*) FROM {}".format(
-    #         self.model_class.__tablename__
-    #     )
-
-    #     cursor: MySQLModelCursor = self._get_cursor()
-    #     cursor.execute(sql_query_str)
-    #     cursor.set_model_class(self.model_class)
-    #     count = cursor.fetchone()
-    #     print(count)
-    #     cursor.close()
-
-    #     return count
-
-    def select_by_page(
-        self,
-        field_names: list = [],
-        page_num: int = 1,
-        page_size: int = 10,
-        filters: dict = None,
-    ):
-        # TODO implement filters (WHERE queries), limits, sorting (ORDER BY queries)
-
-        field_str = self._get_field_names_str(field_names)
-
-        start = (page_num - 1) * page_size
-
-        sql_query_str = "SELECT {} FROM {} LIMIT {} OFFSET {}".format(
-            field_str, self.model_class.__tablename__, page_size, start
+    def _get_count(self, _filter_str, filter_values_list):
+        sql_query_str = "SELECT COUNT(*) FROM {} {}".format(
+            self.model_class.__tablename__, _filter_str
         )
 
-        rows = []
-        with self._get_cursor(MySQLModelCursor) as cursor:
-            cursor.execute(sql_query_str)
-            cursor.set_model_class(self.model_class)
-            rows = cursor.fetchall()
+        _count = None
+        with self._get_cursor(CMySQLCursor) as cursor:
+            cursor.execute(sql_query_str, filter_values_list)
+            _count = cursor.fetchone()
 
-        return rows
-
-    def select_by_all(
-        self,
-        field_names: list = [],
-        page_num: int = 1,
-        page_size: int = 10,
-        filters: dict = {},
-        sort_: dict = {},
-    ):
-        field_str = self._get_field_names_str(field_names)
-
-        start = (page_num - 1) * page_size
-
-        if sort_ is not None and len(sort_) > 0:
-            sort_clause = "ORDER BY "
-            for field, s_order in sort_.items():
-                sort_clause += "{} {}".format(field, s_order)
-                if field != list(sort_.keys())[-1]:
-                    sort_clause += ","
-            print(sort_clause)
-        else:
-            sort_clause = ""
-
-        where_clause = self._get_where_clause(filters)
-
-        sql_query_str = "SELECT {} FROM {} {} {} LIMIT {} OFFSET {}".format(
-            field_str,
-            self.model_class.__tablename__,
-            where_clause,
-            sort_clause,
-            page_size,
-            start,
-        )
-
-        rows = []
-        with self._get_cursor(MySQLModelCursor) as cursor:
-            cursor.execute(sql_query_str)
-            cursor.set_model_class(self.model_class)
-            rows = cursor.fetchall()
-
-        return rows
+        return _count[0]
 
     def _insert(self, field_dict: dict):
         """
@@ -284,13 +274,15 @@ class BaseQueryManager:
         )
 
         success = False
+        row_id = None
         with self._get_cursor(CMySQLCursor) as cursor:
             cursor: CMySQLCursor
             cursor.execute(sql_query_str, tuple(field_dict.values()))
             if cursor.rowcount > 0:
                 success = True
+                row_id = cursor.lastrowid
 
-        return success
+        return success, row_id
 
     def _update(self, field_dict: dict, filter_dict: dict):
         """
@@ -303,12 +295,14 @@ class BaseQueryManager:
         sql_query_str = "UPDATE {} SET {} WHERE {}".format(
             self.model_class.__tablename__,
             ",".join(["{}=%s".format(fname) for fname in field_dict.keys()]),
-            ",".join(["{}=%s".format(fname) for fname in filter_dict.keys()])
+            ",".join(["{}=%s".format(fname) for fname in filter_dict.keys()]),
         )
 
         success = False
         with self._get_cursor(CMySQLCursor) as cursor:
-            cursor.execute(sql_query_str, tuple([*field_dict.values(), *filter_dict.values()]))
+            cursor.execute(
+                sql_query_str, tuple([*field_dict.values(), *filter_dict.values()])
+            )
             if cursor.rowcount > 0:
                 success = True
 

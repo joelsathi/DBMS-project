@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, Response, status, Request, HTTPException, Header, Form
 
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
@@ -88,8 +89,12 @@ def get_registered_user_list(
 
     # TODO add field validation
 
-    rows = RegisteredUserDBModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = RegisteredUserDBModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -99,12 +104,11 @@ def get_registered_user_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
     ret = get_pagination(
         "/registered_user",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -165,8 +169,12 @@ def get_user_list(
 
     # TODO add field validation
 
-    rows = UserDBModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = UserDBModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -176,11 +184,10 @@ def get_user_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [UserDBModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/user",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -206,8 +213,12 @@ def get_payment_detail_list(
 
     # TODO add field validation
 
-    rows = PaymentDetailDBModel.objects.select_by_all(
-        page_num=page_num, page_size=page_size, sort_=sort_dict, filters=where_params
+    rows, total_rows = PaymentDetailDBModel.objects.select(
+        page_num=page_num,
+        page_size=page_size,
+        sort_keys=sort_dict,
+        filters=where_params,
+        get_row_count=True,
     )
 
     if rows is None:
@@ -217,11 +228,10 @@ def get_payment_detail_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [PaymentDetailDBModel.serialize(row) for row in rows]
     ret = get_pagination(
         "/payment_detail",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
@@ -235,3 +245,24 @@ async def post_payment_detail(request: Request):
     new_obj = PaymentDetailDBModel(**field_dict)
     new_obj.save()
 
+@user_router.post("/register")
+async def create_normal_user(request: Request):
+    field_dict = await request.json()
+    field_dict["password"] = get_password_hash(field_dict["password"])
+    conn = None
+    cursor = None
+    try:
+        conn = connection_pool.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("START TRANSACTION")
+        cursor.execute("CALL create_user(%s)",(json.dumps(field_dict),))
+        conn.commit()
+        return JSONResponse(content={"message": "User created successfully"})
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()

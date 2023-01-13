@@ -50,7 +50,7 @@ class MetaModel(type):
         return cls.__query_manager__(model_class=cls)
 
     @lru_cache(maxsize=1)
-    def get_field_names(cls):
+    def get_fields_by_name(cls):
         return {
             **cls._fields,
             **{f.name_id: f for f in cls._foreign_key_fields.values()},
@@ -104,12 +104,21 @@ class BaseDBModel(metaclass=MetaModel):
                 field.validate(fval)
                 field_dict[fname] = fval
             for fname, field in self._foreign_key_fields.items():
-                fval = getattr(self, fname)
+                fval = getattr(self, field.name_id)
                 # perform validation on field values
                 field.validate(fval)
                 field_dict[field.name_id] = fval
 
-            insert_success = self.__class__.objects._insert(field_dict=field_dict)
+            insert_success, row_id = self.__class__.objects._insert(
+                field_dict=field_dict
+            )
+            if (
+                insert_success
+                and getattr(self, self.primary_key) is None
+                and self._fields[self.primary_key].auto_generated
+            ):
+                # update pk if relevant and insert is successful
+                setattr(self, self.primary_key, row_id)
 
         # Otherwise update existing record
         else:
@@ -162,7 +171,7 @@ class BaseDBModel(metaclass=MetaModel):
             Generally a dict with the relevant model fields and values would be returned.
         """
 
-        return {f: getattr(self, f) for f in self.get_field_names()}
+        return {f: getattr(self, f) for f in self.get_fields_by_name()}
 
     def serialize_with_related(self):
         """
