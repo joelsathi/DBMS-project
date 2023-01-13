@@ -61,7 +61,7 @@ const Login = () => {
         </Form.Group>
 
         <Form.Group controlId='password'>
-          <Form.Label>Mot de Passe </Form.Label>
+          <Form.Label>Password </Form.Label>
           <Form.Control
             type='password'
             placeholder='*******'
