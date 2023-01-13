@@ -30,7 +30,7 @@ class RegisteredUserDBModel(model.BaseDBModel):
     address = field.CharDBField(max_length=512, allow_null=True)
     mobile_no = field.CharDBField(max_length=10)
     is_admin = field.BooleanDBField()
-    created_date = None  # TODO
+    created_date = field.DateTimeDBField(datetime_format="%Y-%m-%d %H:%M:%S")
     payment_detail_id = field.ForeignKeyDBField(
         related_model=PaymentDetailDBModel, allow_null=True
     )
