@@ -4,7 +4,7 @@ from ..core import model, field
 class PaymentDetailDBModel(model.BaseDBModel):
     __tablename__ = "payment_detail"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     card_no = field.CharDBField(max_length=20)
     provider = field.CharDBField(max_length=20)
 
@@ -30,7 +30,7 @@ class RegisteredUserDBModel(model.BaseDBModel):
     address = field.CharDBField(max_length=512, allow_null=True)
     mobile_no = field.CharDBField(max_length=10)
     is_admin = field.BooleanDBField()
-    created_date = None  # TODO
+    created_date = field.DateTimeDBField(datetime_format="%Y-%m-%d %H:%M:%S")
     payment_detail_id = field.ForeignKeyDBField(
         related_model=PaymentDetailDBModel, allow_null=True
     )
@@ -54,11 +54,11 @@ class RegisteredUserDBModel(model.BaseDBModel):
 class UserDBModel(model.BaseDBModel):
     __tablename__ = "user"
 
-    ID = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     is_guest = field.BooleanDBField()
     registered_user_id = field.ForeignKeyDBField(related_model=RegisteredUserDBModel)
 
     def serialize(self):
-        fields = ["ID", "is_guest", "registered_user_id"]
+        fields = ["id", "is_guest", "registered_user_id"]
 
         return {f: getattr(self, f) for f in fields}

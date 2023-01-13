@@ -11,10 +11,11 @@ def get_pagination(
     ret = {
         "data": serialized_rows,
         "total": total,
-        "count": page_size,
+        "count": page_size if end <= total else (total - start),
         "pagination": {},
     }
 
+    total = 3 if total is None else total
     if end >= total:
         ret["pagination"]["next"] = None
 
@@ -57,14 +58,7 @@ def get_params(param_dict: dict):
         elif key == "sort_orders":
             sort_orders = val.split(",")
         else:
-            where_params[key] = val.split(",")
-
-    for key, val in where_params.items():
-        temp = []
-        for v in val:
-            cur = '"' + v + '"'
-            temp.append(cur)
-        where_params[key] = temp
+            where_params[key] = val
 
     if sort_by and sort_orders:
         sort_dict = dict(zip(sort_by, sort_orders))

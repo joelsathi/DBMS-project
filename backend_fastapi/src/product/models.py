@@ -1,88 +1,10 @@
 from ..core import model, field
 
 
-class ProductModel(model.BaseDBModel):
-    __tablename__ = "product"
-
-    id = field.IntegerDBField(is_primary_key=True)
-    name = field.CharDBField(max_length=50)
-    description = field.TextDBField()
-    base_price = field.FloatDBField()
-    brand = field.CharDBField(max_length=50)
-
-    discount_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "id",
-            "name",
-            "description",
-            "base_price",
-            "brand",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
-class ProductVariantModel(model.BaseDBModel):
-    __tablename__ = "product_variant"
-
-    sku = field.CharDBField(max_length=8, is_primary_key=True)
-    name = field.CharDBField(max_length=50)
-    price = field.FloatDBField()
-    image_url = field.CharDBField(max_length=255)
-
-    product_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "sku",
-            "name",
-            "price",
-            "image_url",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
-class SubCategoryModel(model.BaseDBModel):
-    __tablename__ = "sub_category"
-
-    id = field.IntegerDBField(is_primary_key=True)
-    name = field.CharDBField(max_length=20)
-    description = field.TextDBField()
-
-    super_category_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "id",
-            "name",
-            "description",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
-class SuperCategoryModel(model.BaseDBModel):
-    __tablename__ = "super_category"
-
-    id = field.IntegerDBField(is_primary_key=True)
-    cat_name = field.CharDBField(max_length=100)
-
-    def serialize(self):
-        fields = [
-            "id",
-            "cat_name",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
 class DiscountModel(model.BaseDBModel):
     __tablename__ = "discount"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     description = field.CharDBField(max_length=20)
     discount_amount = field.FloatDBField()
     status = field.CharDBField(max_length=8)
@@ -98,10 +20,90 @@ class DiscountModel(model.BaseDBModel):
         return {f: getattr(self, f) for f in fields}
 
 
+class ProductModel(model.BaseDBModel):
+    __tablename__ = "product"
+
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
+    name = field.CharDBField(max_length=50)
+    description = field.TextDBField()
+    base_price = field.FloatDBField()
+    brand = field.CharDBField(max_length=50)
+    image_url = field.CharDBField(max_length=255)
+
+    discount_id = field.ForeignKeyDBField(related_model=DiscountModel, allow_null=True)
+
+    def serialize(self):
+        fields = [
+            "id",
+            "name",
+            "description",
+            "base_price",
+            "brand",
+            "image_url",
+            "discount_id",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class ProductVariantModel(model.BaseDBModel):
+    __tablename__ = "product_variant"
+
+    sku = field.CharDBField(max_length=8, is_primary_key=True)
+    name = field.CharDBField(max_length=50)
+    price = field.FloatDBField()
+    image_url = field.CharDBField(max_length=255)
+
+    product_id = field.ForeignKeyDBField(related_model=ProductModel, allow_null=False)
+
+    def serialize(self):
+        fields = [
+            "sku",
+            "name",
+            "price",
+            "image_url",
+            "product_id",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class SuperCategoryModel(model.BaseDBModel):
+    __tablename__ = "super_category"
+
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
+    cat_name = field.CharDBField(max_length=100)
+
+    def serialize(self):
+        fields = [
+            "id",
+            "cat_name",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class SubCategoryModel(model.BaseDBModel):
+    __tablename__ = "sub_category"
+
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
+    name = field.CharDBField(max_length=20)
+    description = field.TextDBField()
+
+    super_category_id = field.ForeignKeyDBField(
+        related_model=SuperCategoryModel, allow_null=False
+    )
+
+    def serialize(self):
+        fields = ["id", "name", "description", "super_category_id"]
+
+        return {f: getattr(self, f) for f in fields}
+
+
 class OptionsModel(model.BaseDBModel):
     __tablename__ = "options"
 
-    option_id = field.IntegerDBField(is_primary_key=True)
+    option_id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     prod_description = field.TextDBField()
     price_diff = field.FloatDBField()
 
@@ -118,17 +120,16 @@ class OptionsModel(model.BaseDBModel):
 class InventoryModel(model.BaseDBModel):
     __tablename__ = "inventory"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     quantity = field.IntegerDBField()
 
-    # sku = field.CharDBField(max_length=20)
-
-    sku = None  # TODO foreign key
+    sku = field.ForeignKeyDBField(related_model=ProductVariantModel, allow_null=False)
 
     def serialize(self):
         fields = [
             "id",
             "quantity",
+            "sku",
         ]
 
         return {f: getattr(self, f) for f in fields}
@@ -137,14 +138,18 @@ class InventoryModel(model.BaseDBModel):
 class ProductSubCategoryModel(model.BaseDBModel):
     __tablename__ = "product_sub_category"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
 
-    product_id = None  # TODO foreign key
-    subcategory_id = None  # TODO foreign key
+    product_id = field.ForeignKeyDBField(related_model=ProductModel, allow_null=False)
+    subcategory_id = field.ForeignKeyDBField(
+        related_model=SubCategoryModel, allow_null=False
+    )
 
     def serialize(self):
         fields = [
             "id",
+            "product_id",
+            "subcategory_id",
         ]
 
         return {f: getattr(self, f) for f in fields}
@@ -153,17 +158,19 @@ class ProductSubCategoryModel(model.BaseDBModel):
 class ProductVarientOptionsModel(model.BaseDBModel):
     __tablename__ = "product_variant_option"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
 
     # sku = field.CharDBField(max_length=8)
     # option_id = field.IntegerDBField()
 
-    sku = None  # TODO foreign key
-    option_id = None  # TODO foreign key
+    sku = field.ForeignKeyDBField(related_model=ProductVariantModel, allow_null=False)
+    option_id = field.ForeignKeyDBField(related_model=OptionsModel, allow_null=False)
 
     def serialize(self):
         fields = [
             "id",
+            "sku",
+            "option_id",
         ]
 
         return {f: getattr(self, f) for f in fields}

@@ -54,9 +54,6 @@ INSERT INTO product(name, description, base_price, discount_id, brand, image_url
 VALUES ('SAMSUNG Galaxy S20 cloud navy', 'SAMSUNG Galaxy S20 FE 5G Cell Phone, Factory Unlocked Android Smartphone, 128GB, Pro Grade Camera, 30X Space Zoom, Night Mode, US Version, Cloud Navy',
 302000.00, 1, 'SAMSUNG', 'https://m.media-amazon.com/images/I/71RxOftVoQL._AC_SL1500_.jpg');
 
-
-
-
 INSERT INTO product_variant 
 VALUES ('ABCD1234', 'Teddy bear brown medium', 1, 1400.00, 'https://m.media-amazon.com/images/I/7168qr79CzL._AC_SL1500_.jpg'); 
 INSERT INTO product_variant 
@@ -217,10 +214,6 @@ VALUES ('lavender', 8000.00);
 INSERT INTO options(option_name, price_diff) 
 VALUES ('olive', 8000.00);
 
-
-
-
-
 INSERT INTO product_variant_option(sku, option_id) 
 VALUES ('ABCD1234', 1); 
 INSERT INTO product_variant_option(sku, option_id) 
@@ -314,14 +307,10 @@ INSERT INTO product_variant_option(sku, option_id)
 VALUES ('ABCD1267', 28); 
 
 
-
 INSERT INTO super_category(cat_name)
 VALUES ('Toys'); 
 INSERT INTO super_category(cat_name)
 VALUES ('Electronics');
-
-
-
 
 INSERT INTO sub_category(name, description, super_category_id) 
 VALUES ('Soft Toys', 'Sample description', 1); 
@@ -337,9 +326,6 @@ INSERT INTO sub_category(name, description, super_category_id)
 VALUES ('Games', 'Sample description', 1); 
 INSERT INTO sub_category(name, description, super_category_id) 
 VALUES ('Puzzles & Puppets', 'Sample description', 1); 
-
-
-
 
 INSERT INTO product_sub_category(product_id, subcategory_id) 
 VALUES (1, 1); 
@@ -471,7 +457,6 @@ INSERT INTO inventory(quantity, sku) VALUES (5, 'ABCD1273');
 INSERT INTO inventory(quantity, sku) VALUES (5, 'ABCD1274');
 INSERT INTO inventory(quantity, sku) VALUES (5, 'ABCD1275');
 INSERT INTO inventory(quantity, sku) VALUES (5, 'ABCD1276');
-
 
 INSERT INTO order_payment_details(order_id, cardnumber, provider) 
 VALUES (1, '1234567812345678', 'Visa');

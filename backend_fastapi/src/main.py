@@ -20,7 +20,16 @@ async def on_startup():
 async def on_shutdown():
     connection_pool._remove_connections()
 
+
 # temporary routes
 @app.get("/about")
 def get_about(response: Response):
     return {"project_name": "Thulasi", "description": "Some Description"}
+
+# added to allow request from frontend
+@app.middleware("http")
+async def cors_middleware(request, call_next):
+    response = await call_next(request)
+    # response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
+    return response
