@@ -54,11 +54,11 @@ class RegisteredUserDBModel(model.BaseDBModel):
 class UserDBModel(model.BaseDBModel):
     __tablename__ = "user"
 
-    ID = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     is_guest = field.BooleanDBField()
     registered_user_id = field.ForeignKeyDBField(related_model=RegisteredUserDBModel)
 
     def serialize(self):
-        fields = ["ID", "is_guest", "registered_user_id"]
+        fields = ["id", "is_guest", "registered_user_id"]
 
         return {f: getattr(self, f) for f in fields}

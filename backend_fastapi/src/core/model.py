@@ -104,12 +104,21 @@ class BaseDBModel(metaclass=MetaModel):
                 field.validate(fval)
                 field_dict[fname] = fval
             for fname, field in self._foreign_key_fields.items():
-                fval = getattr(self, fname)
+                fval = getattr(self, field.name_id)
                 # perform validation on field values
                 field.validate(fval)
                 field_dict[field.name_id] = fval
 
-            insert_success = self.__class__.objects._insert(field_dict=field_dict)
+            insert_success, row_id = self.__class__.objects._insert(
+                field_dict=field_dict
+            )
+            if (
+                insert_success
+                and getattr(self, self.primary_key) is None
+                and self._fields[self.primary_key].auto_generated
+            ):
+                # update pk if relevant and insert is successful
+                setattr(self, self.primary_key, row_id)
 
         # Otherwise update existing record
         else:
