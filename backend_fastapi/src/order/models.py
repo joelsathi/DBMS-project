@@ -47,7 +47,7 @@ class OrderCartModel(model.BaseDBModel):
     __tablename__ = "order_cart"
 
     order_id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
-    billing_date = None  # TODO
+    billing_date = field.DateTimeDBField(datetime_format="%Y-%m-%d %H:%M:%S")
     is_billed = field.BaseDBField()
 
     user_id = field.ForeignKeyDBField(related_model=UserDBModel, allow_null=False)
