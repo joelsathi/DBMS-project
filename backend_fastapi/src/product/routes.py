@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, status,Response
 
-from ..core.manager import BaseQueryManager
+from ..core.db import connection_pool
 
 from .models import (
     ProductModel,
@@ -103,24 +103,37 @@ def get_filtered_product_list(
                 page_size,
                 start,
             )
-        cursor = BaseQueryManager._get_cursor()
+
+        cnx = connection_pool.get_connection()
+        cursor = cnx.cursor()
         cursor.execute(sql_query_str)
-        cursor.set_model_class(ProductModel)
         rows = cursor.fetchall()
         cursor.close()
+        cnx.close()
+
+        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+        serialized_rows = []
+        for row in rows:
+            serialized_row = {
+                "id": row[0],
+                "name": row[1],
+                "description": row[2],
+                "base_price": row[3],
+                "brand": row[4],
+                "image_url": row[5],
+            }
+            serialized_rows.append(serialized_row)
     else:
         rows = ProductModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-
+        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        serialized_rows = [ProductModel.serialize(row) for row in rows]
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
-
-    total = 4  # NEED TO IMPLEMENT THE FUNCTION
-    serialized_rows = [ProductModel.serialize(row) for row in rows]
-
     ret = get_pagination(
         "/product",
         total=total,
@@ -167,97 +180,85 @@ async def post_varient_list(request: Request):
     new_obj = ProductVariantModel(**field_dict)
     new_obj.save()
 
-# @product_router.get("/variant_filtered/search")
-# def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 1, page_size: int = 10):
-#     # TODO add field validation
-#     if id or sku:
-#         sql_query_where = " WHERE "
-#         checks = []
-#         if id:
-#             checks.append("product_variant.product_id = '{}'".format(id))
-#         if sku:
-#             checks.append("product_variant.sku = '{}'".format(sku))
-#         sql_query_where += " AND ".join(checks)
-#         start = (page_num - 1) * page_size
-#         # TODO way to get column names, foriegn key product_variant.product_id,
-#         sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url FROM product_variant \
-#                 {} LIMIT {} OFFSET {}".format(
-#                 sql_query_where,
-#                 page_size,
-#                 start,
-#             )
-#         cursor = BaseQueryManager._get_cursor()
-#         cursor.execute(sql_query_str)
-#         cursor.set_model_class(ProductVariantModel)
-#         rows = cursor.fetchall()
-#         cursor.close()
-#     else:
-#         rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-#     if rows is None:
-#         response.status_code = status.HTTP_404_NOT_FOUND
-#         return {
-#             "Error": "Detail not Found",
-#             "Message": "No entries on page {}".format(page_num),
-#         }
 
-#     total = 4  # NEED TO IMPLEMENT THE FUNCTION
-#     serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
-
-#     ret = get_pagination(
-#         "/product",
-#         total=total,
-#         serialized_rows=serialized_rows,
-#         page_num=page_num,
-#         page_size=page_size,
-#     )
-
-#     return ret
-
-
-@product_router.get("/variant_filtered/search")
-def get_filtered_variant(sku: str, response: Response, page_num: int = 1, page_size: int = 10):
+@product_router.get("/product_variant_filtered/search")
+def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 1, page_size: int = 10):
     # TODO add field validation
-    if sku:
-        sql_query_where = " WHERE "
-        checks = []
-        if sku:
-            checks.append("product_variant.sku = '{}'".format(sku))
-        sql_query_where += " AND ".join(checks)
+    if sku or id:
         start = (page_num - 1) * page_size
-        # TODO way to get column names, foriegn key product_variant.product_id,
-        sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url FROM product_variant \
-                {} LIMIT {} OFFSET {}".format(
-                sql_query_where,
-                page_size,
-                start,
-            )
-        cursor = BaseQueryManager._get_cursor()
-        cursor.execute(sql_query_str)
-        cursor.set_model_class(ProductVariantModel)
-        rows = cursor.fetchall()
-        cursor.close()
-    else:
-        rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-    if rows is None:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return {
-            "Error": "Detail not Found",
-            "Message": "No entries on page {}".format(page_num),
-        }
+        sql_query_str = ""
+        rows = None
+        if sku:
+            # TODO way to get column names, foriegn key product_variant.product_id,
+            sql_query_str = "SELECT product_variant.sku, product_variant.name,  product_variant.price, product_variant.image_url, product.brand FROM product_variant \
+                    JOIN product ON product_variant.product_id = product.id \
+                    WHERE product_variant.sku = '{}' LIMIT {} OFFSET {}".format(
+                    sku,
+                    page_size,
+                    start,
+                )
+            cnx = connection_pool.get_connection()
+            cursor = cnx.cursor()
+            cursor.execute(sql_query_str)
+            rows = cursor.fetchall()
+            cursor.close()
+            cnx.close()
 
-    total = 4  # NEED TO IMPLEMENT THE FUNCTION
-    serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
+            total = 4  # NEED TO IMPLEMENT THE FUNCTION
+            # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+            serialized_rows = []
+            for row in rows:
+                serialized_row = {
+                    "sku": row[0],
+                    "name": row[1],
+                    "price": row[2],
+                    "image_url": row[3],
+                    "brand": row[4]
+                }
+                serialized_rows.append(serialized_row) 
+        else:
+            sql_query_str = "SELECT p.id, p.name, p.description, p.base_price, p.brand, p.image_url FROM product p \
+                    WHERE p.id = '{}' LIMIT {} OFFSET {}".format(
+                    id,
+                    page_size,
+                    start,
+                )
 
-    ret = get_pagination(
-        "/product",
-        total=total,
-        serialized_rows=serialized_rows,
-        page_num=page_num,
-        page_size=page_size,
-    )
+            cnx = connection_pool.get_connection()
+            cursor = cnx.cursor()
+            cursor.execute(sql_query_str)
+            rows = cursor.fetchall()
+            cursor.close()
+            cnx.close()
 
-    return ret
+            total = 4  # NEED TO IMPLEMENT THE FUNCTION
+            # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+            serialized_rows = []
+            for row in rows:
+                serialized_row = {
+                    "id": row[0],
+                    "name": row[1],
+                    "description": row[2],
+                    "base_price": row[3],
+                    "brand": row[4],
+                    "image_url": row[5],
+                }
+                serialized_rows.append(serialized_row)
+        if rows is None:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return {
+                "Error": "Detail not Found",
+                "Message": "No entries on page {}".format(page_num),
+            }
+        # ret = get_pagination(
+        #     "/product",
+        #     total=total,
+        #     serialized_rows=serialized_rows,
+        #     page_num=page_num,
+        #     page_size=page_size,
+        # )
 
+        return serialized_rows 
 
 @product_router.get("/variants/{id}")
 def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_size: int = 10):
@@ -276,23 +277,34 @@ def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_s
                 page_size,
                 start,
             )
-        cursor = BaseQueryManager._get_cursor()
+        cnx = connection_pool.get_connection()
+        cursor = cnx.cursor()
         cursor.execute(sql_query_str)
-        cursor.set_model_class(ProductVariantModel)
         rows = cursor.fetchall()
         cursor.close()
+        cnx.close()
+
+        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+        serialized_rows = []
+        for row in rows:
+            serialized_row = {
+                "sku": row[0],
+                "name": row[1],
+                "price": row[2],
+                "image_url": row[3],
+            }
+            serialized_rows.append(serialized_row)
     else:
         rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
+        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
-
-    total = 4  # NEED TO IMPLEMENT THE FUNCTION
-    serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
-
     ret = get_pagination(
         "/product",
         total=total,
@@ -301,7 +313,7 @@ def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_s
         page_size=page_size,
     )
 
-    return ret
+    return ret  
 @product_router.get("/subcategory")
 def get_subcategory_list(response: Response, request: Request):
 
@@ -359,12 +371,13 @@ def get_filtered_subcategories(
             page_size,
             start,
         )
-    cursor = BaseQueryManager._get_cursor()
+
+    cnx = connection_pool.get_connection()
+    cursor = cnx.cursor()
     cursor.execute(sql_query_str)
-    cursor.set_model_class(SubCategoryModel)
     rows = cursor.fetchall()
     cursor.close()
-
+    cnx.close()
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
@@ -373,7 +386,15 @@ def get_filtered_subcategories(
         }
 
     total = 4  # NEED TO IMPLEMENT THE FUNCTION
-    serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+    # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+    serialized_rows = []
+    for row in rows:
+        serialized_row = {
+            'id': row[0],
+            'name': row[1],
+            'description': row[2],
+        }
+        serialized_rows.append(serialized_row)
 
     ret = get_pagination(
         "/product",
@@ -520,12 +541,13 @@ def get_filtered_options(
             page_size,
             start,
         )
-    cursor = BaseQueryManager._get_cursor()
+
+    cnx = connection_pool.get_connection()
+    cursor = cnx.cursor()
     cursor.execute(sql_query_str)
-    cursor.set_model_class(OptionsModel)
     rows = cursor.fetchall()
     cursor.close()
-
+    cnx.close()
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
@@ -534,7 +556,15 @@ def get_filtered_options(
         }
 
     total = 4  # NEED TO IMPLEMENT THE FUNCTION
-    serialized_rows = [OptionsModel.serialize(row) for row in rows]
+    # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
+    serialized_rows = []
+    for row in rows:
+        serialized_row = {
+            "option_id": row[0],
+            "prod_description": row[1],
+            "price_diff": row[2],
+        }
+        serialized_rows.append(serialized_row)
 
     ret = get_pagination(
         "/product",

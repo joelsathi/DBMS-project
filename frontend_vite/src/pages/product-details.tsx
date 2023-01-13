@@ -28,7 +28,7 @@ import { formatCurrency, getDate } from '../utils/helper';
 
 const ProductDetails = () => {
   const dispatch = useAppDispatch();
-  const { product, variant_options, variant, product_variants, loading } = useAppSelector((state) => state.productDetail);
+  const { product, product_variants, loading } = useAppSelector((state) => state.productDetail);
   const { userInfo } = useAppSelector((state) => state.login);
   const params = useParams();
   const { id } = params;
@@ -37,7 +37,7 @@ const ProductDetails = () => {
   const [comment, setComment] = useState<string>('');
   const [refresh, setRefresh] = useState<boolean>(false);
 
-  const [variant_option, setOption] = useState<string>('');
+  // const [variant_option, setOption] = useState<string>('');
   const [single_variant, setVariant] = useState<string>('');
   console.log('single_variant:', single_variant);
 
@@ -63,15 +63,16 @@ const ProductDetails = () => {
   };
 
   const reset = () => {
-    setOption('');
     setVariant('');
   };
 
   useEffect(() => {
-    dispatch(getProductById({id: id}));
+    // dispatch(getProductById({ id: id }));
+    dispatch(getProductById({id: id, sku: single_variant}));
+    
     // window.scrollTo(0, 0);
-  }, [id, dispatch,  refresh]);
-// }, [id, dispatch, variant]);
+  }, [id, dispatch,single_variant,   refresh]);
+// }, [id, dispatch, single_variant]);
 
 
   return (
@@ -104,7 +105,7 @@ const ProductDetails = () => {
                   {' '}
                   <h5 className=' d-flex justify-content-between align-items-center'>
                     <span>Price:</span>
-                    <span>{formatCurrency(product.base_price)}</span> // update price
+                    <span>{product.base_price ? formatCurrency(product.base_price): formatCurrency(product.price)}</span>
                   </h5>
                   </ListGroup.Item>
                   
@@ -115,10 +116,10 @@ const ProductDetails = () => {
                     onChange={(e: any) => {
                       if (e.target.value === 'Default') {
                         reset();
-                        dispatch(getProductById({id: id, sku: ''}));
+                        // dispatch(getProductById({id: id, sku: ''}));
                       } else {
                         setVariant(e.target.value);
-                        dispatch(getProductById({id: id, sku: e.target.value}));
+                        // dispatch(getProductById({id: id, sku: e.target.value}));
                       }
                     }}
                   >
@@ -152,19 +153,19 @@ const ProductDetails = () => {
                       if (e.target.value === 'Default') {
                         reset();
                       } else {
-                        setOption(e.target.value);
+                        setVariant(e.target.value);
                       }
                     }}
                   >
                     <option value='Default'>Default</option>
                     Default
-                    {variant_options.map((option: any) => (
-                      <option value={option.prod_description} key={option.option_id}>
-                        {option.prod_description}
+                    {product_variants.map((option: any) => (
+                      <option value={option.sku} key={option.sku}>
+                        {option.sku}
                       </option>
                     ))}
                   </FormSelect>
-                </ListGroup.Item> */}
+                </ListGroup.Item>  */}
                 {/* <ListGroup.Item>
                   <h5 className=' d-flex justify-content-between align-items-center'>
                     <span>Category:</span>
