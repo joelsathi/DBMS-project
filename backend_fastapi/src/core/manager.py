@@ -32,6 +32,7 @@ class MySQLModelCursor(CMySQLCursor):
         _all_fields = model_class.get_field_names()
 
         obj = model_class(
+            is_existing=True,
             **{
                 column_name: _all_fields[column_name].from_db(value)
                 for (column_name, value) in zip(self.column_names, row)
