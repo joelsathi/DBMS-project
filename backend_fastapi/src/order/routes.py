@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response, Request, status
+from fastapi import APIRouter, Response, Request, status, HTTPException
 from .models import (
     OrderCartModel,
     ProductOrderModel,
@@ -10,6 +10,10 @@ from .models import (
 from ..auth.utils import checkAdmin
 
 from ..core.pagination import get_pagination, get_params
+
+from fastapi.responses import JSONResponse
+import json
+from ..core.db import connection_pool
 
 order_router = APIRouter(
     prefix="/order",
@@ -408,3 +412,24 @@ def delete_location(id: int, response: Response, request: Request):
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {"message": "Failed to delete"}
+
+@order_router.post("/order")
+async def create_normal_user(request: Request):
+    field_dict = await request.json()
+    conn = None
+    cursor = None
+    try:
+        conn = connection_pool.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("START TRANSACTION")
+        cursor.execute("CALL create_order(%s)", (json.dumps(field_dict),))
+        conn.commit()
+        return JSONResponse(content={"message": "Order placed successfully"})
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
