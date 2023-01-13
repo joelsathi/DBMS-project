@@ -245,9 +245,10 @@ async def post_payment_detail(request: Request):
     new_obj = PaymentDetailDBModel(**field_dict)
     new_obj.save()
 
-@user_router.post("/create_normal_user")
+@user_router.post("/register")
 async def create_normal_user(request: Request):
     field_dict = await request.json()
+    field_dict["password"] = get_password_hash(field_dict["password"])
     conn = None
     cursor = None
     try:
