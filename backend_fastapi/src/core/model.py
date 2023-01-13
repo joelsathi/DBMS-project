@@ -7,6 +7,10 @@ class DBModelException(Exception):
     pass
 
 
+class ModelSaveException(Exception):
+    pass
+
+
 class MetaModel(type):
     __query_manager__ = BaseQueryManager
 
@@ -65,8 +69,10 @@ class BaseDBModel(metaclass=MetaModel):
 
     __tablename__ = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, is_existing=False, **kwargs):
         """NOTE: For now make sure that all field values are passed as kwargs"""
+
+        self.is_existing = is_existing
 
         for f in self._fields.values():
             try:
@@ -89,22 +95,53 @@ class BaseDBModel(metaclass=MetaModel):
         # TODO check for extra kwargs / args
 
     def save(self):
-        field_dict: dict = self.__class__.get_field_names()
-        field_dict = {}
-        for fname, field in self._fields.items():
-            fval = getattr(self, fname)
-            # perform validation on field values
-            field.validate(fval)
-            field_dict[fname] = fval
-        for fname, field in self._foreign_key_fields.items():
-            fval = getattr(self, fname)
-            # perform validation on field values
-            field.validate(fval)
-            field_dict[field.name_id] = fval
+        # Insert if record doesn't exist in db
+        if not self.is_existing:
+            field_dict = {}
+            for fname, field in self._fields.items():
+                fval = getattr(self, fname)
+                # perform validation on field values
+                field.validate(fval)
+                field_dict[fname] = fval
+            for fname, field in self._foreign_key_fields.items():
+                fval = getattr(self, fname)
+                # perform validation on field values
+                field.validate(fval)
+                field_dict[field.name_id] = fval
 
-        self.__class__.objects._insert(field_dict=field_dict)
+            insert_success = self.__class__.objects._insert(field_dict=field_dict)
 
-        # TODO implement update
+        # Otherwise update existing record
+        else:
+            field_dict = {}
+            for fname, field in self._fields.items():
+                fval = getattr(self, fname)
+                if fname == self.primary_key:
+                    pk_val = getattr(self, self.primary_key)
+                    if pk_val is None:
+                        raise ModelSaveException(
+                            "Can't save {} instance without specifying pk {}".format(
+                                self.__class__.__qualname__, self.primary_key
+                            )
+                        )
+
+                elif fval is not None:
+                    # perform validation on field values
+                    field.validate(fval)
+                    field_dict[fname] = fval
+
+            for fname, field in self._foreign_key_fields.items():
+                fval = getattr(self, fname)
+                if fval is not None:
+                    # perform validation on field values
+                    field.validate(fval)
+                    field_dict[field.name_id] = fval
+
+            update_success = self.__class__.objects._update(
+                field_dict=field_dict, filter_dict={self.primary_key: pk_val}
+            )
+
+        # TODO
         # validate -> call validate method on each field, any model specific validation?
         # save -> manager save method, manager update method
         # how to know if updating or saving?

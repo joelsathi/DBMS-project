@@ -32,6 +32,7 @@ class MySQLModelCursor(CMySQLCursor):
         _all_fields = model_class.get_field_names()
 
         obj = model_class(
+            is_existing=True,
             **{
                 column_name: _all_fields[column_name].from_db(value)
                 for (column_name, value) in zip(self.column_names, row)
@@ -282,11 +283,33 @@ class BaseQueryManager:
             ",".join(["%s" for f in field_dict.keys()]),
         )
 
+        success = False
         with self._get_cursor(CMySQLCursor) as cursor:
+            cursor: CMySQLCursor
             cursor.execute(sql_query_str, tuple(field_dict.values()))
-            cursor._check_executed()
+            if cursor.rowcount > 0:
+                success = True
 
-        return True
+        return success
 
-    def _update(self, obj_dict: dict):
-        raise NotImplementedError
+    def _update(self, field_dict: dict, filter_dict: dict):
+        """
+        Update a record in the database.
+
+        NOTE: This should probably not be used directly, instead using the save method on a model
+            which would in turn call this.
+        """
+
+        sql_query_str = "UPDATE {} SET {} WHERE {}".format(
+            self.model_class.__tablename__,
+            ",".join(["{}=%s".format(fname) for fname in field_dict.keys()]),
+            ",".join(["{}=%s".format(fname) for fname in filter_dict.keys()])
+        )
+
+        success = False
+        with self._get_cursor(CMySQLCursor) as cursor:
+            cursor.execute(sql_query_str, tuple([*field_dict.values(), *filter_dict.values()]))
+            if cursor.rowcount > 0:
+                success = True
+
+        return success

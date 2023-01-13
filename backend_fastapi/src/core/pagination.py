@@ -15,6 +15,7 @@ def get_pagination(
         "pagination": {},
     }
 
+    total = 3 if total is None else total
     if end >= total:
         ret["pagination"]["next"] = None
 
