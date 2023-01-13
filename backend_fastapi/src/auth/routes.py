@@ -161,6 +161,13 @@ def get_user_list(
     )
     return ret
 
+@user_router.post("/user")
+async def post_user(request: Request):
+    field_dict = await request.json()
+    field_dict["password"] = get_password_hash(field_dict["password"])
+    new_obj = UserDBModel(**field_dict)
+    new_obj.save()
+    print(new_obj)
 
 @user_router.get("/payment_detail")
 def get_payment_detail_list(
@@ -193,3 +200,10 @@ def get_payment_detail_list(
         page_size=page_size,
     )
     return ret
+
+@user_router.post("/payment_detail")
+async def post_payment_detail(request: Request):
+    field_dict = await request.json()
+    new_obj = payment_detailsDBModel(**field_dict)
+    new_obj.save()
+
