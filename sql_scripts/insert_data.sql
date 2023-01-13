@@ -16,8 +16,8 @@ INSERT INTO product_sub_category(product_id, subcategory_id)
 VALUES (1, 1); 
 INSERT INTO payment_detail(card_no, provider) 
 VALUES ('1234567812345678', 'Visa');
-INSERT INTO registered_user(username, password, firstname, lastname, email, address, mobile_no, payment_detail_id) 
-VALUES ('thulasithang', '4d27eae655e7272b21c5b0a539656a8ae869d75f', 'Thulasithan', 'Gnanenthiram', 'thulasithang@sample.com', 'T56: Bayawechcha paara, anda yata', '0112729729', 1);  
+INSERT INTO registered_user(username, password, firstname, lastname, email, address, mobile_no, payment_detail_id, is_admin) 
+VALUES ('thulasithang', '4d27eae655e7272b21c5b0a539656a8ae869d75f', 'Thulasithan', 'Gnanenthiram', 'thulasithang@sample.com', 'T56: Bayawechcha paara, anda yata', '0112729729', 1, TRUE);  
 INSERT INTO user(is_guest, registered_user_id) 
 VALUES (FALSE, 1);  
 INSERT INTO location(name, is_main_city, delivery_cost) 
