@@ -164,7 +164,6 @@ def get_user_list(
 @user_router.post("/user")
 async def post_user(request: Request):
     field_dict = await request.json()
-    field_dict["password"] = get_password_hash(field_dict["password"])
     new_obj = UserDBModel(**field_dict)
     new_obj.save()
     print(new_obj)
