@@ -49,7 +49,11 @@ async def login(username: str = Form(...), password: str = Form(...)):
             # Create a JWT token with user information
             token = encode_token(payload=payload)
             return JSONResponse(
-                content={"message": "Welcome registered user!", "token": token, "isAdmin": is_admin}
+                content={
+                    "message": "Welcome registered user!",
+                    "token": token,
+                    "isAdmin": is_admin,
+                }
             )
         else:
             return JSONResponse(
@@ -158,6 +162,13 @@ async def put_registered_user(id: int, request: Request, response: Response):
     print(upd_obj)
 
 
+@user_router.delete("/registered_user/{id}")
+def delete_registered_user(id: int, response: Response, request: Request):
+    checkAdmin(request=request)
+    del_obj = RegisteredUserDBModel(id=id, is_existing=True)
+    del_obj.remove()
+
+
 @user_router.get("/user")
 def get_user_list(
     response: Response,
@@ -193,6 +204,7 @@ def get_user_list(
         page_size=page_size,
     )
     return ret
+
 
 @user_router.post("/user")
 async def post_user(request: Request):
@@ -238,12 +250,14 @@ def get_payment_detail_list(
     )
     return ret
 
+
 @user_router.post("/payment_detail")
 async def post_payment_detail(request: Request):
     checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = PaymentDetailDBModel(**field_dict)
     new_obj.save()
+
 
 @user_router.post("/register")
 async def create_normal_user(request: Request):
@@ -255,7 +269,7 @@ async def create_normal_user(request: Request):
         conn = connection_pool.get_connection()
         cursor = conn.cursor()
         cursor.execute("START TRANSACTION")
-        cursor.execute("CALL create_user(%s)",(json.dumps(field_dict),))
+        cursor.execute("CALL create_user(%s)", (json.dumps(field_dict),))
         conn.commit()
         return JSONResponse(content={"message": "User created successfully"})
     except Exception as e:

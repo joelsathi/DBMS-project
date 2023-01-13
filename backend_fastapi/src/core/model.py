@@ -7,7 +7,7 @@ class DBModelException(Exception):
     pass
 
 
-class ModelSaveException(Exception):
+class ModelInstanceException(Exception):
     pass
 
 
@@ -128,7 +128,7 @@ class BaseDBModel(metaclass=MetaModel):
                 if fname == self.primary_key:
                     pk_val = getattr(self, self.primary_key)
                     if pk_val is None:
-                        raise ModelSaveException(
+                        raise ModelInstanceException(
                             "Can't save {} instance without specifying pk {}".format(
                                 self.__class__.__qualname__, self.primary_key
                             )
@@ -155,6 +155,14 @@ class BaseDBModel(metaclass=MetaModel):
         # save -> manager save method, manager update method
         # how to know if updating or saving?
         # save related here too?
+
+    def remove(self):
+        # nothing to remove if its not already marked as being in the database
+        if self.is_existing:
+            pk_val = getattr(self, self.primary_key)
+            delete_success = self.__class__.objects._delete(
+                filter_dict={self.primary_key: pk_val}
+            )
 
     def __repr__(self) -> str:
         return "<{} object {}>".format(

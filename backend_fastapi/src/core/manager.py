@@ -160,7 +160,6 @@ class BaseQueryManager:
                 except ValueError:
                     stripped_field_name = field_name
                     suffix = ""
-                    
 
                 # Silently pass if the field name does not exist: we don't want to fail from a
                 # filter, we would return an unfiltered queryset in that case
@@ -305,6 +304,27 @@ class BaseQueryManager:
             cursor.execute(
                 sql_query_str, tuple([*field_dict.values(), *filter_dict.values()])
             )
+            if cursor.rowcount > 0:
+                success = True
+
+        return success
+
+    def _delete(self, filter_dict: dict):
+        """
+        Delete a record in the database.
+
+        NOTE: This should probably not be used directly, instead using the remove method on a model
+            which would in turn call this.
+        """
+
+        sql_query_str = "DELETE FROM {} WHERE {}".format(
+            self.model_class.__tablename__,
+            ",".join(["{}=%s".format(fname) for fname in filter_dict.keys()]),
+        )
+
+        success = False
+        with self._get_cursor(CMySQLCursor) as cursor:
+            cursor.execute(sql_query_str, tuple(filter_dict.values()))
             if cursor.rowcount > 0:
                 success = True
 
