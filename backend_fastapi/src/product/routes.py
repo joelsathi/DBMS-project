@@ -114,7 +114,7 @@ def get_filtered_product_list(
         cursor.close()
         cnx.close()
 
-        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        total_rows = 4  # NEED TO IMPLEMENT THE FUNCTION
         # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
         serialized_rows = []
         for row in rows:
@@ -128,8 +128,17 @@ def get_filtered_product_list(
             }
             serialized_rows.append(serialized_row)
     else:
-        rows = ProductModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+        # TODO add field validation
+
+        rows, total_rows = ProductModel.objects.select(
+            page_num=page_num,
+            page_size=page_size,
+            sort_keys=sort_dict,
+            filters=where_params,
+            get_row_count=True,
+        )
         serialized_rows = [ProductModel.serialize(row) for row in rows]
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -137,15 +146,15 @@ def get_filtered_product_list(
             "Error": "Detail not Found",
             "Message": "No entries on page {}".format(page_num),
         }
+
     ret = get_pagination(
         "/product",
-        total=total,
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
     )
-
-    return ret  
+    return ret 
 
 @product_router.get("/variant")
 def get_variant_list(response: Response, request: Request):
@@ -267,7 +276,7 @@ def get_filtered_variant(id: int, sku: str, response: Response, page_num: int = 
         return serialized_rows 
 
 @product_router.get("/variants/{id}")
-def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_size: int = 10):
+def get_filtered_variants(id: int, response: Response, request: Request, page_num: int = 1, page_size: int = 10):
     # TODO add field validation
     if id:
         sql_query_where = " WHERE "
@@ -290,7 +299,7 @@ def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_s
         cursor.close()
         cnx.close()
 
-        total = 4  # NEED TO IMPLEMENT THE FUNCTION
+        total_rows = 4  # NEED TO IMPLEMENT THE FUNCTION
         # serialized_rows = [SubCategoryModel.serialize(row) for row in rows]
         serialized_rows = []
         for row in rows:
@@ -302,9 +311,26 @@ def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_s
             }
             serialized_rows.append(serialized_row)
     else:
-        rows = ProductVariantModel.objects.select_by_page(page_num=page_num, page_size=page_size)
-        total = 4  # NEED TO IMPLEMENT THE FUNCTION
-        serialized_rows = [ProductVariantModel.serialize(row) for row in rows]
+
+        page_num, page_size, sort_dict, where_params = get_params(request.query_params)
+
+        # TODO add field validation
+
+        rows, total_rows = ProductVariantModel.objects.select(
+            page_num=page_num,
+            page_size=page_size,
+            sort_keys=sort_dict,
+            filters=where_params,
+            get_row_count=True,
+        )
+
+        if rows is None:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return {
+                "Error": "Detail not Found",
+                "Message": "No entries on page {}".format(page_num),
+            }
+
     if rows is None:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
@@ -312,13 +338,12 @@ def get_filtered_variants(id: int, response: Response, page_num: int = 1, page_s
             "Message": "No entries on page {}".format(page_num),
         }
     ret = get_pagination(
-        "/product",
-        total=total,
+        "/variant",
+        total=total_rows,
         serialized_rows=serialized_rows,
         page_num=page_num,
         page_size=page_size,
     )
-
     return ret  
 @product_router.get("/subcategory")
 def get_subcategory_list(response: Response, request: Request):
@@ -406,7 +431,7 @@ def get_filtered_subcategories(
         serialized_rows.append(serialized_row)
 
     ret = get_pagination(
-        "/product",
+        "/subcategory",
         total=total,
         serialized_rows=serialized_rows,
         page_num=page_num,
