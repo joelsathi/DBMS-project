@@ -27,7 +27,7 @@ def decode_token(authorization: str):
     return jwt.decode(authorization, settings.SECRET_KEY, algorithms=ALGORITHM)
 
 
-def decode_role(authorization: str):
+def get_payload(authorization: str):
     try:
         token = authorization.replace("Bearer ", "")
         # Decode the token using the secret key
@@ -40,16 +40,16 @@ def decode_role(authorization: str):
 
 
 def checkAdmin(request: Request):
-    payload = decode_role(request.headers.get("Authorization"))
+    payload = get_payload(request.headers.get("Authorization"))
     if not payload or payload.get("role") == "customer":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied."
         )
 
 
-def checkCustomer(request: Request):
-    payload = decode_role(request.headers.get("Authorization"))
-    if not payload or payload.get("role") == "customer":
+def checkCustomer(request: Request, id: int):
+    payload = get_payload(request.headers.get("Authorization"))
+    if not payload or (payload.get("role") == "customer" and payload.get("id") != id):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Access denied."
         )
