@@ -71,8 +71,8 @@ const ProductDetails = () => {
     dispatch(getProductById({id: id, sku: single_variant}));
     
     // window.scrollTo(0, 0);
-  }, [id, dispatch,single_variant,   refresh]);
-// }, [id, dispatch, single_variant]);
+  // }, [id, dispatch,single_variant, refresh]);
+}, [id, dispatch, single_variant]);
 
 
   return (

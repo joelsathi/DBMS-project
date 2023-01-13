@@ -76,7 +76,7 @@ const Sidebar = () => {
           <div className='' />
           <ul className='navbar-nav'>
             <li className='nav-item'>
-              <Nav.Link as={NavLink} to={`/profile/${userInfo?._id}`}>
+              <Nav.Link as={NavLink} to={`/profile/${userInfo?.id}`}>
                 <i className='bi bi-person-square' /> Profile
               </Nav.Link>
             </li>

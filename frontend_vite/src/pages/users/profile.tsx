@@ -16,10 +16,11 @@ import { getUserOrder } from '../../redux/orders/user-orders';
 import { formatCurrency, getDate } from '../../utils/helper';
 import { FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
 import { GrView } from 'react-icons/gr';
+import React from 'react';
 
 type FormValues = {
   email: string;
-  name: string;
+  username: string;
   password: string;
   confirmPassword: string;
 };
@@ -34,7 +35,7 @@ const Profile = () => {
   const { id } = useParams();
   const [refresh, setRefresh] = useState<boolean>(false);
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required(),
+    username: Yup.string().required(),
     email: Yup.string().required('Email is required').email('Email is invalid'),
     password: Yup.string(),
     confirmPassword: Yup.string().oneOf(
@@ -53,12 +54,12 @@ const Profile = () => {
 
   const onSubmit = (data: FormValues) => {
     const update = {
-      name: data.name,
+      username: data.username,
       email: data.email,
       password: data.password === '' ? null : data.password,
     };
     authAxios
-      .put(`/users/${user?._id}`, update)
+      .put(`/users/${user?.id}`, update)
       .then((res) => {
         toast.success('user has been updated');
         setRefresh((prev) => (prev = !prev));
@@ -86,7 +87,7 @@ const Profile = () => {
   const cols = ['Order id', 'Price', 'Address', 'Paid', 'Date', 'Options'];
 
   return (
-    <DefaultLayout title={`${user?.name} profile`}>
+    <DefaultLayout title={`${user?.username} profile`}>
       <Container>
         {loading || !user || orderLoading || !orders ? (
           <Loader />
@@ -101,13 +102,13 @@ const Profile = () => {
                     <Form.Group controlId='name'>
                       <Form.Label>Username</Form.Label>
                       <Form.Control
-                        {...register('name', {
-                          value: user?.name,
+                        {...register('username', {
+                          value: user?.username,
                         })}
                         placeholder='Enter name'
-                        className={errors.name?.message && 'is-invalid'}
+                        className={errors.username?.message && 'is-invalid'}
                       />
-                      <p className='invalid-feedback'>{errors.name?.message}</p>
+                      <p className='invalid-feedback'>{errors.username?.message}</p>
                     </Form.Group>
 
                     <Form.Group controlId='email'>

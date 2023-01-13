@@ -13,9 +13,9 @@ const DownFooter = () => {
                 <Image width={100} src='/NewLogoFooter.png' alt='' />
               </h3>
               <p>
-                2 Example Lane
+                Panchikawatta Road,
                 <br />
-                Colombo
+                Colombo 4,
                 <br />
                 Sri Lanka
                 <br />

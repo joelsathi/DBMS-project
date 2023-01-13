@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../../redux';
 import { userLogin } from '../../redux/users/login-slice';
+import React from 'react';
 
 type FormValues = {
   email: string;
@@ -61,7 +62,7 @@ const Login = () => {
         </Form.Group>
 
         <Form.Group controlId='password'>
-          <Form.Label>Mot de Passe </Form.Label>
+          <Form.Label>Password </Form.Label>
           <Form.Control
             type='password'
             placeholder='*******'

@@ -60,7 +60,7 @@ const UserTable = () => {
           </h3>
           <TableContainer cols={cols}>
             {users.map((user) => (
-              <tr key={user._id}>
+              <tr key={user.id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>{getDate(user.createdAt)}</td>
@@ -75,7 +75,7 @@ const UserTable = () => {
                   {' '}
                   {!user?.isAdmin && (
                     <Button
-                      onClick={() => onPromote(user._id)}
+                      onClick={() => onPromote(user.id)}
                       variant='success'
                       size='sm'
                       className='me-3'
@@ -86,7 +86,7 @@ const UserTable = () => {
                 </td>
                 <td>
                   <Button
-                    onClick={() => onDelete(user._id)}
+                    onClick={() => onDelete(user.id)}
                     variant='danger'
                     size='sm'
                   >

@@ -19,6 +19,7 @@ import Products from './pages/products';
 import AuthProvider from './utils/auth-provider';
 import AdminProvider from './utils/admin-provider';
 import TemporaryPage from './pages/temp';
+import React from 'react';
 const App = () => {
   return (
     <Router>
@@ -34,17 +35,17 @@ const App = () => {
         <Route
           path='/shipping-address'
           element={
-            <AuthProvider>
+            // <AuthProvider>
               <ShippingAddress />
-            </AuthProvider>
+            // </AuthProvider>
           }
         />
         <Route
           path='/checkout'
           element={
-            <AuthProvider>
+            // <AuthProvider>
               <Checkout />
-            </AuthProvider>
+            // </AuthProvider>
           }
         />
         <Route

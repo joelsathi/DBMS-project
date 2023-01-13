@@ -138,7 +138,7 @@ const ProductModal = ({ show, handleClose, setRefresh }: Props) => {
           type='submit'
           className='mt-3 w-full text-white'
         >
-          Ajouter
+          Add
         </Button>
       </Form>
     </ModalContainer>
