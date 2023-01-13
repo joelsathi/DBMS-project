@@ -35,8 +35,12 @@ def get_payload(authorization: str):
         return payload
     # except jwt.ExpiredSignatureError:
     #     raise ValueError("Token has expired.")
-    except: # noqa
-        raise ValueError("Invalid token.")
+    except:  # noqa
+        # raise ValueError("Invalid token.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token. Access denied. Try Logging in with an authorized account",
+        )
 
 
 def checkAdmin(request: Request):
