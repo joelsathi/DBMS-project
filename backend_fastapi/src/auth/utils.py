@@ -35,7 +35,7 @@ def get_payload(authorization: str):
         return payload
     # except jwt.ExpiredSignatureError:
     #     raise ValueError("Token has expired.")
-    except:
+    except: # noqa
         raise ValueError("Invalid token.")
 
 

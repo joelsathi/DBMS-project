@@ -4,7 +4,7 @@ from ..core import model, field
 class PaymentDetailDBModel(model.BaseDBModel):
     __tablename__ = "payment_detail"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     card_no = field.CharDBField(max_length=20)
     provider = field.CharDBField(max_length=20)
 

@@ -4,7 +4,7 @@ from ..core import model, field
 class DiscountModel(model.BaseDBModel):
     __tablename__ = "discount"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     description = field.CharDBField(max_length=20)
     discount_amount = field.FloatDBField()
     status = field.CharDBField(max_length=8)
@@ -23,7 +23,7 @@ class DiscountModel(model.BaseDBModel):
 class ProductModel(model.BaseDBModel):
     __tablename__ = "product"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     name = field.CharDBField(max_length=50)
     description = field.TextDBField()
     base_price = field.FloatDBField()
@@ -71,7 +71,7 @@ class ProductVariantModel(model.BaseDBModel):
 class SuperCategoryModel(model.BaseDBModel):
     __tablename__ = "super_category"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     cat_name = field.CharDBField(max_length=100)
 
     def serialize(self):
@@ -86,7 +86,7 @@ class SuperCategoryModel(model.BaseDBModel):
 class SubCategoryModel(model.BaseDBModel):
     __tablename__ = "sub_category"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     name = field.CharDBField(max_length=20)
     description = field.TextDBField()
 
@@ -103,7 +103,7 @@ class SubCategoryModel(model.BaseDBModel):
 class OptionsModel(model.BaseDBModel):
     __tablename__ = "options"
 
-    option_id = field.IntegerDBField(is_primary_key=True)
+    option_id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     prod_description = field.TextDBField()
     price_diff = field.FloatDBField()
 
@@ -120,7 +120,7 @@ class OptionsModel(model.BaseDBModel):
 class InventoryModel(model.BaseDBModel):
     __tablename__ = "inventory"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
     quantity = field.IntegerDBField()
 
     sku = field.ForeignKeyDBField(related_model=ProductVariantModel, allow_null=False)
@@ -138,7 +138,7 @@ class InventoryModel(model.BaseDBModel):
 class ProductSubCategoryModel(model.BaseDBModel):
     __tablename__ = "product_sub_category"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
 
     product_id = field.ForeignKeyDBField(related_model=ProductModel, allow_null=False)
     subcategory_id = field.ForeignKeyDBField(
@@ -158,7 +158,7 @@ class ProductSubCategoryModel(model.BaseDBModel):
 class ProductVarientOptionsModel(model.BaseDBModel):
     __tablename__ = "product_variant_option"
 
-    id = field.IntegerDBField(is_primary_key=True)
+    id = field.IntegerDBField(is_primary_key=True, auto_generated=True)
 
     # sku = field.CharDBField(max_length=8)
     # option_id = field.IntegerDBField()

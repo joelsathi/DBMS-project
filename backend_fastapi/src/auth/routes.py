@@ -49,7 +49,11 @@ async def login(username: str = Form(...), password: str = Form(...)):
             # Create a JWT token with user information
             token = encode_token(payload=payload)
             return JSONResponse(
-                content={"message": "Welcome registered user!", "token": token, "isAdmin": is_admin}
+                content={
+                    "message": "Welcome registered user!",
+                    "token": token,
+                    "isAdmin": is_admin,
+                }
             )
         else:
             return JSONResponse(
@@ -71,7 +75,7 @@ async def secure_route(authorization: str = Header(None, prefix="Bearer ")):
         # Verify the JWT token
         payload = decode_token(token)
         return JSONResponse(content={"message": f"Welcome {payload['username']}!"})
-    except:
+    except:  # noqa
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token."
         )
@@ -118,15 +122,18 @@ def get_registered_user_list(
 
 
 @user_router.post("/registered_user")
-async def post_registered_user(request: Request):
-
+async def post_registered_user(request: Request, response: Response):
     checkAdmin(request=request)
-
     field_dict = await request.json()
     field_dict["password"] = get_password_hash(field_dict["password"])
     new_obj = RegisteredUserDBModel(**field_dict)
-    new_obj.save()
-    print(new_obj)
+    success = new_obj.save()
+    if success:
+        response.status_code = status.HTTP_201_CREATED
+        return {"message": "success", "id": new_obj.id}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to create"}
 
 
 @user_router.get("/registered_user/{id}")
@@ -154,8 +161,26 @@ async def put_registered_user(id: int, request: Request, response: Response):
     if "password" in field_dict:
         field_dict["password"] = get_password_hash(field_dict["password"])
     upd_obj = RegisteredUserDBModel(**field_dict, is_existing=True)
-    upd_obj.save()
-    print(upd_obj)
+    success = upd_obj.save()
+    if success:
+        response.status_code = status.HTTP_200_OK
+        return {"message": "success"}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to update"}
+
+
+@user_router.delete("/registered_user/{id}")
+def delete_registered_user(id: int, response: Response, request: Request):
+    checkAdmin(request=request)
+    del_obj = RegisteredUserDBModel(id=id, is_existing=True)
+    success = del_obj.remove()
+    if success:
+        response.status_code = status.HTTP_200_OK
+        return {"message": "success"}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to delete"}
 
 
 @user_router.get("/user")
@@ -194,12 +219,47 @@ def get_user_list(
     )
     return ret
 
+
 @user_router.post("/user")
-async def post_user(request: Request):
+async def post_user(request: Request, response: Response):
     checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = UserDBModel(**field_dict)
-    new_obj.save()
+    success = new_obj.save()
+    if success:
+        response.status_code = status.HTTP_201_CREATED
+        return {"message": "success", "id": new_obj.id}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to create"}
+
+
+@user_router.put("/user/{id}")
+async def put_user(id: int, response: Response, request: Request):
+    checkAdmin(request=request)
+    field_dict = await request.json()
+    field_dict["id"] = id
+    upd_obj = UserDBModel(**field_dict, is_existing=True)
+    success = upd_obj.save()
+    if success:
+        response.status_code = status.HTTP_200_OK
+        return {"message": "success"}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to update"}
+
+
+@user_router.delete("/user/{id}")
+def delete_user(id: int, response: Response, request: Request):
+    checkAdmin(request=request)
+    del_obj = RegisteredUserDBModel(id=id, is_existing=True)
+    success = del_obj.remove()
+    if success:
+        response.status_code = status.HTTP_200_OK
+        return {"message": "success"}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to delete"}
 
 
 @user_router.get("/payment_detail")
@@ -238,12 +298,48 @@ def get_payment_detail_list(
     )
     return ret
 
+
 @user_router.post("/payment_detail")
-async def post_payment_detail(request: Request):
+async def post_payment_detail(request: Request, response: Response):
     checkAdmin(request=request)
     field_dict = await request.json()
     new_obj = PaymentDetailDBModel(**field_dict)
-    new_obj.save()
+    success = new_obj.save()
+    if success:
+        response.status_code = status.HTTP_201_CREATED
+        return {"message": "success", "id": new_obj.id}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to create"}
+
+
+@user_router.put("/payment_detail/{id}")
+async def put_payment_detail(id: int, response: Response, request: Request):
+    checkAdmin(request=request)
+    field_dict = await request.json()
+    field_dict["id"] = id
+    upd_obj = UserDBModel(**field_dict, is_existing=True)
+    success = upd_obj.save()
+    if success:
+        response.status_code = status.HTTP_200_OK
+        return {"message": "success"}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to update"}
+
+
+@user_router.delete("/payment_detail/{id}")
+def delete_payment_detail(id: int, response: Response, request: Request):
+    checkAdmin(request=request)
+    del_obj = RegisteredUserDBModel(id=id, is_existing=True)
+    success = del_obj.remove()
+    if success:
+        response.status_code = status.HTTP_200_OK
+        return {"message": "success"}
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"message": "Failed to delete"}
+
 
 @user_router.post("/register")
 async def create_normal_user(request: Request):
@@ -255,7 +351,7 @@ async def create_normal_user(request: Request):
         conn = connection_pool.get_connection()
         cursor = conn.cursor()
         cursor.execute("START TRANSACTION")
-        cursor.execute("CALL create_user(%s)",(json.dumps(field_dict),))
+        cursor.execute("CALL create_user(%s)", (json.dumps(field_dict),))
         conn.commit()
         return JSONResponse(content={"message": "User created successfully"})
     except Exception as e:
