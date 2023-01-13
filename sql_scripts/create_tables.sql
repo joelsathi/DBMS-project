@@ -161,3 +161,28 @@ CREATE TABLE order_payment_details(
     FOREIGN KEY (order_id) REFERENCES order_cart(order_id)
 		ON DELETE SET NULL
 );
+
+DELIMITER $$
+CREATE PROCEDURE create_user(IN field_dict JSON)
+BEGIN
+    
+    DECLARE registered_user_id INT;
+    DECLARE payment_detail_id INT;
+
+    START TRANSACTION;
+    INSERT INTO registered_user (username, password, firstname, lastname, email, address, mobile_no, is_admin, created_date, payment_detail_id) 
+    VALUES (field_dict->>'$.username', field_dict->>'$.password', field_dict->>'$.firstname', field_dict->>'$.lastname', field_dict->>'$.email', field_dict->>'$.address', field_dict->>'$.mobile_no', 0, NOW(), NULL);
+    SET registered_user_id = LAST_INSERT_ID();
+    
+    INSERT INTO user (is_guest, registered_user_id) 
+    VALUES (0, registered_user_id);
+    
+    INSERT INTO payment_detail (card_no, provider) 
+    VALUES (field_dict->>'$.card_no', field_dict->>'$.provider');
+    SET payment_detail_id = LAST_INSERT_ID();
+    
+    UPDATE registered_user SET payment_detail_id = payment_detail_id WHERE id = registered_user_id;
+    
+    COMMIT;
+END$$
+DELIMITER ;
