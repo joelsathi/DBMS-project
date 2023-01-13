@@ -14,7 +14,7 @@ from .utils import (
 )
 from fastapi.responses import JSONResponse
 
-from ..core.db import connection
+from ..core.db import connection_pool
 
 
 user_router = APIRouter(
@@ -25,12 +25,14 @@ user_router = APIRouter(
 @user_router.post("/login")
 async def login(username: str = Form(...), password: str = Form(...)):
 
-    cursor = connection.cursor()
+    cnx = connection_pool.get_connection()
+    cursor = cnx.cursor()
 
     query = "SELECT password, is_admin, id FROM registered_user WHERE username = %s"
     cursor.execute(query, (username,))
     result = cursor.fetchone()
     cursor.close()
+    cnx.close()
 
     if result:
         hashed_password, is_admin, id = result
@@ -141,13 +143,11 @@ def get_registered_user(id: int, response: Response, request: Request):
 
 
 @user_router.put("/registered_user/{id}")
-async def put_registered_user(
-    id: int,
-    request: Request,
-    response: Response
-):
+async def put_registered_user(id: int, request: Request, response: Response):
     field_dict = await request.json()
     field_dict["id"] = id
+    if "password" in field_dict:
+        field_dict["password"] = get_password_hash(field_dict["password"])
     upd_obj = RegisteredUserDBModel(**field_dict, is_existing=True)
     upd_obj.save()
     print(upd_obj)
