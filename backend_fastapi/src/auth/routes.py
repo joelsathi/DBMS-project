@@ -20,14 +20,14 @@ async def login(username: str = Form(...), password: str = Form(...)):
     cursor = connection.cursor()
     
     #### This is for Authorization
-    #### query = "SELECT password, role FROM users WHERE username = %s"
+    #### query = "SELECT password, is_admin FROM users WHERE username = %s"
     query = "SELECT password FROM registered_user WHERE username = %s"
     cursor.execute(query, (username,))
     result = cursor.fetchone()
     cursor.close()
 
     if result:
-        #### hashed_password, role = result
+        #### hashed_password, is_admin = result
         hashed_password = result[0]
 
         # password = get_password_hash(password=password)
@@ -35,6 +35,8 @@ async def login(username: str = Form(...), password: str = Form(...)):
         # Perform authentication and authorization here
         if verify_password(plain_password=password, hashed_password=hashed_password):
             #### for Authorization
+            #### role = "customer"
+            #### if (is_admin): role = "admin"
             #### payload = {"username": username, "role": role}
 
             # Create a JWT token with user information
