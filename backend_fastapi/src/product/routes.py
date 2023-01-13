@@ -53,6 +53,9 @@ def get_product_list(response: Response, request: Request):
         page_num=page_num,
         page_size=page_size,
     )
+    # set the cache-control header on the response(since home page once loaded is static)
+    # browser to cache the response for 3600 seconds, or 1 hour.
+    response.headers["Cache-Control"] = "max-age=3600"
     return ret
 
 
