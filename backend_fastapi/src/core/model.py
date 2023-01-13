@@ -197,9 +197,11 @@ class BaseDBModel(metaclass=MetaModel):
 
         for f in self.__class__.get_fields():
             if isinstance(f, ForeignKeyDBField):
-                serialized_obj[f.name] = f.related_model.serialize(
-                    getattr(self, f.name)
-                )
+                fval = getattr(self, f.name)
+                if fval is not None:
+                    serialized_obj[f.name] = f.related_model.serialize(fval)
+                else:
+                    serialized_obj[f.name] = None
 
             else:
                 serialized_obj[f.name] = getattr(self, f.name)
