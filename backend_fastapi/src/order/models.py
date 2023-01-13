@@ -1,81 +1,7 @@
 from ..core import model, field
 
-
-class OrderCartModel(model.BaseDBModel):
-    __tablename__ = "order_cart"
-
-    order_id = field.IntegerDBField(is_primary_key=True)
-    billing_date = None  # TODO
-    is_billed = field.BaseDBField()
-
-    user_id = None  # TODO foriengn key
-    delivery_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "order_id",
-            "is_billed",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
-class ProductOrderModel(model.BaseDBModel):
-    __tablename__ = "product_order"
-
-    id = field.IntegerDBField(is_primary_key=True)
-    price = field.FloatDBField()
-    quantity = field.IntegerDBField()
-
-    sku = None  # TODO have to consider the ER again and decide
-    order_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "id",
-            "price",
-            "quantity",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
-class OrderPaymentDetailModel(model.BaseDBModel):
-    __tablename__ = "order_payment_details"
-
-    ID = field.IntegerDBField(is_primary_key=True)
-    cardnumber = field.CharDBField(max_length=16)
-    provider = field.CharDBField(max_length=20)
-
-    order_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "ID",
-            "cardnumber",
-            "provider",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
-
-
-class DeliveryModel(model.BaseDBModel):
-    __tablename__ = "delivery"
-
-    ID = field.IntegerDBField(is_primary_key=True)
-    delivery_method = field.CharDBField(max_length=20)
-    provider = field.CharDBField(max_length=20)
-
-    location_id = None  # TODO foriengn key
-
-    def serialize(self):
-        fields = [
-            "ID",
-            "delivery_method",
-            "provider",
-        ]
-
-        return {f: getattr(self, f) for f in fields}
+from ..auth.models import UserDBModel
+from ..product.models import ProductVariantModel
 
 
 class LocationModel(model.BaseDBModel):
@@ -92,6 +18,89 @@ class LocationModel(model.BaseDBModel):
             "name",
             "is_main_city",
             "delivery_cost",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class DeliveryModel(model.BaseDBModel):
+    __tablename__ = "delivery"
+
+    ID = field.IntegerDBField(is_primary_key=True)
+    delivery_method = field.CharDBField(max_length=20)
+    provider = field.CharDBField(max_length=20)
+
+    location_id = field.ForeignKeyDBField(related_model=LocationModel, allow_null=True)
+
+    def serialize(self):
+        fields = [
+            "ID",
+            "delivery_method",
+            "provider",
+            "location_id",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class OrderCartModel(model.BaseDBModel):
+    __tablename__ = "order_cart"
+
+    order_id = field.IntegerDBField(is_primary_key=True)
+    billing_date = None  # TODO
+    is_billed = field.BaseDBField()
+
+    user_id = field.ForeignKeyDBField(related_model=UserDBModel, allow_null=False)
+    delivery_id = field.ForeignKeyDBField(related_model=DeliveryModel, allow_null=True)
+
+    def serialize(self):
+        fields = [
+            "order_id",
+            "is_billed",
+            "user_id",
+            "delivery_id",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class ProductOrderModel(model.BaseDBModel):
+    __tablename__ = "product_order"
+
+    id = field.IntegerDBField(is_primary_key=True)
+    price = field.FloatDBField()
+    quantity = field.IntegerDBField()
+
+    sku = field.ForeignKeyDBField(related_model=ProductVariantModel, allow_null=False)
+    order_id = field.ForeignKeyDBField(related_model=OrderCartModel, allow_null=False)
+
+    def serialize(self):
+        fields = [
+            "id",
+            "price",
+            "quantity",
+            "sku",
+            "order_id",
+        ]
+
+        return {f: getattr(self, f) for f in fields}
+
+
+class OrderPaymentDetailModel(model.BaseDBModel):
+    __tablename__ = "order_payment_details"
+
+    ID = field.IntegerDBField(is_primary_key=True)
+    cardnumber = field.CharDBField(max_length=16)
+    provider = field.CharDBField(max_length=20)
+
+    order_id = field.ForeignKeyDBField(related_model=OrderCartModel, allow_null=False)
+
+    def serialize(self):
+        fields = [
+            "ID",
+            "cardnumber",
+            "provider",
+            "order_id",
         ]
 
         return {f: getattr(self, f) for f in fields}
