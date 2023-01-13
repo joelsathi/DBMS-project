@@ -4,7 +4,13 @@ from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
 from ..core.pagination import get_pagination, get_params
 
-from .utils import get_password_hash, encode_token, decode_token, verify_password
+from .utils import (
+    get_password_hash,
+    encode_token,
+    decode_token,
+    verify_password,
+    checkAdmin,
+)
 from fastapi.responses import JSONResponse
 
 from ..core.db import connection
@@ -73,6 +79,7 @@ def get_registered_user_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -105,6 +112,9 @@ def get_registered_user_list(
 
 @user_router.post("/registered_user")
 async def post_registered_user(request: Request):
+
+    checkAdmin(request=request)
+
     field_dict = await request.json()
     field_dict["password"] = get_password_hash(field_dict["password"])
     new_obj = RegisteredUserDBModel(**field_dict)
@@ -116,7 +126,10 @@ async def post_registered_user(request: Request):
 def get_registered_user(
     id: int,
     response: Response,
+    request: Request
 ):
+    checkAdmin(request=request)
+
     row = RegisteredUserDBModel.objects.select_by_id(id)
     if row is None:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -134,6 +147,7 @@ def get_user_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -167,6 +181,7 @@ def get_payment_detail_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 

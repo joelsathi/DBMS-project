@@ -7,6 +7,8 @@ from .models import (
     LocationModel,
 )
 
+from ..auth.utils import checkAdmin, checkCustomer
+
 from ..core.pagination import get_pagination, get_params
 
 order_router = APIRouter(
@@ -19,6 +21,7 @@ def get_order_cart_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -52,6 +55,7 @@ def get_product_order_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
@@ -85,7 +89,8 @@ def get_order_payment_detail_list(
     response: Response,
     request: Request,
 ):
-
+    checkAdmin(request=request)
+    
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -118,6 +123,7 @@ def get_delivery_list(
     response: Response,
     request: Request,
 ):
+    checkAdmin(request=request)
 
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 

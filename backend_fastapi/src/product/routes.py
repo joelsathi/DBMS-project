@@ -12,6 +12,8 @@ from .models import (
     ProductVarientOptionsModel,
 )
 
+from ..auth.utils import checkAdmin
+
 from ..core.pagination import get_pagination, get_params
 
 product_router = APIRouter(
@@ -142,6 +144,8 @@ def get_supercategory_list(response: Response, request: Request):
 @product_router.get("/discount")
 def get_discount_list(response: Response, request: Request):
     
+    checkAdmin(request=request)
+
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
     # TODO add field validation
@@ -201,6 +205,8 @@ def get_options_list(response: Response, request: Request):
 
 @product_router.get("/inventory")
 def get_inventory_list(response: Response, request: Request):
+    
+    checkAdmin(request=request)
     
     page_num, page_size, sort_dict, where_params = get_params(request.query_params)
 
