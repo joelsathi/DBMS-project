@@ -48,7 +48,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
             # Create a JWT token with user information
             token = encode_token(payload=payload)
             return JSONResponse(
-                content={"message": "Welcome registered user!", "token": token}
+                content={"message": "Welcome registered user!", "token": token, "isAdmin": is_admin}
             )
         else:
             return JSONResponse(
