@@ -78,6 +78,7 @@ const Register = () => {
       .catch((err) => toast.error(setError(err)));
   };
 
+  
   return (
     <FormContainer
       meta='register for free'
