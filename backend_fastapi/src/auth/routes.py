@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, Response, status, Request, HTTPException, Header, Form
 
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
@@ -244,3 +245,23 @@ async def post_payment_detail(request: Request):
     new_obj = PaymentDetailDBModel(**field_dict)
     new_obj.save()
 
+@user_router.post("/create_normal_user")
+async def create_normal_user(request: Request):
+    field_dict = await request.json()
+    conn = None
+    cursor = None
+    try:
+        conn = connection_pool.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("START TRANSACTION")
+        cursor.execute("CALL create_user(%s)",(json.dumps(field_dict),))
+        conn.commit()
+        return JSONResponse(content={"message": "User created successfully"})
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
