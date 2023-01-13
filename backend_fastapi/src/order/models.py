@@ -59,6 +59,7 @@ class OrderCartModel(model.BaseDBModel):
             "is_billed",
             "user_id",
             "delivery_id",
+            "billing_date"
         ]
 
         return {f: getattr(self, f) for f in fields}
