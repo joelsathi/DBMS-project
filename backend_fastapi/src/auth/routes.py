@@ -1,12 +1,70 @@
-from fastapi import APIRouter, Response, status, Request
+from fastapi import APIRouter, Response, status, Request, HTTPException, Header, Form
 
 from .models import RegisteredUserDBModel, UserDBModel, PaymentDetailDBModel
 
 from ..core.pagination import get_pagination, get_params
 
+from .utils import get_password_hash, encode_token, decode_token, verify_password
+from fastapi.responses import JSONResponse
+
+from ..core.db import connection
+
+
 user_router = APIRouter(
     prefix="/auth",
 )
+
+
+@user_router.post("/login")
+async def login(username: str = Form(...), password: str = Form(...)):
+
+    cursor = connection.cursor()
+
+    query = "SELECT password, is_admin FROM registered_user WHERE username = %s"
+    cursor.execute(query, (username,))
+    result = cursor.fetchone()
+    cursor.close()
+
+    if result:
+        hashed_password, is_admin = result
+
+        # Perform authentication and authorization here
+        if verify_password(plain_password=password, hashed_password=hashed_password):
+            # for Authorization
+            role = "customer"
+            if is_admin:
+                role = "admin"
+            payload = {"username": username, "role": role}
+
+            # Create a JWT token with user information
+            token = encode_token(payload=payload)
+            return JSONResponse(
+                content={"message": "Welcome registered user!", "token": token}
+            )
+        else:
+            return JSONResponse(
+                content={"message": "Invalid credentials."},
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+    else:
+        return JSONResponse(
+            content={"message": "Invalid credentials."},
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+
+@user_router.get("/secure")
+async def secure_route(authorization: str = Header(None, prefix="Bearer ")):
+    try:
+        # Separate the token from the "Bearer " prefix
+        token = authorization.replace("Bearer ", "")
+        # Verify the JWT token
+        payload = decode_token(token)
+        return JSONResponse(content={"message": f"Welcome {payload['username']}!"})
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token."
+        )
 
 
 @user_router.get("/registered_user")
@@ -31,7 +89,7 @@ def get_registered_user_list(
             "Message": "No entries on page {}".format(page_num),
         }
 
-    total = 18  # NEED TO IMPLEMENT THE FUNCTION
+    total = None  # NEED TO IMPLEMENT THE FUNCTION
     serialized_rows = [RegisteredUserDBModel.serialize(row) for row in rows]
 
     ret = get_pagination(
@@ -44,9 +102,11 @@ def get_registered_user_list(
 
     return ret
 
+
 @user_router.post("/registered_user")
 async def post_registered_user(request: Request):
     field_dict = await request.json()
+    field_dict["password"] = get_password_hash(field_dict["password"])
     new_obj = RegisteredUserDBModel(**field_dict)
     new_obj.save()
     print(new_obj)

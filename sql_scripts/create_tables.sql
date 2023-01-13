@@ -93,6 +93,7 @@ CREATE TABLE registered_user (
     mobile_no VARCHAR(10),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     payment_detail_id INT,
+    is_admin BOOL,
     FOREIGN KEY (payment_detail_id) REFERENCES payment_detail(id) ON DELETE
     SET NULL
 );

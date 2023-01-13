@@ -29,6 +29,7 @@ class RegisteredUserDBModel(model.BaseDBModel):
     email = field.CharDBField(max_length=255)
     address = field.CharDBField(max_length=512, allow_null=True)
     mobile_no = field.CharDBField(max_length=10)
+    is_admin = field.BooleanDBField()
     created_date = None  # TODO
     payment_detail_id = field.ForeignKeyDBField(
         related_model=PaymentDetailDBModel, allow_null=True
@@ -44,6 +45,7 @@ class RegisteredUserDBModel(model.BaseDBModel):
             "address",
             "mobile_no",
             "payment_detail_id",
+            "is_admin",
         ]
 
         return {f: getattr(self, f) for f in fields}
