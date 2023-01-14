@@ -5,8 +5,17 @@ from .order.routes import order_router
 from .reports.routes import report_router
 from .core.db import connection_pool
 from .core.manager import BaseQueryManager
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(user_router)
 app.include_router(product_router)
 app.include_router(order_router)
@@ -27,10 +36,3 @@ async def on_shutdown():
 def get_about(response: Response):
     return {"project_name": "Thulasi", "description": "Some Description"}
 
-# added to allow request from frontend
-@app.middleware("http")
-async def cors_middleware(request, call_next):
-    response = await call_next(request)
-    # response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:5173"
-    return response

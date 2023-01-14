@@ -10,6 +10,7 @@ import Paginate from '../../../components/UI/paginate';
 import TableContainer from '../../../components/UI/table-contrainer';
 import { useAppDispatch, useAppSelector } from '../../../redux';
 import { getFilterProducts } from '../../../redux/products/search-list';
+import { getFilterProducts2 } from '../../../redux/products/rep1';
 import authAxios from '../../../utils/auth-axios';
 import { setError } from '../../../utils/error';
 import { formatCurrency, getDate } from '../../../utils/helper';
@@ -29,13 +30,25 @@ function ProductTable() {
   const onClose = () => setShow(false);
 
   const cols = [
-    'image',
-    'name',
-    'brand',
-    'category',
-    'price',
-    'created At',
-    'options',
+    // 'image',
+    // 'name',
+    // 'brand',
+    // 'category',
+    // 'price',
+    // 'created At',
+    // 'options',
+    "id",
+    "sku",
+    "year",
+    "firstQuaterQty",
+    "firstQuaterSales",
+    "secondQuaterQty",  
+    "secondQuaterSales",
+    "thirdQuaterQty",
+    "thirdQuaterSales",
+    "fourthQuaterQty",
+    "fourthQuaterSales",
+    "total",  
   ];
 
   const onDelete = (id: string | number) => {
@@ -51,7 +64,9 @@ function ProductTable() {
   };
 
   useEffect(() => {
-    dispatch(getFilterProducts({ n: pageNumber, b: '', c: '', q: '' }));
+    // dispatch(getFilterProducts({ n: pageNumber, b: '', c: '', q: '' }));
+    dispatch(getFilterProducts2({ n: pageNumber, b: '', c: '', q: '' }));
+
   }, [dispatch, pageNumber, refresh]);
 
   return (
@@ -61,43 +76,31 @@ function ProductTable() {
       ) : (
         <Row className='py-3'>
           <h3 className='d-flex justify-content-between align-items-center'>
-            <span>Product List</span>
-            <Button
+            <span>Quartely sales report</span>
+            {/* <Button
               style={{ backgroundColor: '#e03a3c', color: '#fff' }}
               variant='outline-none'
               onClick={onOpen}
               size='sm'
             >
               Add Product
-            </Button>
+            </Button> */}
           </h3>
           <TableContainer cols={cols}>
             {products.map((product) => (
               <tr key={product.sku}>
-                <td>
-                  <Image className='avatar' roundedCircle src={product.image_url} />
-                </td>
-                <td>{product.name}</td>
-                <td>{product.brand}</td>
-                <td>{product.category}</td>
-                <td>{formatCurrency(product.price)}</td>
-                <td>{getDate(product?.createdAt)}</td>
-                <td>
-                  <Link
-                    className='btn btn-sm btn-primary me-2'
-                    to={`/dashboard/product-edit/${product.sku}`}
-                  >
-                    <FaEdit />
-                  </Link>
-                  <Button
-                    onClick={() => onDelete(product.sku)}
-                    variant='danger'
-                    size='sm'
-                  >
-                    <FaTrash />
-                  </Button>
-                </td>
-                {/* <td>{product?.created_at}</td> */}
+                <td>{product.id}</td>
+                <td>{product.sku}</td>
+                <td>{product.year}</td>
+                <td>{product.firstQuaterQty}</td>
+                <td>{formatCurrency(product.firstQuaterSales)}</td>
+                <td>{product.secondQuaterQty}</td>
+                <td>{formatCurrency(product.secondQuaterSales)}</td>
+                <td>{product.thirdQuaterQty}</td>
+                <td>{formatCurrency(product.thirdQuaterSales)}</td>
+                <td>{product.fourthQuaterQty}</td>
+                <td>{formatCurrency(product.fourthQuaterSales)}</td>
+                <td>{product.total}</td>
               </tr>
             ))}
           </TableContainer>

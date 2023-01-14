@@ -61,7 +61,7 @@ const UserTable = () => {
           <TableContainer cols={cols}>
             {users.map((user) => (
               <tr key={user.id}>
-                <td>{user.name}</td>
+                <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{getDate(user.createdAt)}</td>
                 <td>

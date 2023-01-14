@@ -33,7 +33,9 @@ const initialState: OrderSliceState = {
 
 export const getUserOrder = createAsyncThunk('users/orders', async () => {
   try {
-    const { data } = await authAxios.get('/orders/orders-user');
+    // const { data } = await authAxios.get('/order/product_order');
+    const { data } = await authAxios.get('/product/product');
+
     return data;
   } catch (error: any) {
     const message = setError(error);

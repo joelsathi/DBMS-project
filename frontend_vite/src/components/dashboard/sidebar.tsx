@@ -56,7 +56,7 @@ const Sidebar = () => {
             </li>
             <li className='nav-item '>
               <Link className='nav-link p-5' to='/dashboard/product-list'>
-                <HiUsers className='me-2' size={'1.5rem'} /> Products
+                <HiUsers className='me-2' size={'1.5rem'} /> Reports
               </Link>
             </li>
 
@@ -77,7 +77,7 @@ const Sidebar = () => {
           <div className='' />
           <ul className='navbar-nav'>
             <li className='nav-item'>
-              <Nav.Link as={NavLink} to={`/profile/${userInfo?._id}`}>
+              <Nav.Link as={NavLink} to={`/profile/${userInfo?.id}`}>
                 <i className='bi bi-person-square' /> Profile
               </Nav.Link>
             </li>
