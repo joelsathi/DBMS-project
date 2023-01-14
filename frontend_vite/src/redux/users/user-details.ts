@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { User } from '../../utils/interfaces';
 import publicAxios from '../../utils/public-axios';
-
+import authAxios from '../../utils/auth-axios';
 interface ProductSliceState {
   user: User | null;
   loading: boolean;
@@ -18,7 +18,10 @@ export const getUserBydId = createAsyncThunk(
   'users/:id',
   async (id: string | undefined) => {
     try {
-      const res = await publicAxios.get(`/users/${id}`);
+      // const res = await publicAxios.get(`/users/${id}`);
+      const res = await authAxios.get(`/auth/user`);
+      console.log(res.data);
+
       if (res.data) {
         return res.data;
       }

@@ -169,7 +169,7 @@ const Header = () => {
                   )}
                   <NavDropdown.Item
                     as={NavLink}
-                    to={`/profile/${userInfo._id}`}
+                    to={`/profile/${userInfo.id}`}
                   >
                     Profile
                   </NavDropdown.Item>

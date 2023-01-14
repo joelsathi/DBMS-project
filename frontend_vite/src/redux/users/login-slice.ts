@@ -9,7 +9,7 @@ type User = {
 };
 
 type UserInfo = {
-  _id: string;
+  id: string;
   email: string;
   username: string;
   isAdmin: Boolean;
@@ -33,8 +33,9 @@ export const userLogin = createAsyncThunk(
   async (user: User, thunkAPI) => {
     try {
       const res = await publicAxios.post('/auth/login', user);
+      console.log(res.data);
       if (res.data) {
-        toast.success(`Hi 👏 ${res.data.username}`);
+        toast.success(`Hi 👏 ${res.data.message}`);
         return res.data;
       }
     } catch (error: any) {

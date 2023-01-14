@@ -166,7 +166,7 @@ const Profile = () => {
               </Card>
             </Col>
             <Col md={7} lg={8}>
-              <TableContainer cols={cols}>
+              {/* <TableContainer cols={cols}>
                 {orders.map((order) => (
                   <tr key={order._id}>
                     <td>{order._id}</td>
@@ -198,7 +198,7 @@ const Profile = () => {
                     </td>
                   </tr>
                 ))}
-              </TableContainer>
+              </TableContainer> */}
             </Col>
           </Row>
         )}
